@@ -1,0 +1,364 @@
+ParkName,ParkType,Acreage,ParkID,location,lat,lon
+29TH/DIAMOND OPEN SPACE,Neighborhood Park or Playground,0.82,194,"Diamond
+San Francisco, CA
+(37.74360211, -122.43523589)",37.74360211, -122.43523589
+ADAM ROGERS PARK,Neighborhood Park or Playground,2.74,46,"Ingalls
+San Francisco, CA
+(37.73101645, -122.38385466)",37.73101645, -122.38385466
+ALAMO SQUARE,Neighborhood Park or Playground,12.7,117,"Hayes
+San Francisco, CA
+(37.77634875, -122.43467396)",37.77634875, -122.43467396
+ALICE MARBLE TENNIS COURTS,Neighborhood Park or Playground,0.84,151,"Greenwich
+San Francisco, CA
+(37.80142776, -122.42034327)",37.80142776, -122.42034327
+ALLYNE PARK,Neighborhood Park or Playground,0.75,131,"2609 Gough St
+San Francisco, CA
+(37.79746066, -122.42759992)",37.79746066, -122.42759992
+ALTA PLAZA,Neighborhood Park or Playground,11.91,129,"Jackson
+San Francisco, CA
+(37.79117333, -122.43766978)",37.79117333, -122.43766978
+ANGELO J. ROSSI PLAYGROUND,Neighborhood Park or Playground,6.47,105,"2 Willard North St
+San Francisco, CA
+(37.77874186, -122.45745402)",37.77874186, -122.45745402
+APTOS PLAYGROUND,Neighborhood Park or Playground,4.81,65,"Aptos
+San Francisco, CA
+(37.7285246, -122.46654085)",37.7285246, -122.46654085
+ARGONNE PLAYGROUND,Neighborhood Park or Playground,0.82,97,"18th Ave
+San Francisco, CA
+(37.779415, -122.47769976)",37.779415, -122.47769976
+BALBOA NATURAL AREA,Neighborhood Park or Playground,1.84,174,"Balboa
+San Francisco, CA
+(37.77591285, -122.51103949)",37.77591285, -122.51103949
+BALBOA PARK,Neighborhood Park or Playground,24.02,66,"Ocean
+San Francisco, CA
+(37.72494861, -122.44462659)",37.72494861, -122.44462659
+BAY VIEW PLAYGROUND,Neighborhood Park or Playground,3.4,38,"3rd
+San Francisco, CA
+(37.72593906, -122.39329436)",37.72593906, -122.39329436
+BERKELEY WAY OPEN SPACE,Neighborhood Park or Playground,0.83,2,"298 Berkeley Wy
+San Francisco, CA
+(37.73956697, -122.43995903)",37.73956697, -122.43995903
+BERNAL HEIGHTS RECREATION CENTER,Neighborhood Park or Playground,0.74,33,"500 Moultrie
+San Francisco, CA
+(37.73844636, -122.41615685)",37.73844636, -122.41615685
+BILLY GOAT HILL,Neighborhood Park or Playground,3.67,5,"30th
+San Francisco, CA
+(37.74140787, -122.43319872)",37.74140787, -122.43319872
+BROOKS PARK,Neighborhood Park or Playground,3.77,18,"373 Ramsell St
+San Francisco, CA
+(37.71727397, -122.46676875)",37.71727397, -122.46676875
+BUCHANAN STREET MALL,Neighborhood Park or Playground,1.81,121,"Buchanan
+San Francisco, CA
+(37.77949531, -122.42856481)",37.77949531, -122.42856481
+CABRILLO PLAYGROUND,Neighborhood Park or Playground,0.89,95,"858 38th Ave
+San Francisco, CA
+(37.77286672, -122.49870214)",37.77286672, -122.49870214
+CARL LARSEN PARK,Neighborhood Park or Playground,6.58,86,"19th Ave
+San Francisco, CA
+(37.73929782, -122.47596603)",37.73929782, -122.47596603
+CAYUGA PLAYGROUND,Neighborhood Park or Playground,2.69,15,"301 Naglee Ave
+San Francisco, CA
+(37.71388814, -122.45029719)",37.71388814, -122.45029719
+CHINESE RECREATION CENTER,Neighborhood Park or Playground,0.65,140,"1101 Washington St
+San Francisco, CA
+(37.79420965, -122.41178577)",37.79420965, -122.41178577
+CORONA HEIGHTS,Neighborhood Park or Playground,13.38,80,"Roosevelt
+San Francisco, CA
+(37.76497671, -122.43879691)",37.76497671, -122.43879691
+COW HOLLOW PLAYGROUND,Neighborhood Park or Playground,0.15,110,"1 Miley St
+San Francisco, CA
+(37.79733829, -122.44485143)",37.79733829, -122.44485143
+CROCKER AMAZON PLAYGROUND,Neighborhood Park or Playground,56.46,164,"Moscow
+San Francisco, CA
+(37.7140459, -122.42923866)",37.7140459, -122.42923866
+DIAMOND/FARNUM OPEN SPACE,Neighborhood Park or Playground,0.07,181,"Diamond
+San Francisco, CA
+(37.73880241, -122.43431084)",37.73880241, -122.43431084
+DOROTHY ERSKINE PARK,Neighborhood Park or Playground,1.5,179,"Martha
+San Francisco, CA
+(37.73391249, -122.43944536)",37.73391249, -122.43944536
+DOUGLASS PLAYGROUND,Neighborhood Park or Playground,7.45,8,"26th
+San Francisco, CA
+(37.74727823, -122.43893283)",37.74727823, -122.43893283
+DUBOCE PARK,Neighborhood Park or Playground,4.31,113,"Duboce
+San Francisco, CA
+(37.769615, -122.43342784)",37.769615, -122.43342784
+DUNCAN/CASTRO OPEN SPACE,Neighborhood Park or Playground,0.55,178,"Duncan
+San Francisco, CA
+(37.74594931, -122.43339409)",37.74594931, -122.43339409
+DUPONT COURTS,Neighborhood Park or Playground,0.82,98,"336 31st Ave
+San Francisco, CA
+(37.78268787, -122.4908331)",37.78268787, -122.4908331
+EDGEHILL MOUNTAIN,Neighborhood Park or Playground,2.33,71,"Edgehill
+San Francisco, CA
+(37.74203025, -122.45976472)",37.74203025, -122.45976472
+EUREKA VALLEY REC CENTER,Neighborhood Park or Playground,1.93,75,"100 Collingwood St
+San Francisco, CA
+(37.75978957, -122.43648069)",37.75978957, -122.43648069
+EVERSON/DIGBY LOTS,Neighborhood Park or Playground,1.2,6,"61 Everson St
+San Francisco, CA
+(37.73807643, -122.43177574)",37.73807643, -122.43177574
+EXCELSIOR PLAYGROUND,Neighborhood Park or Playground,1.61,29,"Russia Ave
+San Francisco, CA
+(37.7203554, -122.43321862)",37.7203554, -122.43321862
+FAIRMOUNT PLAZA,Neighborhood Park or Playground,0.74,3,"Miquel
+San Francisco, CA
+(37.73849226, -122.42913147)",37.73849226, -122.42913147
+FATHER ALFRED E. BOEDDEKER PARK,Neighborhood Park or Playground,0.97,134,"295 Eddy St
+San Francisco, CA
+(37.78439513, -122.4120591)",37.78439513, -122.4120591
+FAY PARK,Neighborhood Park or Playground,0.25,184,"2366 Leavenworth St
+San Francisco, CA
+(37.80289031, -122.4178443)",37.80289031, -122.4178443
+FRANKLIN SQUARE,Neighborhood Park or Playground,5.18,55,"16th
+San Francisco, CA
+(37.76501506, -122.4093148)",37.76501506, -122.4093148
+FULTON PLAYGROUND,Neighborhood Park or Playground,0.82,96,"855 27th Ave
+San Francisco, CA
+(37.7733822, -122.48693405)",37.7733822, -122.48693405
+GARFIELD SQUARE,Neighborhood Park or Playground,2.93,24,"26th
+San Francisco, CA
+(37.75020058, -122.4122356)",37.75020058, -122.4122356
+GENE FRIEND REC CENTER,Neighborhood Park or Playground,1.02,57,"270 6th St
+San Francisco, CA
+(37.77863929, -122.40635191)",37.77863929, -122.40635191
+GEORGE CHRISTOPHER PLAYGROUND,Neighborhood Park or Playground,6.8,7,"5210 Diamond Heights Blvd
+San Francisco, CA
+(37.74347014, -122.44055037)",37.74347014, -122.44055037
+GILMAN PLAYGROUND,Neighborhood Park or Playground,4.4,44,"Gilman Ave
+San Francisco, CA
+(37.71698202, -122.38809021)",37.71698202, -122.38809021
+GOLDEN GATE HEIGHTS PARK,Neighborhood Park or Playground,6.95,89,"12th Ave (off Pacheco
+San Francisco, CA
+(37.74998538, -122.46940674)",37.74998538,-122.46940674
+GRAND VIEW OPEN SPACE,Neighborhood Park or Playground,0.65,12910,"15th Ave
+San Francisco, CA
+(37.75507227, -122.47235155)",37.75507227, -122.47235155
+GRAND VIEW PARK,Neighborhood Park or Playground,3.98,92,"Moraga
+San Francisco, CA
+(37.75646571, -122.47180128)",37.75646571, -122.47180128
+GRATTAN PLAYGROUND,Neighborhood Park or Playground,1.52,104,"1180 Stanyan St
+San Francisco, CA
+(37.76259314, -122.45147654)",37.76259314, -122.45147654
+HAMILTON REC CENTER,Neighborhood Park or Playground,3.22,125,"1900 Geary Blvd
+San Francisco, CA
+(37.78441485, -122.43603929)",37.78441485, -122.43603929
+HAWK HILL,Neighborhood Park or Playground,4.85,186,"14th Ave Rivera
+San Francisco, CA
+(37.74657651, -122.46872941)",37.74657651, -122.46872941
+HAYES VALLEY PLAYGROUND,Neighborhood Park or Playground,0.61,116,"Hayes
+San Francisco, CA
+(37.77606034, -122.42736714)",37.77606034, -122.42736714
+HELEN WILLS PLAYGROUND,Neighborhood Park or Playground,0.8,130,"BRdway
+San Francisco, CA
+(37.79577299, -122.42066143)",37.79577299, -122.42066143
+HERZ PLAYGROUND,Neighborhood Park or Playground,6.68,137671,"Hahn
+San Francisco, CA
+(37.71348444, -122.41659732)",37.71348444, -122.41659732
+HILLTOP PARK,Neighborhood Park or Playground,3.46,47,"La Salle
+San Francisco, CA
+(37.73291728, -122.38347479)",37.73291728, -122.38347479
+Hunter's Point Recreation Center,Neighborhood Park or Playground,0.3,165,"200 Middle Point Rd
+San Francisco, CA
+(37.73735, -122.37834)",37.73735, -122.37834
+INDIA BASIN SHORELINE PARK,Neighborhood Park or Playground,11.57,48,"Evans
+San Francisco, CA
+(37.73366342, -122.37371901)",37.73366342, -122.37371901
+INTERIOR GREEN BELT,Neighborhood Park or Playground,21.35,87,"Belmont
+San Francisco, CA
+(37.7585442, -122.45319935)",37.7585442, -122.45319935
+J. P. MURPHY PLAYGROUND,Neighborhood Park or Playground,1.23,90,"1960 9th Ave
+San Francisco, CA
+(37.75180107, -122.46500011)",37.75180107, -122.46500011
+JACKSON PLAYGROUND,Neighborhood Park or Playground,4.41,54,"17th
+San Francisco, CA
+(37.7643148, -122.3996072)",37.7643148, -122.3996072
+JAMES ROLPH JR PLAYGROUND,Neighborhood Park or Playground,2.93,50,"Potrero
+San Francisco, CA
+(37.7497274, -122.40623124)",37.7497274, -122.40623124
+JEFFERSON SQUARE,Neighborhood Park or Playground,5.64,122,"Eddy
+San Francisco, CA
+(37.78180034, -122.42565792)",37.78180034, -122.42565792
+JOE DIMAGGIO PLAYGROUND,Neighborhood Park or Playground,2.52,150,"651 Lombard St
+San Francisco, CA
+(37.80248342, -122.41206911)",37.80248342, -122.41206911
+JOSE CORONADO PLAYGROUND,Neighborhood Park or Playground,0.78,60,"21st
+San Francisco, CA
+(37.75754628, -122.41510589)",37.75754628, -122.41510589
+JOSEPH LEE RECREATION CENTER,Neighborhood Park or Playground,0.78,40,"1395 Mendell St
+San Francisco, CA
+(37.73453491, -122.389412)",37.73453491, -122.389412
+JULIUS KAHN PLAYGROUND,Neighborhood Park or Playground,12.38,166,"Pacific Ave
+San Francisco, CA
+(37.79131306, -122.45397275)",37.79131306, -122.45397275
+JUNIPERO SERRA PLAYGROUND,Neighborhood Park or Playground,1.53,13,"300 Stonecrest Dr
+San Francisco, CA
+(37.72482337, -122.47385187)",37.72482337, -122.47385187
+KID POWER PARK,Neighborhood Park or Playground,0.23,191,"45 Hoff St
+San Francisco, CA
+(37.76415431, -122.42027989)",37.76415431, -122.42027989
+KITE HILL,Neighborhood Park or Playground,2.87,74,"Yukon
+San Francisco, CA
+(37.75824114, -122.44166171)",37.75824114, -122.44166171
+KOSHLAND PARK,Neighborhood Park or Playground,0.82,115,"Page
+San Francisco, CA
+(37.77324835, -122.42672942)",37.77324835, -122.42672942
+LAFAYETTE PARK,Neighborhood Park or Playground,11.49,128,"Gough
+San Francisco, CA
+(37.79154983, -122.42767158)",37.79154983, -122.42767158
+LAUREL HILL PLAYGROUND,Neighborhood Park or Playground,1.47,107,"251 Euclid Ave
+San Francisco, CA
+(37.78393678, -122.45093931)",37.78393678, -122.45093931
+LOUIS SUTTER PLAYGROUND,Neighborhood Park or Playground,13.92,137665,"Wayland
+San Francisco, CA
+(37.72245982, -122.41392441)",37.72245982, -122.41392441
+MARGARET S HAYWARD PLAYGROUND,Neighborhood Park or Playground,5.03,119,"1016 Laguna
+San Francisco, CA
+(37.78084683, -122.425427)",37.78084683, -122.425427
+MCCOPPIN SQUARE,Neighborhood Park or Playground,7.24,88,"24th
+San Francisco, CA
+(37.74382723, -122.48007959)",37.74382723, -122.48007959
+MCKINLEY SQUARE,Neighborhood Park or Playground,2.81,53,"20th St
+San Francisco, CA
+(37.75913976, -122.40469058)",37.75913976, -122.40469058
+MERCED HEIGHTS PLAYGROUND,Neighborhood Park or Playground,1.03,17,"Byxbee
+San Francisco, CA
+(37.71750931, -122.47028126)",37.71750931, -122.47028126
+MICHELANGELO PLAYGROUND,Neighborhood Park or Playground,0.44,148,"Greenwich
+San Francisco, CA
+(37.80109573, -122.41689916)",37.80109573, -122.41689916
+MIDTOWN TERRACE PLAYGROUND,Neighborhood Park or Playground,1.57,167,"Clarendon
+San Francisco, CA
+(37.75223367, -122.45453246)",37.75223367, -122.45453246
+MINNIE & LOVIE WARD REC CENTER,Neighborhood Park or Playground,10.3,19,"650 Capitol
+San Francisco, CA
+(37.71577016, -122.45757024)",37.71577016, -122.45757024
+MIRALOMA PLAYGROUND,Neighborhood Park or Playground,2.2,70,"Omar
+San Francisco, CA
+(37.73864614, -122.44931265)",37.73864614, -122.44931265
+MISSION DOLORES PARK,Neighborhood Park or Playground,15.94,63,"19th
+San Francisco, CA
+(37.75975506, -122.42709405)",37.75975506, -122.42709405
+MISSION PLAYGROUND,Neighborhood Park or Playground,2.03,61,"19th
+San Francisco, CA
+(37.7592917, -122.42230064)",37.7592917, -122.42230064
+MISSION REC CENTER,Neighborhood Park or Playground,0.63,59,"2450 Harrison St
+San Francisco, CA
+(37.75813659, -122.41292225)",37.75813659, -122.41292225
+MOSCONE RECREATION CENTER,Neighborhood Park or Playground,12.07,132,"1800 Chestnut St
+San Francisco, CA
+(37.8021249, -122.43313532)",37.8021249, -122.43313532
+MOUNTAIN LAKE PARK,Neighborhood Park or Playground,12.79,102,"1 11th Ave
+San Francisco, CA
+(37.78724257, -122.4690454)",37.78724257, -122.4690454
+NOE VALLEY COURTS,Neighborhood Park or Playground,0.93,72,"24th
+San Francisco, CA
+(37.75140324, -122.43892096)",37.75140324, -122.43892096
+PALEGA RECREATION CENTER,Neighborhood Park or Playground,4.97,30,"500 Felton St
+San Francisco, CA
+(37.72934205, -122.40978)",37.72934205, -122.40978
+PALOU/PHELPS PARK,Neighborhood Park or Playground,2.63,188,"Palou
+San Francisco, CA
+(37.73551382, -122.39472336)",37.73551382, -122.39472336
+PARKSIDE SQUARE,Neighborhood Park or Playground,8.31,84,"28th Ave
+San Francisco, CA
+(37.73794781, -122.48390596)",37.73794781, -122.48390596
+PARQUE NINOS UNIDOS,Neighborhood Park or Playground,0.53,187,"23rd
+San Francisco, CA
+(37.75439053, -122.41356906)",37.75439053, -122.41356906
+PEIXOTTO PLAYGROUND,Neighborhood Park or Playground,0.79,195,"15th St
+San Francisco, CA
+(37.76578838, -122.43790519)",37.76578838, -122.43790519
+PORTSMOUTH SQUARE,Neighborhood Park or Playground,1.29,141,"Washington
+San Francisco, CA
+(37.79483492, -122.40535067)",37.79483492, -122.40535067
+POTRERO DEL SOL PARK,Neighborhood Park or Playground,4.36,49,"Potrero
+San Francisco, CA
+(37.75060695, -122.40507971)",37.75060695, -122.40507971
+POTRERO HILL RECREATION CENTER,Neighborhood Park or Playground,10.07,52,"801 Arkansas St
+San Francisco, CA
+(37.75613966, -122.39688179)",37.75613966, -122.39688179
+PRECITA PARK,Neighborhood Park or Playground,2.21,37,"3200 Folsom St
+San Francisco, CA
+(37.74706232, -122.41202466)",37.74706232, -122.41202466
+PRESIDIO HEIGHTS PLAYGROUND,Neighborhood Park or Playground,0.44,109,"Clay
+San Francisco, CA
+(37.78847078, -122.4495972)",37.78847078, -122.4495972
+RAYMOND KIMBELL PLAYGROUND,Neighborhood Park or Playground,0,124,"Geary Blvd
+San Francisco, CA
+(37.78294403, -122.43512653)",37.78294403, -122.43512653
+RICHMOND PLAYGROUND,Neighborhood Park or Playground,0.82,100,"18th Ave
+San Francisco, CA
+(37.78513017, -122.47811169)",37.78513017, -122.47811169
+RICHMOND RECREATION CENTER,Neighborhood Park or Playground,0.82,172,"251 18th Ave
+San Francisco, CA
+(37.78326998, -122.47797676)",37.78326998, -122.47797676
+ROCHAMBEAU PLAYGROUND,Neighborhood Park or Playground,0.83,99,"238 25th Ave
+San Francisco, CA
+(37.78483852, -122.48454408)",37.78483852, -122.48454408
+ROCK OUTCROPPING,Neighborhood Park or Playground,1.4,175,"Ortega
+San Francisco, CA
+(37.75384487, -122.47086479)",37.75384487, -122.47086479
+ROLPH NICOL PLAYGROUND,Neighborhood Park or Playground,3.04,9,"Eucalyptus Dr
+San Francisco, CA
+(37.73060291, -122.48041933)",37.73060291, -122.48041933
+RUSSIAN HILL OPEN SPACE,Neighborhood Park or Playground,0.96,153,"Hyde
+San Francisco, CA
+(37.80341611, -122.42075699)",37.80341611, -122.42075699
+SILVER TERRACE PLAYGROUND,Neighborhood Park or Playground,5.47,39,"Thornton
+San Francisco, CA
+(37.73285911, -122.40314958)",37.73285911, -122.40314958
+SOUTH PARK,Neighborhood Park or Playground,1.12,56,"64 Park Ave
+San Francisco, CA
+(37.78157949, -122.39395227)",37.78157949, -122.39395227
+SOUTH SUNSET PLAYGROUND,Neighborhood Park or Playground,3.72,85,"40th Ave
+San Francisco, CA
+(37.73738679, -122.49845174)",37.73738679, -122.49845174
+ST MARY'S REC CENTER,Neighborhood Park or Playground,13.6,31,"Murray
+San Francisco, CA
+(37.73365828, -122.42064294)",37.73365828, -122.42064294
+STATES STREET PLAYGROUND,Neighborhood Park or Playground,2.76,200,"86 States St
+San Francisco, CA
+(37.76380044, -122.43785312)",37.76380044, -122.43785312
+SUE BIERMAN PARK,Neighborhood Park or Playground,4.41,143,"Clay St
+San Francisco, CA
+(37.79592597, -122.3965106)",37.79592597, -122.3965106
+SUNNYSIDE PLAYGROUND,Neighborhood Park or Playground,2.37,67,"Teresita Ave
+San Francisco, CA
+(37.73366412, -122.4474787)",37.73366412, -122.4474787
+SUNSET PLAYGROUND,Neighborhood Park or Playground,3.29,93,"2201 Lawton St
+San Francisco, CA
+(37.75658875, -122.48684698)",37.75658875, -122.48684698
+TANK HILL,Neighborhood Park or Playground,2.87,76,"Clarendon
+San Francisco, CA
+(37.75994801, -122.44768643)",37.75994801, -122.44768643
+TENDERLOIN CHILDREN'S REC CENTER,Neighborhood Park or Playground,0.61,168,"570 Ellis St
+San Francisco, CA
+(37.78482103, -122.41540228)",37.78482103, -122.41540228
+UPPER NOE RECREATION CENTER,Neighborhood Park or Playground,2.51,22,"Day
+San Francisco, CA
+(37.74243091, -122.42779751)",37.74243091, -122.42779751
+VICTORIA MANALO DRAVES PARK,Neighborhood Park or Playground,2.52,169,"Folsom
+San Francisco, CA
+(37.77700947, -122.40595532)",37.77700947, -122.40595532
+VISITACION VALLEY GREENWAY,Neighborhood Park or Playground,2.13,177,"Lel
+San Francisco, CA
+(37.71476638, -122.40613194)",37.71476638, -122.40613194
+VISITACION VALLEY PLAYGROUND,Neighborhood Park or Playground,2.05,27,"251 Lel&amp; St
+San Francisco, CA
+(37.71240126, -122.40908547)",37.71240126, -122.40908547
+WALTER HAAS PLAYGROUND,Neighborhood Park or Playground,4.4,4,"Addison
+San Francisco, CA
+(37.74058384, -122.43436978)",37.74058384, -122.43436978
+WEST PORTAL PLAYGROUND,Neighborhood Park or Playground,1.91,68,"Ulloa
+San Francisco, CA
+(37.74160392, -122.46524393)",37.74160392, -122.46524393
+WEST SUNSET PLAYGROUND,Neighborhood Park or Playground,17.16,91,"3223 Ortega St &amp; 39th Ave
+San Francisco, CA
+(37.74899627, -122.49800859)",37.74899627, -122.49800859
+WOH HEI YUEN PARK,Neighborhood Park or Playground,0.31,170,"922 Jackson St
+San Francisco, CA
+(37.79584858, -122.41033649)",37.79584858, -122.41033649
+YOUNGBLOOD COLEMAN PLAYGROUND,Neighborhood Park or Playground,6.13,45,"1398 Hudson St
+San Francisco, CA
+(37.73876792, -122.38450221)",37.73876792, -122.38450221

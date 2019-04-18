@@ -1,0 +1,4 @@
+- keep the "tutorial" stuff?
+        - update the README and docx files, if not
+- keep the "cheatsheet" thing?
+        - update the README if not
