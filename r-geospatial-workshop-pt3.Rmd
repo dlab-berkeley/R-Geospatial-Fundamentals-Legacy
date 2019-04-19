@@ -10,6 +10,26 @@ editor_options:
   chunk_output_type: console
 ---
 
+
+
+
+---------------------------
+# TODO:
+
+
+1. add explanation of some packages not converting to , and demo of how to convert objects to  objects, in Day 3
+           world_sp = as(world, Class = "Spatial")
+                   world_sf = st_as_sf(world_sp)
+
+2. decide whether or not to produce and use the tutorial files
+
+
+----------------------------
+
+
+
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```

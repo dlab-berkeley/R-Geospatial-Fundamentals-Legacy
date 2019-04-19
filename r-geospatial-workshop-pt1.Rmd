@@ -15,12 +15,8 @@ knitr::opts_chunk$set(echo = TRUE)
 --------------------------
 # TODO
 1. change repo URL at top once we have it
-2. decide whether or not to produce and use the tutorial files
-3. maybe make some of the challenges a bit more challenging (I think some people find them too simple to be helpful)
-4. add explanation of some packages not converting to `sf`, and demo of how to convert objects to `sp` objects, in Day 3
-        world_sp = as(world, Class = "Spatial")
-        world_sf = st_as_sf(world_sp)
-5. name all objects with sf in the name (for San Francisco) SF instead (to disambiguate from sf pkg)
+2. standaradize style for all slides titles
+3. name all objects with sf in the name (for San Francisco) SF instead (to disambiguate from sf pkg)
 
 
 -------------------------
@@ -553,7 +549,7 @@ Let's fetch a simple map on which we can display our points
 Here we are centering the map on San Francisco & using the stamen `toner-lite` basemap.
 
 
-```{r, eval=FALSE}
+```{r}
 #Load my API key from file
 #(NOTE: THIS WON'T RUN ON OTHERS' MACHINES!)
 filename = '/home/drew/Desktop/gmapi.txt'
@@ -797,7 +793,7 @@ which are used represent vector data in `sf`.
 
 First, of course, we'll need to load the package:
 
-```{r, eval=F}
+```{r}
 library(sf)
 ```
 
@@ -1231,6 +1227,42 @@ Some additional info on CRS definitions:
 [Here](https://github.com/OSGeo/proj.4/blob/master/nad/epsg) is an example file of proj4 CRS definitions
 
 
+## Projections, CRS, oh my!
+
+We want all data in the same CRS
+
+Which one is best?
+
+<img height ="500px" src="https://d3enniz247y0a9.cloudfront.net/website/var/tmp/image-thumbnails/30000/34546/thumb__article-header-square/hero-square-gettyimages-563936217.jpeg"></img>
+
+
+## Common CRS Codes
+
+**Geographic CRSs**
+
+* `4326` Geographic, WGS84 (default for lon/lat)
+
+* `4269` Geographic, NAD83 (USA Fed agencies like Census)
+
+
+**Projected CRSs**
+
+* `5070` USA Contiguous Albers Equal Area Conic
+
+* `3310` CA ALbers Equal Area
+
+* `26910` UTM Zone 10, NAD83 (Northern Cal)
+
+* `3857` Web Mercator (web maps)
+
+
+## Finding CRS Codes
+
+See [http://spatialreference.org/](http://spatialreference.org/)
+
+Use this site to find EPSG codes and proj4 CRS strings
+
+
 ## Creating `sf` objects
 
 Now that we know our homes have are in unprojected coordinates with a WGS84 datum
@@ -1257,7 +1289,7 @@ Looks good!
 That takes care of both steps 1 (create `sf` object) and 2 (define CRS)!
 
 Now that our homes are an `sf` object with the correct CRS, we'll need to reproject
-either `sfhomes15_sp` or `tracts`, so that they are in the same projection.
+either `sfhomes15_sf` or `tracts`, so that they are in the same projection.
 
 Which one should we project, and why?...
 
@@ -1273,7 +1305,16 @@ so that everything is in an unprojected CRS and plots with units of decimal degr
 
 ## Reprojecting
 
-We can **reproject**, or **transform** an `sf` object
+**Note**: If we were working with `sp` objects, we would use the `rgdal` package
+to carry out CRS transformations.
+
+However, `sf` provides a one stop shop for all sorts of common geospatial operations,
+so we can just stick with `sf` functions.
+
+
+## Reprojecting
+
+Using `sf`, we can **reproject**, or **transform** an `sf` object
 using the `st_transform` function.
 
 The only arguments we need are:
@@ -1281,6 +1322,8 @@ The only arguments we need are:
 **x**: The object to be transformed
 
 **crs**: The CRS to transform x to (which can be provided as just an integer of the EPSG code)
+
+
 
 ## Challenge
 
@@ -1340,13 +1383,13 @@ Work through the following steps:
 1. Coerce the landmarks dataframe to an `sf` object,
    with EPSG: `3857`, Web Mercator as its CRS.
 
-2. Read in the 'sfboundary' shapefile, from the './data' subdirectory.
+2. Read in the 'sfboundary' and 'sfhighways' shapefiles, from the './data' subdirectory.
 
-3. Reproject whichever of those two layers to the CRS of sfhomes15\_sf, as needed.
+3. Reproject any of those layers to the CRS of sfhomes15\_sf, as needed.
 
-4. Plot tracts, boundary, homes, and landmarks together, in that order.
-   Make the border purple, the homes green, and the landmarks orange.
-
+4. Plot tracts, boundary, highways, homes, and landmarks together.
+   Make the border purple, and the highways and the landmarks red.
+   Color the homes by the 'totvalue' column.
 
 
 ## Challenge: Solution
@@ -1364,400 +1407,61 @@ landmarks_sf = st_as_sf(landmarks, coords = c('X', 'Y'), crs = 3857)
 
 ```{r}
 sfboundary = st_read('./data', 'sfboundary')
+sfhighways = st_read('./data', 'sfhighways')
 ```
 
 ## Challenge: Solution
 
-3. Reproject whichever of those two layers to the CRS of sfhomes15\_sf, as needed.
+3. Reproject any of those layers to the CRS of sfhomes15\_sf, as needed.
 
 ```{r}
 #check the CRS of sfboundary
 st_crs(sfboundary) == st_crs(sfhomes15_sf)
-#doesn't need to be transformed, but we know the landmarks do (EPSG 3857)
+#it doesn't need to be transformed, but we know the landmarks do (EPSG 3857)
+
+#check th CRS of sfhighways
+st_crs(sfhighways) == st_crs(sfhomes15_sf)
+#it needs to be transformed
+sfhighways_lonlat = st_transform(sfhighways, st_crs(sfhomes15_sf))
+
+#and we know the landmarks need to be transformed, because we just set their CRS to EPSG:3857
 landmarks_lonlat = st_transform(landmarks_sf, st_crs(sfhomes15_sf))
 ```
 
 
 ## Challenge: Solution
 
-4. Plot tracts, boundary, homes, and landmarks together, in that order.
-   Make the border purple, the homes green, and the landmarks orange.
+4. Plot tracts, boundary, highways, homes, and landmarks together.
+   Make the border purple, and the highways and the landmarks red.
+   Color the homes by the 'totvalue' column.
 
 ```{r}
-ggplot() +
+challenge_map = ggplot() +
 geom_sf(data = sfboundary, col = 'purple') +
-geom_sf(data = tracts_lonlat) + 
+geom_sf(data = tracts_lonlat, alpha = 0.2) +  #alpha = 0.2 for transparency, so we can see sfboundary
+geom_sf(data= sfhighways_lonlat, col = 'red') +
 geom_sf(data = sfhomes15_sf, aes(col = totvalue)) +
-geom_sf(data = landmarks_sf, col = 'orange')
+geom_sf(data = landmarks_sf, col = 'red')
+challenge_map
 ```
 
 ## Challenge: Solution
 
 Excellent! Everything lines up!
 
-However, we need to learn more about how to control the aesthetics of our plots.
-For example, as things stand, we can barely see the border because it's covered up by the tracts layer.
+Now, how do we manipulate more of the aspects in our plots?
 
-How do we manipulate things like this? How do we make our plots prettier?
+How do we make our plots prettier?
 
-
-
-## Plotting: `tmap`
-
-We already started to see ways to control these sorts of plotting parameters in `ggplot`.
-
-We will continue to explore similar functionalities. But we'll do so using the `tmap` package.
-
-As we will see, `tmap` offers a still wider variety of options
-for creating and tweaking our maps. And more importantly, it is an explicitly
-spatial package (unlike `ggplot`), so it will make a lot of work easier and more intuitive.
-
-
-
-
-------------------------------------------------------
-
-TODO
-
-- introduce and condense tmap in last part of today
-
-- last challenge (using tmap)
-      
------------------------------------------------------- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## `rgdal`
-
-`rgdal` is an R port of the powerful and widely used [GDAL](http://gdal.org) library.
-
-It is the most commonly used R library for importing and exporting spatial data. 
-
-* `OGR`: for vector data: readOGR() and writeOGR()
-
-* `GDAL` for raster data: readGDAL() and writeGDAL()
-
-## `rgdal`
-
-```{r}
-
-library(rgdal)
-
-# See what file types are supported by rgdal drivers
-# ogrDrivers()$name
-
-```
-
-## Getting help
-
-gdal.org
-
-`?readOGR`
-
-For more info on working with `rgdal` to load different types of spatial data in R see this excellent [tutorial](http://zevross.com/blog/2016/01/13/tips-for-reading-spatial-files-into-r-with-rgdal/) by Zev Ross.
-
-## Read in a Shapefile with the boundary of San Francisco
-
-Take a look at the file(s)
-```{r}
-
-dir("data", pattern="sf_boundary")
-
-```
-
-## Read in Shapefile
-
-```{r}
-
-sfboundary <- readOGR(dsn="data",layer="sf_boundary")
-
-# or
-# sfboundary <- readOGR("data","sf_boundary")
-# but not
-#sfboundary <- readOGR(dsn="data/",layer="sf_boundary")
-
-```
-
-
-## Check out the data structure
-
-What type of `sp` object is `sfboundary`?
-How many `features` are in the object?
-
-```{r, eval=F}
-class(sfboundary)
-str(sfboundary) 
-head(sfboundary@data)  
-```
-*Explore the object in the Envi window*
-
-## Make a quick plot of `sfboundary`
-
-How?
-
-## Make a quick plot of `sfboundary`
-```{r}
-
-plot(sfboundary)
-
-```
-
-
-
-## Map `sfboundary` & `sfhomes15_sp`
-
-```{r}
-plot(sfboundary)
-points(sfhomes15_sp, col="red")
-```
-
-## Map `sfboundary` & `sfhomes15_sp`
-
-Where are the points? What's wrong?
-
-```{r, eval=T}
-plot(sfboundary)
-points(sfhomes15_sp, col="red")
-```
-
-## What's Wrong?
-
-Compare the CRSs, are they the same?
-
-```{r, eval=F}
-
-proj4string(sfboundary)
-proj4string(sfhomes15_sp)
-
-```
-
-## Compare the CRSs, are they the same?
-
-```{r}
-
-proj4string(sfboundary)
-proj4string(sfhomes15_sp)
-
-```
-
-## Compare the coordinate values
-
-```{r}
-sfboundary@bbox
-sfhomes15_sp@bbox
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Transforming a CRS
-
-## Transform the CRS
-
-Use `sp` function `spTransform`
-
-Requires as input:
-
-* a `sp` object to transform with a defined CRS
-    
-* a target CRS
-
-Outputs a new spatial object with coordinate data in the target CRS
-
-- It does not change the input data
-
-## Transform `sfboundary`
-
-Let's transform the CRS of `sfboundary` to be the same as that of `sfhomes15_sp`.
-
-
-```{r}
-
-sfboundary_lonlat <- spTransform(sfboundary, CRS("+init=epsg:4326"))
-
-```
-
-Why not the other way around?
-
-## Did it work?
-
-Do they match now? 
-
-How will we know?
-
-## Do the CRSs match?
-
-```{r}
-proj4string(sfhomes15_sp) == proj4string(sfboundary_lonlat)
-
-```
-
-## Overlay the data in space
-
-```{r, eval=F}
-plot(sfboundary_lonlat)
-points(sfhomes15_sp, col="red")
-
-
-```
-
-## Overlay the data in space
-
-Woo-hoo!
-
-```{r, echo=F}
-plot(sfboundary_lonlat)
-points(sfhomes15_sp, col="red")
-
-```
-
-## So....
-
-We can **define** the CRS of `sp` objects and **transform** them to the same CRS for mapping and spatial analysis.
-
-Recap
-```{r, eval=F}
-# Define the CRS
-proj4string(sfhomes15_sp) <- CRS("+init=epsg:4326")
-
-#Transform the CRS
-sfboundary_lonlat <- spTransform(sfboundary, CRS("+init=epsg:4326"))
-```
-
-
-## Save `sfboundary_lonlat`
-
-Use `writeOGR` to save `sfboundary_lonlat` to a new shapefile
-
-See `?writeOGR` for help
-```{r, eval=F}
-# write transformed data to a new shapefile 
-writeOGR(sfboundary_lonlat, 
-          dsn = "data", 
-          layer = "sfboundary_lonlat", 
-          driver="ESRI Shapefile")
-
-# is it there?
-dir("data")
-```
-
-=
-
-## Projections, CRS, oh my!
-
-We want all data in the same CRS
-
-Which one is best?
-
-<img height ="500px" src="https://d3enniz247y0a9.cloudfront.net/website/var/tmp/image-thumbnails/30000/34546/thumb__article-header-square/hero-square-gettyimages-563936217.jpeg"></img>
-
-
-## Common CRS Codes
-
-**Geographic CRSs**
-
-* `4326` Geographic, WGS84 (default for lon/lat)
-
-* `4269` Geographic, NAD83 (USA Fed agencies like Census)
-
-
-**Projected CRSs**
-
-* `5070` USA Contiguous Albers Equal Area Conic
-
-* `3310` CA ALbers Equal Area
-
-* `26910` UTM Zone 10, NAD83 (Northern Cal)
-
-* `3857` Web Mercator (web maps)
-
-## Finding CRS Codes
-
-See [http://spatialreference.org/](http://spatialreference.org/)
-
-Use this site to find EPSG codes and proj4 CRS strings
-
-## Challenge
-
-1. Use `coordinates` to convert the `landmarks` data frame to a SpatialPointsDataFrame
-2. Use `proj4string` to define it's CRS as `3857` Web Mercator
-3. Use  `spTransform` to transform the landmarks data to geographic coords (WGS84)
-4. Add the landmarks to the last map we created.
-
-## Challenge - solution
-```{r, eval=F}
-# Convert the DF to a SPDF
-coordinates(landmarks) <-c("X","Y")
-# Define the CRS with an EPSG code for Web mercator
-proj4string(landmarks) <- CRS("+init=epsg:3857") 
-# Transform the CRS to WGS84
-landmarks_lonlat <- spTransform(landmarks, CRS("+init=epsg:4326"))
-# map it
-plot(sfboundary_lonlat)
-points(sfhomes15_sp, col="red")
-points(landmarks_lonlat, col="green")
-```
-
-## Challenge - solution
-```{r, echo=F}
-# Convert the DF to a SPDF
-coordinates(landmarks) <-c("X","Y")
-# Define the CRS with an EPSG code for Web mercator
-proj4string(landmarks) <- CRS("+init=epsg:3857") 
-# Transform the CRS to WGS84
-landmarks_lonlat <- spTransform(landmarks, CRS("+init=epsg:4326"))
-# map it
-plot(sfboundary_lonlat)
-points(sfhomes15_sp, col="red")
-points(landmarks_lonlat, col="green")
-```
+And what other options do we have for plotting these explicity geospatial `sf` objects?
 
 
 ## Quick aside: Geocoding with `ggmap`
-Note: Now that we've transformed our landmarks' coordinates to geographic coordinates, let's see how to get geocoded coordinates from `gmap`, to see how the results compare:
+Note: Now that we've transformed our landmarks' coordinates to geographic coordinates, let's see how to get geocoded coordinates from `ggmap`, to see how the results compare:
 
 ```{r}
 #prep our names for geocoding with the Google Maps API
-place_names = paste0(landmarks@data$name, ',  San Francisco, CA')
+place_names = paste0(landmarks$name, ',  San Francisco, CA')
 #geocode them
 geocode_coords = geocode(place_names)
 ```
@@ -1766,7 +1470,7 @@ geocode_coords = geocode(place_names)
 
 ```{r}
 #transformed coords
-landmarks_lonlat@coords
+landmarks_lonlat
 #geocoded coords
 geocode_coords
 ```
@@ -1780,68 +1484,520 @@ There are actually more significant digits. They're just truncated by R's displa
 
 ```{r}
 #transformed coords
-landmarks_lonlat@coords
+landmarks_lonlat
 #geocoded coords
 cbind(geocode_coords$lon, geocode_coords$lat)
 ```
 
 
-## Challenge 
-1. Use `readOGR` to load the shapefile "data/sf_highways.shp"
-2. Check its data type with `class()`
-3. Check its CRS with  `proj4string()`
-4. Use `spTransform` if need to project it to WGS84
-2. Recreate the last map and add the highways as black `lines`
 
-## Challenge - solution
-```{r, eval=F}
-highways <- readOGR(dsn="data", layer="sf_highways")
-class(highways)
-proj4string(highways)
-highways_lonlat <- spTransform(highways, CRS("+init=epsg:4326"))
 
-plot(sfboundary_lonlat)
-lines(highways_lonlat, col="black")
-points(sfhomes15_sp, col="red")
-points(landmarks_lonlat, col="green")
+# Plotting: `tmap` package
 
+## `tmap`
+
+We've already mapped with base R's `plot`, `ggplot`, and `ggmap`.
+
+We've seen how to control some plot aesthetics, to make our maps data-rich.
+
+We will continue to explore similar functionalities. But we'll do so using the `tmap` package.
+
+We won't spend a ton of time reviewing `tmap`, because you'll get more practice with
+it during Parts 2 and 3.
+
+
+## `tmap`
+
+As we will see, `tmap` offers some crucial additional options:
+
+- integration with spatial objects (i.e. `sf` and `sp` objects)
+- easy interactive maps
+
+## `tmap`
+
+`tmap` stands for thematic map
+
+It's a powerful toolkit for creating maps with `sf` and `sp` objects,
+with less code than the alternatives
+
+Syntax inspired by ggplot2 (but a bit simpler)
+
+
+## `tmap`
+
+First we'l load the library
+
+```{r}
+library(tmap)
 ```
-## Challenge - solution
+*Note*: You may need to install /load dependencies
+- ggplot2, RColorbrewer, classInt, leaflet libraries
+
+
+## `tmap`: quick tmaps
+
+We can create **q**uick **tm**aps with the `qtm` function:
+
+```{r}
+qtm(sfhomes15_sf)
+```
+
+## `tmap`: modes
+
+`tmap` has 2 modes:
+
+* **plot**: makes static maps
+
+* **view**: makes interactive maps
+
+Use the command `tmap_mode` to toggle between them:
+
+* `tmap_mode("plot")`
+
+* `tmap_mode("view")`
+
+
+## `tmap`: modes
+
+We can create an interactive version of the previous map: 
+
+```{r, eval=F}
+tmap_mode("view") # set tmap to interactive view mode
+qtm(sfhomes15_sf) # Interactive - click on the points
+```
+
+
+## `tmap`: modes
+
+Notice that this is a live, interactive map!
+* click on the points to see the `Popups`
+* look at the `Layer selector`
+
+```{r}
+tmap_mode("view") # set tmap to interactive view mode
+qtm(sfhomes15_sf) # Interactive - click on the points
+```
+
+## `tmap`: modes
+
+Conveniently, we can also toggle between the modes using the `ttm` function.
+
+```{r}
+ttm()
+ttm()
+ttm()
+ttm()
+```
+
+## `tmap`: building custom maps
+
+To customize our tmaps, we need to use `tmap`'s more complex, `ggplot`-type  syntax
+
+```{r, eval=F}
+tm_shape(tracts) + 
+  tm_polygons(col="beige", border.col="red", alpha=0.5)
+```
+
+`tm_shape(<sf_object>)`  specifies the sf object
+
+`+ tm_<element>(...)`  specifies the symbology
+
+plus other options for creating a publication ready map
+
+
+## `tmap`: mapping polygons
+
+We can add and customize polygons using `tm_polygons`.
+
+```{r, eval=FALSE}
+tm_shape(tracts) + 
+  tm_polygons(col="beige", border.col="red", alpha = 0.4)
+```
+
+## `tmap`: mapping polygons
+
+```{r }
+tm_shape(tracts) + 
+  tm_polygons(col="beige", border.col="red", alpha = 0.4)
+
+#then we'll switch back to 'plot' mode
+ttm()
+```
+
+
+## `tmap`: mapping points
+
+We can also map and customize point data using `tm_dots`
+
+`tm_dots` are a type of `tm_symbols()`
+
+See `?tm_symbols` for other types of point symbols.
+
+```{r, eval=FALSE}
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="skyblue", size=.25)
+```
+
+
+## `tmap`: mapping points
+
+```{r}
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="skyblue", size=.25)
+```
+
+
+## `tmap`: mapping lines
+
+And we can add and customize lines using `tm_lines`.
+
+```{r, eval=FALSE}
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black")
+```
+
+## `tmap`: mapping lines
+
+```{r}
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black")
+```
+
+
+## `tmap`: mapping aesthetics onto data values
+
+This works the same as with `ggplot`, except for two important things to note:
+
+* we don't use an `aes` aesthetic-mapping function
+* we must quote our column names!
+
+```{r}
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25) 
+```
+
+
+## `tmap`: mapping multiple layers
+
+We can overlay multiple `sf` objects, or layers,
+by concatenating the `tmap` commands with plus signs
+(again, using `ggplot`-style syntax).
+
+```{r, eval=F}
+# Map the SF Boundary first
+overlay_map = tm_shape(sfboundary) + 
+  tm_polygons(col="beige", border.col="black") +
+
+# Overlay the highway lines next
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black") +
+  
+# Then add the house points
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25) 
+
+overlay_map
+ 
+```
+
+## `tmap`: mapping multiple layers
 
 ```{r, echo=F}
-highways <- readOGR(dsn="data", layer="sf_highways")
-class(highways)
-proj4string(highways)
-highways_lonlat <- spTransform(highways, CRS("+init=epsg:4326"))
+overlay_map = tm_shape(sfboundary) + 
+  tm_polygons(col="beige", border.col="black") +
 
-plot(sfboundary_lonlat)
-lines(highways_lonlat, col="black")
-points(sfhomes15_sp, col="red")
-points(landmarks_lonlat, col="green")
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black") +
+
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25) 
+
+overlay_map 
+```
+
+
+## `tmap`: mapping multiple layers
+
+What if we then want to add our landmarks? Does this code work?
+
+```{r, eval=F}
+overlay_map +
+    tm_shape(landmarks_lonlat) +
+    tm_dots(col = 'skyblue', size = 2)
+```
+
+## `tmap`: mapping multiple layers
+
+Yup!
+
+```{r}
+overlay_map +
+    tm_shape(landmarks_lonlat) +
+    tm_dots(col = 'skyblue', size = 2)
+```
+
+
+## `tmap`: CRS management
+
+Can we redo it using `landmarks_sf` instead of `landmarks_lonlat`?
+
+If so, what does that tell us about `tmap`?
+
+```{r}
+overlay_map +
+    tm_shape(landmarks_sf) +
+    tm_dots(col = 'skyblue', size = 2)
+```
+
+
+## `tmap`: CRS management
+
+`tmap` reprojects for us on the fly!
+
+If the CRSs are defined, `tmap` will use that info - if not, `tmap` will assume `WGS84` -
+
+and dynamically reproject subsequent layers to match first one added to map.
+
+
+
+## `tmap`: advanced customization
+
+We can of course tweak all sorts of details in our maps.
+
+```{r, eval=F}
+tm_shape(sfboundary) +
+  tm_polygons(col="beige", border.col="black") +
+  
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black") +
+  
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25, 
+          title = "San Francisco Property Values (2015)") + 
+tm_layout(inner.margins=c(.05, .2, .15, .05)) 
+      # bottom, left, top, right
+```
+
+## `tmap`: advanced customization
+
+```{r}
+tm_shape(sfboundary) +
+  tm_polygons(col="beige", border.col="black") +
+  
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black") +
+  
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25, 
+          title = "San Francisco Property Values (2015)") + 
+tm_layout(inner.margins=c(.05, .2, .15, .05)) 
+      # bottom, left, top, right
+```
+
+## `tmap`: advanced customization
+
+We can also customize the popups!
+
+Notice the changes relative to the previous code.
+
+```{r, eval=F}
+tm_shape(sfboundary) + 
+  tm_polygons(col="beige", border.col="black") +
+  
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black") +
+
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25, 
+          title = "San Francisco Property Values (2015)",
+          popup.vars=c("SalesYear","totvalue","NumBedrooms",
+                       "NumBathrooms","AreaSquareFeet")) + 
+  
+tm_layout(inner.margins=c(.05, .2, .15, .05)) # bottom, left, top, right
+```
+
+## `tmap`: advanced customization
+
+We can also customize the popups!
+
+```{r}
+tm_shape(sfboundary) + 
+  tm_polygons(col="beige", border.col="black") +
+  
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black") +
+
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25, 
+          title = "San Francisco Property Values (2015)",
+          popup.vars=c("SalesYear","totvalue","NumBedrooms",
+                       "NumBathrooms","AreaSquareFeet")) + 
+  
+tm_layout(inner.margins=c(.05, .2, .15, .05)) # bottom, left, top, right
+```
+
+## `tmap`: advanced customization
+And we can access a wide variety of basemaps. 
+
+(Here's a list: http://leaflet-extras.github.io/leaflet-providers/preview/)
+
+```{r, eval=FALSE}
+tm_basemap("Stamen.Watercolor") +
+tm_shape(sfhomes15_sf) + 
+tm_dots(col="totvalue", size=.25, title = "San Francisco Property Values (2015)") +
+tm_tiles("Stamen.TonerLabels")
+```
+
+## `tmap`: advanced customization
+
+```{r}
+tmap_mode('view')
+tm_basemap("Stamen.Watercolor") +
+tm_shape(sfhomes15_sf) + 
+tm_dots(col="totvalue", size=.25, title = "San Francisco Property Values (2015)") +
+tm_tiles("Stamen.TonerLabels")
+```
+
+## `tmap`: advanced customization
+Here's another type of basemap.
+
+```{r}
+tmap_mode('view')
+tm_basemap('OpenStreetMap.HOT') + 
+tm_shape(sfhomes15_sf) + 
+tm_dots(col="totvalue", size=.25, title = "San Francisco Property Values (2015)") +
+tm_tiles("Stamen.TonerLabels")
+```
+
+
+
+
+## `tmap`: saving and sharing maps
+
+We can use the `tmap_last` function to grab the last map we made.
+
+Here, we save it to a named variable ('map1'), then display it.
+
+```{r }
+map1 <- tmap_last()
+map1 # then display it
+```
+
+## `tmap`: saving and sharing maps
+
+And we can use `tmap_save` to save maps to files.
+
+Let's save in a couple formats, then look at them.
+
+*Note*: We can specify the output format by just using the file extension!
+
+```{r, eval=F}
+tmap_save(map1, "./output/SF_properties.png", height=6) # Static image file with
+tmap_save(map1, "./output/SF_properties.html") # interactive web map
+```
+
+## `tmap`: saving and sharing maps
+
+There are many ways to publish your maps.
+
+You can share you map online by publishing it to [RPubs](https://rpubs.com).
+
+- You need to have an RPubs account to make that work.
+
+1. Enter the name of your tmap object (`map1`) or your  `tmap` code in the console
+
+2. In the `Viewer` window, click on the **Publish** icon.
+
+
+## `tmap`: saving and sharing maps
+Here's an RPubs Demo
+
+[http://rpubs.com/pfrontiera/358110](http://rpubs.com/pfrontiera/358110)
+
+
+## `tmap`: starting points
+
+?tmap
+
+?tmap\_shape
+
+?tmap\_element
+
+- ?tm\_polygons (tm\_fill, tm\_borders)
+- ?tm\_symbols (tm\_dots, etc...)
+
+- [tmap in a Nutshell](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-nutshell.html) 
+
+
+
+## Challenge
+
+Using `tmap` instead of `ggplot`, recreate the map from our previous challenge.
+
+Here's the prompt again:
+
+> Plot tracts, boundary, highways, homes, and landmarks together.
+> Make the border purple, and the highways and the landmarks red.
+> Color the homes by the 'totvalue' column.
+
+## Challenge
+
+And here's the map:
+```{r}
+challenge_map
+```
+
+
+## Challenge: Solution
+```{r, eval=FALSE}
+
+challenge_map_2 = tm_shape(sfboundary) +
+    tm_polygons(border.col = 'darkgray') +
+tm_shape(tracts_lonlat) +
+    tm_polygons(col = 'beige', border.col = 'lightgray', alpha = 0.4) + 
+tm_shape(sfhighways_lonlat) +
+    tm_lines(col = 'black') +
+tm_shape(sfhomes15_sf) +
+    tm_dots(col = 'totvalue', size = 0.05, palette = '-RdBu') +
+tm_shape(landmarks_sf) +
+    tm_dots(col = 'black', size = 0.1) 
+challenge_map_2
 
 ```
-# QUESTIONS?
+
+
+## Challenge: Solution
+```{r, echo=FALSE}
+
+challenge_map_2 = tm_shape(sfboundary) +
+    tm_polygons(border.col = 'darkgray') +
+tm_shape(tracts_lonlat) +
+    tm_polygons(col = 'beige', border.col = 'lightgray', alpha = 0.4) + 
+tm_shape(sfhighways_lonlat) +
+    tm_lines(col = 'black') +
+tm_shape(sfhomes15_sf) +
+    tm_dots(col = 'totvalue', size = 0.05, palette = '-RdBu') +
+tm_shape(landmarks_sf) +
+    tm_dots(col = 'black', size = 0.1) 
+challenge_map_2
+
+```
+
 
 
 ## Recap
 
 - Geospatial Data in R
 - CSV > Data Frame > ggplot/ggmap
-- `sp` library - spatial objects and methods in R
-- `GDAL` libary - readOGR, writeOGR
-- Convert Data Frame to `SPDF`
+- `sf` library - spatial objects and methods in R
+- Convert data frame to `sf`
 - CRS definitions and transformations
-- Map Overlays
+- Map overlays
+- `tmap`
 
-# End of Part I
 
+# Questions?
 
-##
+That's the end of Part I!
 
-```{r, eval=F, echo=F}
-## Output code to script
-library(knitr)
-purl("r-geospatial-workshop-pt1-fall2018.Rmd",
-     output = "scripts/r-geospatial-workshop-pt1-fall2018.R", documentation = 1)
-
-```
+See you in Part II, where we'll cover spatial analysis!

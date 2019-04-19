@@ -3,7 +3,7 @@
 Materials for a three part D-Lab Workshop on working with geospatial data in R.
 
 (This workshop is an updated version of the previous R-geospatial workshop,
-which used `sp` throughout, instead of using the `sf` package for vector data.
+which used `sp` throughout, instead of using the `sf` package for vector data.)
 
 --
 

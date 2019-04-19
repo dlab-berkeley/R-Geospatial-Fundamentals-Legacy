@@ -2,3 +2,5 @@
         - update the README and docx files, if not
 - keep the "cheatsheet" thing?
         - update the README if not
+- finish up day 1 (see embedded TODO lists)
+- do days 2 and 3
