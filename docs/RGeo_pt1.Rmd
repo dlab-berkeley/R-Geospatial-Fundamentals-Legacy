@@ -220,15 +220,19 @@ Cutting edge
 
 ## Prep reminder
 
-Make sure you have the packages we are going to use installed and loaded
+Make sure you have set your working directory to the location of the workshop files.
 
-Make sure you have set your working directory to the location of the workshop files
+Make sure you have the packages we are going to use installed.
 
 ```{r, eval=F}
-install.packages(
-  c("sf","sp","rgdal","tmap","classInt","RColorBrewer",
-    "ggplot2","leaflet", "ggmap"), dependencies=TRUE
-)
+our_packages<- c("sf","sp","tmap","classInt","RColorBrewer",
+                 "ggplot2","leaflet", "ggmap","dplyr")
+
+for (i in our_packages){
+  if ( i %in% rownames(installed.packages()) == FALSE) {
+    install.packages(i)
+  } 
+}
 ```
 
 
@@ -788,9 +792,10 @@ which are used represent vector data in `sf`.
 
 ## `sf` package
 
-First, of course, we'll need to load the package:
+First, of course, we'll need to load the package and `dplyr` which it depends on:
 
 ```{r}
+library(dplyr)
 library(sf)
 ```
 
