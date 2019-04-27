@@ -1,5 +1,5 @@
 ---
-title: "Geospatial Data in R, pt1"
+title: "Geospatial Programming in R, Pt. I"
 author: "Patty Frontiera and Drew Hart, UC Berkeley D-Lab"
 date: "Spring 2019"
 output:  ioslides_presentation
@@ -33,7 +33,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, eval=F}
 install.packages(
-  c("sf","sp","rgdal","tmap","classInt","RColorBrewer",
+  c("sf","sp","tmap","classInt","RColorBrewer",
     "ggplot2","leaflet", "ggmap"), dependencies=TRUE
 )
 ```
@@ -68,13 +68,10 @@ Why are you here?
 Open one of the tutorial files in a web browser
 
 Slides
-`r-geospatial-workshop-pt1.html `
-
-Tutorial
-`r-geospatial-workshop-pt1-tutorial.html `
+`./docs/RGeo_pt1.html`
 
 Raw Code
-`scripts/r-geospatial-workshop-pt1.R`
+`./docs/RGeo_pt1.Rmd`
 
 *Make sure you can cut and paste into RStudio*
 # Geographic Data
@@ -881,7 +878,7 @@ class(tracts$NAME)
 ```
 
 When we use bracket syntax or the subset function,
-`sf` objects return new, subsetted sf objects.
+`sf` objects return new, subsetted `sf` objects.
 
 But when we use the '$' notation, we just get a vector of the column's values!
 
@@ -1070,6 +1067,12 @@ columns..
 
 (From the ![`sf` docs] (https://r-spatial.github.io/sf/articles/sf1.html.))
 
+
+## `sf` objects: summary
+
+And here's another depicition (from the ![`sf` Github Repo] (https://github.com/r-spatial/sf)):
+
+<img src="images/sticky_geometries.jpg" width="400px"></img>
 
 ## `sf` objects: summary
 
