@@ -91,7 +91,7 @@ represent location more specifically with **coordinates**
 
 `46.130479, -117.134167`
   
-<img width="600px" src="./images/anatone_google.png"></img>
+<img width="600px" src="./docs/images/anatone_google.png"></img>
 
 
 ## Coordinate Reference Systems
@@ -159,13 +159,13 @@ Vector and Raster Data
 
 Points, lines and Polygons
 
-<img width="800px" src="images/vector_data.png"></img>
+<img width="800px" src="./docs/images/vector_data.png"></img>
 
 ## Raster Data
 
 Regular grid of cells (or pixels)
 
-<img width="800px" src="images/raster_data.png"></img>
+<img width="800px" src="./docs/images/raster_data.png"></img>
 
 *We cover raster data only in Day 3 of this workshop*
 
@@ -372,13 +372,13 @@ ggplot() + geom_point(data=sfhomes, aes(lon,lat), size=1) + coord_map()
 
 Allows you to associate a map projection with geographic coord data.
 
-<img src="images/coord_map_help.png" width="600px"></img>
+<img src="./docs/images/coord_map_help.png" width="600px"></img>
 
 ## Map Projections
 
 `Map Projection`: mathematial transformation from curved to flat surface
 
-<img width="600px" src="images/projection.gif"></img>
+<img width="600px" src="./docs/images/projection.gif"></img>
 
 A `Projected CRS` applies a **map projection** to a Geographic CRS
 
@@ -396,7 +396,7 @@ Selection depends on location, extent and purpose
 
 ##  Different Projected CRSs
 
-<img height="500px" src="images/diff_crs.png"></img>
+<img height="500px" src="./docs/images/diff_crs.png"></img>
 
 ## `coord_map("mercator")`
 
@@ -727,7 +727,7 @@ head(landmarks)
 
 The ESRI Shapefile is the most common file format for geospatial data.
 
-<img src="images/shapefile.png" width="400px"></img>
+<img src="./docs/images/shapefile.png" width="400px"></img>
 
 `ggplot` and `ggmap` cannot **directly** read in or plot shapefile data.
 
@@ -774,7 +774,7 @@ A 'feature' is just a representation of a thing in the real world (e.g. a buildi
 Here are the most common simple features geometries,
 which are used represent vector data in `sf`.
 
-<img src="images/sf-classes.png" width="400px"></img>
+<img src="./docs/images/sf-classes.png" width="400px"></img>
 
 (From the ![Geocomputation in R](https://geocompr.robinlovelace.net/spatial-class.html) textbook.)
 
@@ -1069,7 +1069,7 @@ columns..
  - The geometry column is a simple features collection (`sfc`) object.
  - Each value in an `sfc` is a simple features geometry (`sfg`) object.
 
-<img src="images/sf_annotated.png" width="400px"></img>
+<img src="./docs/images/sf_annotated.png" width="400px"></img>
 
 (From the ![`sf` docs] (https://r-spatial.github.io/sf/articles/sf1.html.))
 
@@ -1078,7 +1078,7 @@ columns..
 
 And here's another depicition (from the ![`sf` Github Repo] (https://github.com/r-spatial/sf)):
 
-<img src="images/sticky_geometries.jpg" width="400px"></img>
+<img src="./docs/images/sticky_geometries.jpg" width="400px"></img>
 
 ## `sf` objects: summary
 
@@ -1133,7 +1133,7 @@ head(sfhomes15, n = 1)
 
 The #1 reason...
 
-<img width="600px" src="images/not_working.jpeg"></img>
+<img width="600px" src="./docs/images/not_working.jpeg"></img>
 
 
 ## Reconciling projections

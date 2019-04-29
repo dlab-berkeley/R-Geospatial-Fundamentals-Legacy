@@ -763,7 +763,7 @@ tmap_mode("plot")
 - We also could have used `st_intersects` instead of `st_within` to run the query the first way.
 - These, and other similar operations are neatly summarized on this great ![`sf` cheatsheet] (https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) (also available in the `./docs` subdirectory of our workshop repo):
 
-<img src="images/sf_cheatsheet_thumbnail.png" width="200px"></img>
+<img src="./docs/images/sf_cheatsheet_thumbnail.png" width="200px"></img>
 
 
 ## SF Census Tracts
@@ -784,7 +784,7 @@ that we saw on day 1.
 #read in tracts
 sftracts <- st_read("./data", "sftracts_wpop")
 #plot
-plot(sftracts_utm['pop14'])
+plot(sftracts['pop14'])
 ```
 
 ## Spatial join
@@ -1293,7 +1293,7 @@ Here is that great ![`sf` cheatsheet] (https://github.com/rstudio/cheatsheets/bl
 
 (It is also available in the `./docs` subdirectory of our workshop repo.)
 
-<img src="images/sf_cheatsheet_thumbnail.png" width="200px"></img>
+<img src="./docs/images/sf_cheatsheet_thumbnail.png" width="200px"></img>
 
 
 
