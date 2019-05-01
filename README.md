@@ -3,16 +3,16 @@
 This is the repository for D-Lab's __Geospatial Fundamentals in R with `sf`__ workshop.
 
 __View the Slides or RStudio Binders__:
-- [slides](https://dlab-geo.github.io/RGeo_workshop/docs/RGeo_pt1.html#1)     [![Part I](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_1/master?urlpath=rstudio)
-- [slides](https://dlab-geo.github.io/RGeo_workshop/docs/RGeo_pt2.html#1)     [![Part II](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_2/master?urlpath=rstudio)
-- [slides](https://dlab-geo.github.io/RGeo_workshop/docs/RGeo_pt3.html#1)     [![Part III](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_3/master?urlpath=rstudio)
+- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-sf/docs/RGeo_pt1.html#1), [![Part I](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-sf/docs/Part_1/master?urlpath=rstudio)
+- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-sf/docs/RGeo_pt2.html#1), [![Part II](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-sf/docs/Part_2/master?urlpath=rstudio)
+- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-sf/docs/RGeo_pt3.html#1), [![Part III](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-sf/docs/Part_3/master?urlpath=rstudio)
 
 (For the old workshop, using the `sp` package, go ![here](https://github.com/dlab-geo/r-geospatial-workshop/).)
 
 --
 
 ## Content outline
-  - __Part I: Rudiments and plotting__
+  - __Part I: Core concepts, vector data, and plotting__
       - Basic geospatial concepts
       - Basic vector data
       - Basic plotting (`base::plot` and the `ggplot2` package)
@@ -59,10 +59,4 @@ highly recommended but not required.
 - The [`tmap` getting started](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) documentation is a great source of plotting support.
 - The [`sf` vignettes](https://cran.r-project.org/web/packages/sf/vignettes/sf1.html) and ![`sf` cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) are great resources for developing and debugging `sf` code.
 - The [`raster` vignettes](https://cran.r-project.org/web/packages/raster/vignettes/Raster.pdf) should help you troubleshoot that package.
-
-
-## Slideshow
-
-The slides were made using [xaringan](https://github.com/yihui/xaringan), which is a wrapper for [remark.js](https://remarkjs.com/#1). Check out Chapter 7 if you are interested in making your own! The theme borrows from Brad Boehmke's presentation on [Decision Trees, Bagging, and Random Forests - with an example implementation in R](https://bradleyboehmke.github.io/random-forest-training/slides-source.html#1).  
-
 

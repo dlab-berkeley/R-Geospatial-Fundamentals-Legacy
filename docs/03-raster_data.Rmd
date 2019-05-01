@@ -1,0 +1,1276 @@
+---
+title: "Geospatial Fundamentals in R with sf, Part 3"
+author: "Patty Frontiera and Drew Hart, UC Berkeley D-Lab"
+date: "May 2019"
+output: 
+  ioslides_presentation:
+    widescreen: true
+    smaller: true
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Part III Prep
+
+1. https://github.com/dlab-geo/r-geospatial-workshop
+
+- Click *Clone or Download* and download the zip file
+- Upzip the zip file and make a note of the folder in which it is located
+
+2. Open RStudio and start a **new script** or continue the one from last week
+
+3. Set your working directory to where you downloaded and unzipped the files
+
+4. Follow along by opening `r-geospatial-workshop-pt3.html` in a web browser
+
+5. Make sure required libraries are installed. 
+
+- sp, rgdal, rgeos, tmap, raster
+
+## Follow Along
+
+Open one of the tutorial files in a web browser
+
+Slides
+`r-geospatial-workshop-pt3.html `
+
+R Code
+`scripts/r-geospatial-workshop-pt3.Rmd`
+
+*Make sure you can cut and paste into RStudio*
+
+## Part III Overview
+
+Review basic raster concepts
+
+Read in our previous spatial data and new raster data
+
+Make some raster and combined raster-vector maps
+
+Run some raster and raster-vector operations and analyses
+
+## R Spatial Libraries
+
+Let's load the libraries we will use
+
+```{r, eval=FALSE}
+library(sf)     # simple features objects and methods
+library(tmap)   # mapping spatial objects
+library(raster) # reading in and operating on rasters
+```
+
+##
+
+```{r, echo=FALSE}
+library(sf)     # simple features objects and methods
+library(tmap)   # mapping spatial objects
+library(raster) # reading in and operating on rasters
+```
+ 
+## Set your working directory
+
+Use `setwd` to set your working directory to the location of the tutorial files.
+
+For example:
+
+```{r, eval=FALSE}
+path = "/path/to/your/working_directory"
+setwd(path)
+```
+
+# Load some files from Parts I and II
+
+## SF Census Tracts
+
+```{r}
+# Read in the 'sftracts_wpop' shapefile
+sftracts <- st_read("./data", "sftracts_wpop")
+```
+
+## SF Properties 2015
+
+```{r}
+# Read in from CSV file
+sfhomes <- read.csv('./data/sf_properties.csv', 
+                    stringsAsFactors = FALSE)
+# subset the data
+sfhomes15 <- subset(sfhomes, as.numeric(SalesYear) == 2015)
+
+# coerce to an `sf` object
+sfhomes15_sf <- st_as_sf(sfhomes15, coords = c('lon', 'lat'),
+                                                  crs = 4326)
+#Reproject to the sftracts projection
+#NOTE: We're overwriting the previous sfhomes15_sf object here! This is
+#fine to do if we want, but we should always beware.
+sfhomes15_sf = st_transform(sfhomes15_sf, st_crs(sftracts))
+
+#check projection equality
+st_crs(sfhomes15_sf) == st_crs(sftracts)
+```
+
+# SECTION I: Raster Data in R
+
+## Read in a Raster
+
+Using the fabulous `raster` package
+
+```{r}
+# Reading in and plotting raster files
+
+#read in a Bay Area DEM (Digital Elevation Model)
+#(from http://www.webgis.com/terr_pages/CA/dem1/sanfrancisco.html)
+DEM = raster('./data/san_francisco-e.DEM')
+```
+
+## Plot it
+
+Make a quick map of the data to check it out
+```{r}
+#plot it
+plot(DEM)
+```
+
+## Explore the Structure
+
+To see a summary of the structure and content of a `RasterLayer` object,
+we can just enter the object's name.
+
+```{r}
+DEM
+```
+You can view more detail in the RStudio Environment pane.
+
+## Explore the Structure
+
+A raster should really just be a matrix of data, with metadata assiging
+it the correct location on the Earth's surface, right?
+
+In a `raster` object, the data and metadata will all be saved in their own
+'slots', which are indexed by '@' rather than '$'.
+
+('Slots' are components used to organize 'S4' objects. 'S4' is a data-type commonly
+used by third-party packages to define their own special data structures.)
+
+## Explore the Structure
+
+Here's some of the important metadata.
+
+```{r}
+DEM@extent
+DEM@crs
+DEM@ncols
+```
+
+## Explore the Structure
+
+And notice that the `DEM` object is indeed an 'S4' object.
+
+```{r}
+class(DEM)
+typeof(DEM)
+```
+
+## Explore the Structure
+
+Note that a `raster` object's structural organizaion and string-representation (the bit that is printed
+to the screen when you call the variable's name) are fundamentally different
+from those of `sf` objects.
+
+
+## Explore the Structure
+
+For example, a `RasterLayer` has information on the resolution.
+
+```{r}
+DEM
+```
+
+## Explore the Structure
+
+What does the resolution mean?
+
+```{r}
+(DEM@extent@xmax - DEM@extent@xmin) / DEM@ncols
+(DEM@extent@ymax - DEM@extent@ymin) / DEM@nrows
+DEM
+```
+It's the cell-size! That is, the real-world distance of the x and y sides of
+each cell (i.e. pixel) in our `RasterLayer`, expressed in the distance units
+of the object (as determined by its projection).
+
+## Explore the Structure
+
+As for our matrix of data, it should live somewhere inside the `@data` slot, right?
+(Just like our data.frame of attribute data lives in the `Spatial*DataFrame@data` slot.)
+
+```{r}
+DEM@data
+```
+
+## Explore the Structure
+
+There's a bunch of stuff there. Let's take a look at the `@data@values` slot...
+
+```{r}
+DEM@data@values
+```
+## Explore the Structure
+
+What happened there? How can our data be `logical(0)`?
+Where's our data?
+
+```{r}
+DEM@data@inmemory
+DEM@data@fromdisk
+```
+
+It appears our data was not all read into memory. Instead, our `RasterLayer` object
+contains a pointer to where that data is held on disk (to save memory).
+
+## Explore the Structure
+
+How do we see the values, then?
+
+Well, we can still subset the values, using two-dimensional subsetting notation, just
+as we'd expect for a matrix.
+
+```{r}
+DEM[10:15, 20:30]
+```
+And we'll get back a vector of the values from that subsetted matrix, unfolded.
+
+## Explore the Structure
+
+We can even subset the entire thing, getting back all of the values.
+
+```{r}
+DEM[,]
+```
+
+## Explore the Structure
+
+And we could even then turn that vector back into a matrix of the proper dimensions.
+
+```{r}
+#coerce our whole raser's dataset to a matrix, with the appropriate number
+#of columns, and 
+matrix(DEM[,], ncol = ncol(DEM), byrow = TRUE)
+```
+
+Notice that we were able to use `ncol` on our `RasterLayer` object, because in some 
+basic senses it behaves like a `matrix`, much as a `Spatial*DataFrame` behaves in some
+senses like a `data.frame`.
+
+## Explore the Structure
+
+Can we create a new `RasterLayer` object from a matrix?
+
+```{r}
+test = raster(matrix(DEM[,], ncol = ncol(DEM), byrow = TRUE))
+test
+```
+
+We do get a new `RasterLayer`! However, notice that it of course has no
+projection, and has incorrect extent and resolution.
+
+## Explore the Structure
+
+You can imagine that you could then use
+the DEM object's information to assign the new `RasterLayer` its appropriate metadata
+(much like what we did with unprojected point data that we read in from a CSV and
+coerced to a `SpatialPointsDataFrame`). 
+
+Because there's a much easier way to do all of this...
+
+## Explore the Structure
+
+Our subsetting operation can actually take a `drop = FALSE` argument!
+
+```{r}
+DEM[10:15, 20:30, drop = FALSE]
+```
+
+And this gives us back a new RasterLayer object! 
+
+In essence, this makes the subsetting operation more or less like a basic **clipping** function.
+
+## Explore the Structure
+
+Here's what that gave us:
+
+```{r}
+test = DEM[10:15, 20:30, drop = FALSE]
+plot(test)
+```
+
+## Explore the Structure
+
+And now what does the `@data@values` slot look like in our new object now?
+
+```{r}
+test@data@values
+```
+
+## Explore the Structure
+
+That makes sense, because our test object didn't come from a file, so R
+didn't leave its data on disk.
+
+```{r}
+test@data@inmemory
+test@data@fromdisk
+```
+
+## CRS Transformations
+
+Check the CRS (aka projection) of the DEM raster data.
+
+Transform (or reproject) the Tracts vector data to match it.
+
+```{r}
+#check out its projection
+proj4string(DEM)
+
+#reproject tracts to our DEM projection
+sftracts_NAD = st_transform(sftracts, st_crs(DEM))
+```
+
+## CRS Transformations
+
+You can reproject the DEM with `raster::projectRaster`
+
+Note how the syntax is similar to `sp::spTransform`
+
+```{r}
+DEM_WGS = projectRaster(DEM, projectExtent(DEM, st_crs(sftracts)))
+```
+
+## CRS Transformations
+
+Oops! What went wrong?
+
+That's not a very informative error message...
+
+Let's read the docs!
+
+```{r, eval=F}
+?projectRaster
+```
+
+## CRS Transformations
+
+Looks like projectRaster expects the `crs` argument needs to be an object
+of the 'CRS' class.
+
+Is it?
+
+```{r}
+class(st_crs(sftracts))
+```
+
+## CRS Transformations
+
+We need to be careful when working between the `raster` and `sf` packages, because
+`raster` is older and still depends on `sp`.
+
+This object is of the `crs` class. But check out the class of _this_ object!
+
+```{r}
+class(crs(st_crs(sftracts)$proj4string))
+```
+
+## CRS Transformations
+
+__What did we do there?__
+
+That has multiple nested steps. From the inside, out:
+
+1. call `sf::st_crs` to get the CRS of sftracts;
+2. index out its `proj4string` using `$` notation;
+3. feed that into the `raster::crs` function, to create a CRS object of the
+   correct class
+
+```{r, eval=F}
+class(crs(st_crs(sftracts)$proj4string))
+```
+
+## CRS Transformations
+
+That's an object of the `CRS` class,
+which is even indicated as belonging to the `sp` package!
+
+Now we can see that `raster` is still expecting spatial objects to be
+expressed in classes defined by the `sp` package.
+
+(Maybe this will change in the future, if `raster` integrates `sf` support.
+But for the time being, we'll need to be aware of and manage this mismatch.)
+
+
+## CRS Transformations
+
+So, clearly, a solution would be to replace the broken bit of code
+with the expression we used that _did_ give us a `CRS` object.
+
+```{r}
+DEM_WGS = projectRaster(DEM, projectExtent(DEM, crs(st_crs(sftracts)$proj4string)))
+```
+
+## CRS Transformations
+Then  we can check equivalence.
+```{r}
+st_crs(sftracts_NAD) == st_crs(DEM)
+st_crs(DEM_WGS) == st_crs(sftracts)
+```
+
+
+
+
+#################################
+
+## `sp` package
+
+As we mentiond in Part I, `sp` was for a long time the primary geospatial package in R.
+
+`sf` has now eclipsed this package (along with the 'rgdal' and 'rgeos' packages).
+
+However, as you can see, not all geospatial packages have made the transition already.
+
+## `sp` package
+
+You may sometimes run into issues such as the one we just experienced, where you can find an easy workaround.
+
+Other times, however, you may actually need to work with `sp` objects instead of `sf` ones.
+
+Luckily, this is easy!
+
+## `sp` package
+
+To convert __from `sf` to `sp`__, `sf` provides the `as_Spatial` function.
+
+Let's convert `sfhomes15_sf`, then look at its string representation.
+
+Note that it looks very similar to the metadata of a `raster` object.
+
+```{r}
+sfhomes15_sp = as_Spatial(sfhomes15_sf)
+sfhomes15_sp
+```
+
+## `sp` package
+
+And look at its structure, which is also similar.
+
+```{r, eval=F}
+str(sfhomes15_sp)
+```
+
+## `sp` package
+
+That makes sense, because the `raster` and `sp` packages are designed to feel as
+standardized and consistent as possible.
+
+There _are_ differences, however!
+
+Some are just stylistic:
+
+- `@bbox` instead of `@extent`
+- `@proj4string` instead of `@crs`
+
+Some come from the difference between the vector and raster data models:
+
+- no `dimensions` attribute
+- no `resolution` (this _is_ a concept for vector data, but is not key metadata)
+- the `@data` slot is a `data.frame` (a.k.a. an "attribute table")
+
+
+## `sp` package
+
+`sp` creates objects that pertain to any of a number of classes,
+which conform to the `Spatial*DataFrame` convention:
+
+- `SpatialPointsDataFrame`
+- `SpatialLinesDataFrame`
+- `SpatialPolygonsDataFrame`
+- etc.
+
+## `sp` package
+
+`Spatial` objects can then be transformed, subsetted, analyzed, and plotted,
+using a variety of packages that may not be compatible (yet?) with `sf`.
+
+Here's a plot:
+
+```{r}
+plot(sfhomes15_sp)
+```
+
+## `sp` package
+
+And should you need to convert __from `sp` to `sf`__,
+there's a function for that as well (which we already saw in Part I).
+
+```{r}
+sfhomes15_sfagain = st_as_sf(sfhomes15_sp)
+plot(sfhomes15_sfagain['totvalue'])
+```
+
+## `sp` package
+
+We will not go into any greater detail on `sp` in this workshop.
+
+However, if you find you need to learn more then please visit our
+![former R geospatial workshop] (https://github.com/dlab-geo/r-geospatial-workshop),
+which is based on `sp`.
+
+(It uses the same data and runs more or less the same operations as this workshop,
+so it should be easy to follow and should highlight all the differences between `sf` and `sp`.)
+
+
+## Clipping Rasters
+
+Since the raster data covers a larger area than our vector data / area of interest,
+we can clip it using the `raster::crop` function.
+
+```{r}
+# clip the WGS CRS version of the rasters to sftracts 
+DEM_WGS_crop = crop(DEM_WGS, sftracts)
+
+# Clip the NAD CRS version
+DEM_crop = crop(DEM, sftracts_NAD)
+```
+
+## Plot Clipped Raster data
+
+You can plot raster and vector
+```{r}
+plot(DEM_WGS_crop)
+ 
+```
+
+## Plot Raster & Vector Data
+
+And we can plot raster and vector data together!
+Here we plot the NAD CRS version
+```{r}
+#plot together
+plot(DEM_WGS_crop)
+plot(sftracts, add = T)
+```
+
+## Masking Raster Data
+
+Notice that the clipping (or cropping) operation reduced our dataset
+to just the extent of the census-tract dataset, but still left us with
+values outside of the census tracts themselves (because they are areas outside
+the city of San Francisco).
+
+## Masking Raster Data
+
+For some purposes, we may want to get rid of those
+values as well. 
+
+We can do this with an operation called **masking**.
+
+```{r}
+DEM_WGS_crop_masked = mask(DEM_WGS_crop, sftracts)
+```
+
+## Masking Raster Data
+
+Here's what that gives us, compared to the unmasked object:
+
+```{r}
+DEM_WGS_crop_masked
+DEM_WGS_crop
+```
+
+## Masking Raster Data
+
+```{r, eval=F}
+DEM_WGS_crop_masked
+DEM_WGS_crop
+```
+
+Notice that this is still a rectangular grid of cells, with the same `nrow` and `ncol`
+as the unmasked object. This is, of course, because a raster will **always** be a
+rectangular grid of cells. What masking did was to set the cells that lie outside
+our dataset to NAs.
+
+
+## Masking Raster Data
+
+```{r}
+plot(DEM_WGS_crop_masked)
+plot(sftracts, add = T)
+```
+
+## Plotting rasters in TMAP
+
+We can make an interactive plot using `TMAP`
+
+```{r}
+my_map <- tm_shape(DEM_WGS_crop_masked) +
+  tm_raster() +
+tm_shape(sftracts) + 
+  tm_borders() +
+
+# Set mode to interactive
+tmap_mode("view")
+```
+
+## View Map
+```{r}
+my_map
+```
+
+## Writing Raster Data
+
+And now that we've manipulated our data as desired, we can write it to disk
+if we like!
+
+```{r}
+#write our reprojected, cropped data to the data directory, using the Geotiff format
+#(and allow R to overwrite if file already exists)
+writeRaster(DEM_WGS_crop_masked, filename="./data/DEM_reproject_crop.tif", format="GTiff", overwrite = T)
+```
+
+
+
+# SECTION II: Raster Operations and Spatial Analysis
+
+## Challenge section
+
+This section will feature a number of challenges, to get you practicing some of the
+material we've already covered today.
+
+## Extract elevation values
+
+We can use the raster::extract function to get the elevation values for each tract.
+
+```{r}
+# get the elevation for every cell in each of the census tracts
+elev = extract(DEM_WGS_crop, sftracts)
+
+#what did that give us?
+head(elev)
+
+```
+
+
+## What is the output?
+
+Check out the data in the `elev` object
+```{r, eval=F}
+length(elev)
+nrow(sftracts)
+```
+
+## What is the output?
+
+A vector of the elevations for all the cells within each census tract!
+
+```{r}
+length(elev)
+nrow(sftracts)
+```
+
+## Average Raster value by Vector shape
+
+Let's get each tract's average elevation
+```{r}
+mean_elev = lapply(elev, mean, na.rm = T)
+head(mean_elev)
+```
+
+## Add elevation to Vector object
+
+Let's add this to the sftracts_NAD df
+NOTE: the order remains the same, so we can just add this right in!
+```{r}
+sftracts$mean_elev = unlist(mean_elev)
+```
+
+
+## Map it
+```{r}
+#what did we get?
+elev_map <- tm_shape(sftracts) + 
+  tm_polygons(col = 'mean_elev') +
+  tm_layout("The pain of biking in SF, by census tract", 
+            inner.margins=c(0,0,.1,0), title.size=4.8)
+```
+
+## Map it
+
+```{r}
+elev_map
+```
+
+## One step Re-do
+
+We can also pass a function argument to `raster::extract`
+```{r}
+elev = extract(DEM_WGS_crop, sftracts, fun=mean)
+
+#what did that give us?
+head(elev)
+```
+
+## Questions?
+
+Can you see the difference between mapping a vector layer on top of a raster layer (`my_map`) compared to summarizing raster values by vector polygons and then mapping the polygon features (`elev_map`)?
+
+
+## Challenge 1: Read in and check out new data
+
+You have another raster dataset in your `./data` directory. The file is called
+`nlcd2011_sf.tif`.
+This is data from the ![National Land Cover Database (NLCD)] (https://www.mrlc.gov/nlcd11_leg.php).
+It's 2011 data that was downloaded from https://viewer.nationalmap.gov/basic.
+Read that file in as an object called `nlcd`, and plot it.
+
+## Work in progress...
+
+Reminder: file is called `nlcd2011_sf.tif`
+
+## Solution
+
+```{r}
+#read in nlcd data
+nlcd = raster('./data/nlcd2011_sf.tif')
+
+#plot nlcd
+plot(nlcd)
+```
+
+## Let's see what's in the NLCD data
+
+```{r}
+freq(nlcd)
+```
+
+## ... and a barplot
+
+(Please note that the colors in this barplot have no relations to the colors used to plot our raster! Pay attention
+instead to the numbered categories along the x-axis, instead.)
+
+```{r}
+barplot(nlcd)
+```
+
+## What do those values mean?
+
+This is a categorical raster. Each cell on the raster holds a discrete (integer) value, coding a particular type of land-cover (rather than a continuous value, like we saw with our elevation data above).
+
+Where do we do to figure out what the codes mean?
+This should come with the metadarad that ships with your data,
+or that is provided at the website where you downloaded it.
+
+![Here](https://www.mrlc.gov/data/legends/national-land-cover-database-2011-nlcd2011-legend)'s the NLCD legend.
+
+
+## Challenge 2: Reproject and crop our NLCD data
+
+Now that we've read in our NCLD data, check if we need to reproject it (we want it to be in the same projection as our `sftracts` object), and project it if need be. Then crop it to the extent of our `sftracts` object.
+
+## Work in progress...
+
+## Solution
+
+```{r}
+#check projection equality
+st_crs(nlcd) == st_crs(sftracts)
+
+#reproject
+nlcd_WGS = projectRaster(nlcd, projectExtent(nlcd, crs(st_crs(sftracts)$proj4string)))
+
+#check projection equality again
+st_crs(nlcd_WGS) == st_crs(sftracts)
+
+#crop
+nlcd_WGS_crop = crop(nlcd_WGS, sftracts)
+
+```
+
+## Plot the new raster
+
+```{r}
+plot(nlcd_WGS_crop)
+```
+
+## Recovering our plot formatting
+
+Notice that the colors of our original, which conveniently represented the NLCD class
+colors from their website, are lost after reprojecting and cropping our raster.
+
+Those colors were actually all controlled by a bunch of information stored in the original
+NLCD file, which was read into the `@legend` slot of our RasterLayer object when we read that file in. Here's the information -- and note that the codes that look like '#435ae2', for example, are hexadecimal strings, a common way of representing colors in the programming world:
+
+```{r}
+nlcd@legend
+```
+
+## Recover our plot formatting
+
+What's the `@legend` slot in our reproject, cropped object look like?
+
+```{r}
+nlcd_WGS_crop@legend
+```
+
+## Recover our plot formatting
+
+Well that's a bummer...
+
+Is there a way we could transfer that information over to our reprojected, cropped raster?
+
+## Challenge 3: Transferring our `@legend` info
+Try to figure out how to transfer the `@legend` info from the original raster object to our new object. Then plot the new object to see if it worked.
+
+## Work in progress...
+
+## Solution
+
+Nice! Not necessary... but nice!
+
+```{r}
+nlcd_WGS_crop@legend = nlcd@legend
+plot(nlcd_WGS_crop)
+```
+
+## Reclassifying rasters
+
+When we're working with a categorical raster, we'll often want to reclass our data. We may want to do this because:
+
+- Our original data has more classifications than we actually need for our analysis.
+- We want to represent the classifications we do have by a different numerical scheme because it somehow makes our analysis more convenient.
+
+## Reclass the NLCD
+
+Let's reclass our NLCD data. First we'll need to define a reclassification
+matrix with 3 columns (low, high, to):
+
+```{r, eval = FALSE}
+?reclassify
+```
+
+## Define reclassification matrix 
+```{r}
+reclass_vec <- c(0, 20, NA, # water will be set to NA (i.e. 'left out' of our analysis)
+                20, 21, 1, # we'll treat developed open space as greenspace, based on NLCD description
+                21, 30, 0, # developed and hardscape will have 0s
+                30, 31, NA, 
+                31, Inf, 1) # greensapce will have 1s
+reclass_vec
+reclass_m <- matrix(reclass_vec, ncol = 3, byrow = TRUE)
+reclass_m
+```
+
+## Reclassify the raster 
+```{r}
+nlcd_green <- reclassify(nlcd_WGS_crop, reclass_m)
+```
+
+## Reclassify the raster
+
+What did we get?
+
+```{r}
+freq(nlcd_green)
+```
+
+## Reclassify the raster 
+
+What did we get?
+
+```{r}
+barplot(nlcd_green)
+```
+
+## Reclassify the raster 
+
+What did we get?
+
+```{r}
+plot(nlcd_green)
+```
+
+## Challenge 4: Extract our NLCD data to our tract polygons
+
+Just like we did earlier with our elevation data, let's extract our reclassed
+NLCD data to our census-tract polygons.
+
+## Work in progress...
+
+## Solution
+
+```{r}
+
+#extract the mean nlcd_simple values to tract polygons
+greenspace = extract(nlcd_green, sftracts, fun=mean)
+
+```
+
+## What did we get?
+
+```{r}
+greenspace
+```
+## Why?
+
+What's with all the NAs?
+
+Remember, we set all water cells to NA, to ignore them in our analysis.
+
+## Challenge 5: How do we get extract to ignore our NAs?
+
+Try to run the same command again, but telling the extract function to ignore NAs.
+
+## Work in progress...
+
+## Solution
+
+The `na.rm` argument will do this for us. See how the docs indicate that it is set to FALSE by default? 
+
+```{r, eval = FALSE}
+?raster::extract
+```
+
+Good to know!  Also good to know that this is a common
+argument across a variety of R operations.
+
+## Solution
+
+```{r}
+#extract the mean nlcd_simple values to tract polygons,
+#this time setting na.rm to TRUE
+greenspace = extract(nlcd_green, sftracts, fun=mean, na.rm = T)
+
+#and add to our sftracts dataframe (which we can do because order is preserved)
+sftracts$prop_greenspace = greenspace
+
+```
+## Get the mean home values in each tract
+
+Pulling code from the end of Part II of this workshop, let's aggregate our homes data to the tract level too.
+
+```{r}
+#aggregate totvalue to sftracts
+sftracts_w_mean_val = aggregate(x = sfhomes15_sf['totvalue'],
+                                by = sftracts,
+                                FUN = mean)
+```
+
+## Get the mean home values in each tract
+
+```{r}
+#use a quick tmap to check that it looks like sensible output
+qtm(sftracts_w_mean_val, fill = 'totvalue')
+
+#and add the mean_val column to our sftracts dataframe
+sftracts$mean_totvalue = sftracts_w_mean_val$totvalue
+
+```
+
+## Predicting home values
+
+Do mean elevation and proportion greenspace predict mean total home values in each tract?
+
+(__DISCLAIMER__: This is not a statistically valid model!
+Statisticaly modeling is outside the scope of this workshop.
+But this should serve as a demonstrative example of
+how raster and vector data could be combined in an analysis workflow.)
+
+```{r}
+mod = lm(mean_totvalue ~ mean_elev + prop_greenspace, data = sftracts)
+summary(mod)
+```
+
+## Predicting home values
+
+Not at the census-tract level. But that's kind of coarse...
+
+What if we want to do the analysis at the property level?
+
+Here's a workflow that puts together a bunch of what we've learned over
+Parts I to III of the workshop!
+
+```{r}
+#First, we'll take a random subset of our 2015 homes, so that our analysis doesn't take so long to compute.
+sfhomes15_sample = sfhomes15_sf[sample(seq(nrow(sfhomes15_sf)), replace = FALSE, size = 2000), ]
+```
+
+## Predicting home values
+
+Now let's reproject all our data to a UTM projection, so that we units of meters rather 
+than decimal degrees.
+
+```{r}
+#reproject
+sfhomes15_utm <- st_transform(sfhomes15_sample, 26910)
+DEM_utm = projectRaster(DEM, projectExtent(DEM, crs(st_crs(sfhomes15_utm)$proj4string)))
+nlcd_green_utm = projectRaster(nlcd_green, projectExtent(nlcd_green, crs(st_crs(sfhomes15_utm)$proj4string)))
+
+#check that the projections are all good
+st_crs(sfhomes15_utm) == st_crs(DEM_utm)
+st_crs(sfhomes15_utm) == st_crs(nlcd_green_utm)
+```
+
+## Predicting home values
+
+Now let's buffer all our homes with a 100-meter buffer, then sum the greenspace within
+those buffers.
+
+```{r}
+#create buffer
+sfhomes15_utm_buff = st_buffer(sfhomes15_utm, dist = 100)
+
+#sum the greenspace within the buffers 
+#NOTE: This will take a couple minutes to run...
+greenspace_homes = extract(nlcd_green_utm, sfhomes15_utm_buff, fun = mean, na.rm = T)
+
+#add that as a column in our sfhomes15_utm dataframe
+sfhomes15_utm$greenspace = greenspace_homes
+```
+
+## Predicting home values
+
+And now let's extract the elevation at each home.
+
+```{r}
+#extract the elevation to the homes
+#NOTE: no need for fun or na.rm arguments here, because the homes
+#and points, not polygons, so only a single cell will extract to each
+elev_homes = extract(DEM_utm, sfhomes15_utm)
+
+#add that as a column in our sfhomes15_utm dataframe too
+sfhomes15_utm$elev = elev_homes
+
+```
+
+## Predicting home values
+
+**Now**, how about that regression model?
+
+```{r}
+mod = lm(totvalue ~ elev + greenspace, data = sfhomes15_utm)
+summary(mod)
+
+```
+Mehhh... Some signal for elevation, but a very low $R^2$.
+
+But this should be a demonstrative analysis!
+
+
+## Questions?
+
+
+
+
+# SECTION III: RasterStacks and RasterBricks
+
+## RasterStacks
+
+What about working with multiple rasters?
+
+## Fog data
+
+Data on summertime coastal fog in CA (a.k.a. Karl)
+```{r}
+#(from http://climate.calcommons.org/dataset/monthly-summertime-fog)
+#(units are in average hours per day)
+karl_files = unique(gsub('.aux.xml', '', list.files('./data/CalMnYr')))
+karl_files = karl_files[grep('flcc', karl_files)]
+
+# Take  a look
+karl_files
+```
+
+## RasterStack
+
+Read all of the KARL files into one RasterStack object
+```{r}
+karl <- stack(paste0('./data/CalMnYr/', karl_files))
+
+# look at what we made!
+karl
+
+```
+*A RasterStack object -  literally what it sounds like!*
+
+## Plot the Stack
+
+```{r}
+#plot one
+plot(karl[[7]])
+plot(sftracts, add = T)
+```
+
+## CRS
+
+What's the projection of the RasterStack?
+
+## CRS
+
+What's the projection of the RasterStack?
+```{r}
+
+#what's the projection?
+st_crs(karl)
+```
+
+## CRS Transformation
+
+Let's reproject this
+```{r}
+karl_WGS = projectRaster(karl, projectExtent(karl, crs(st_crs(sftracts)$proj4string)))
+
+# check resultant CRS
+st_crs(karl_WGS) == st_crs(sftracts)
+
+```
+
+
+##  What??
+
+What type of spatial object did that give us?
+
+```{r}
+karl_WGS
+```
+
+## RasterBrick
+
+A RasterBrick. What does that mean?
+```{r, eval = FALSE}
+
+# See the documentation!
+?raster::brick
+
+```
+
+
+## Crop the Brick
+
+Crop it to the extent of our area of interest - SF
+```{r}
+# Crop it to sftracts
+karl_WGS_crop = crop(karl_WGS, sftracts)
+
+#Note that R vectorized that operation across our entire RasterBrick, the same way that it vectorizes many operations, e.g. 3<4 vs 3< seq(4)
+```
+
+
+## Plot it
+
+```{r}
+# now let's make our same plot again
+par(mfrow = c(1,2))
+plot(karl_WGS[[7]])
+plot(sftracts, add = T, reset=F, key.pos = NULL, col = NA)
+plot(karl_WGS_crop[[7]])
+plot(sftracts, add = T, reset = F, key.pos = NULL, col = NA)
+
+```
+
+## Mean Fog
+
+Let's mean the karl values across the RasterBrick
+```{r}
+# Mean values
+mean_karl_WGS_crop = mean(karl_WGS_crop)
+```
+
+What did that give us?
+```{r}
+mean_karl_WGS_crop
+```
+
+## RasterBrick to Raster
+
+When we computed the mean of a RasterBrick we got back a RasterLayer object! That makes sense, because we took cellwise means across all Layers in our Brick.
+
+**This is called raster algebra**
+
+## Plot it
+
+```{r}
+plot(mean_karl_WGS_crop)
+plot(sftracts, add = T, col = NA)
+```
+
+
+## BUT
+
+Not all common operations successfully run as raster algebra
+```{r, eval=FALSE}
+# This won't work
+sd_karl_WGS_crop = sd(karl_WGS_crop)
+```
+
+Let's try this instead
+```{r}
+sd_karl_WGS_crop = calc(karl_WGS_crop, sd)
+```
+
+## Plot it
+
+```{r}
+#plot that too
+par(mfrow = c(1,2))
+plot(mean_karl_WGS_crop)
+plot(sftracts, add = T, reset=F, key.pos=NULL, col = NA)
+plot(sd_karl_WGS_crop)
+plot(sftracts, add = T, reset=F, key.pos=NULL, col = NA)
+```
+
+## Thoughts...
+
+Looks like the foggiest neighborhoods also have the highest variation in fog, 
+but some less foggy neighborhoods on the east side of the city
+(e.g. The Inner Mission, Bayview) also vary quite a bit
+
+## Extract Mean Values
+
+Extract fog values to our tracts
+```{r}
+sftracts$mean_karl = extract(mean_karl_WGS_crop, sftracts, mean)
+```
+
+
+## Explore Spatial Relationships
+
+Maybe fogginess is a function of elevation? That would make sense, right?
+
+```{r}
+# Linear regression model
+mod = lm(mean_karl ~ mean_elev, data = sftracts)
+```
+
+## View results
+```{r}
+summary(mod)
+```
+
+## Comments
+
+Neat! Census-tract mean elevation has a significant, positive effect on
+mean fogginess (with each meter increase in elevation causing on average
+a .011 hour, or about 39-second increase in time spent in fog on an average
+summer day. Though this only explains about 4% of the variance in our data!
+
+## Questions?
+
+**Additional Resources**
+ https://cran.r-project.org/web/packages/raster/vignettes/Raster.pdf 
+
+ https://www.neonscience.org/raster-data-r
+
+ https://nceas.github.io/oss-lessons/spatial-data-gis-law/4-tues-spatial-analysis-in-r.html
+
+ https://geoscripting-wur.github.io/IntroToRaster/
