@@ -2,18 +2,13 @@
 
 This is the repository for D-Lab's __Geospatial Fundamentals in R with `sf`__ workshop.
 
-__Slides__:
-[Part I](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/Part_1.html#1)
-[Part II](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/Part_2.html#1)
-[Part III](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/Part_3.html#1)
+__Slides and RStudio Binder links__:
+- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/Part_1.html#1), [![Part I](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_1/master?urlpath=rstudio)
+- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/Part_2.html#1), [![Part II](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_2/master?urlpath=rstudio)
+- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/Part_3.html#1), [![Part III](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_3/master?urlpath=rstudio)
 
-__RStudio Binder__:
-[![Part I](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_1/master?urlpath=rstudio)
-[![Part II](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_2/master?urlpath=rstudio)
-[![Part III](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_3/master?urlpath=rstudio)
+(For the old workshop, using the `sp` package, go ![here](https://github.com/dlab-geo/Geospatial-Fundamentals-in-R-with-sp/).)
 
-
-(Visit ![here](https://github.com/dlab-geo/Geospatial-Fundamentals-in-R-with-sp/) to see the old workshop, __Geospatial Fundamentals in R with `sp`__ )
 --
 
 ## Content outline
@@ -27,10 +22,9 @@ __RStudio Binder__:
       - Advanced plotting (the `tmap` package)
   - __Part II__: Spatial analysis
       - Review of Part I material
-      - Spatial analysis
-        - Distance-based spatial analysis
-        - Relationship-based spatial analysis
-        - Spatial and non-spatial joins
+      - Distance-based spatial analysis
+      - Relationship-based spatial analysis
+      - Spatial and non-spatial joins
       - Continued mapping practice
   - __Part III__: Raster data
       - Raster concepts
@@ -61,10 +55,10 @@ highly recommended but not required.
 
 ## Resources
 
-The ![Geocomputation with R](https://geocompr.robinlovelace.net/) textbook is an excellent resource for getting up and running.
-The ![`tmap` getting started](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) documentation is a great source of plotting support.
-The ![`sf` vignettes](https://cran.r-project.org/web/packages/sf/vignettes/sf1.html) and ![`sf` cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) are great resources for developing and debugging `sf` code.
-The ![`raster` vignettes](https://cran.r-project.org/web/packages/raster/vignettes/Raster.pdf) should help you troubleshoot that package.
+The [Geocomputation with R](https://geocompr.robinlovelace.net/) textbook (Lovelace, Nowosad, and Muenchow, 2019) is an excellent resource for getting up and running.
+The [`tmap` getting started](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) documentation is a great source of plotting support.
+The [`sf` vignettes](https://cran.r-project.org/web/packages/sf/vignettes/sf1.html) and ![`sf` cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) are great resources for developing and debugging `sf` code.
+The [`raster` vignettes](https://cran.r-project.org/web/packages/raster/vignettes/Raster.pdf) should help you troubleshoot that package.
 
 
 ## Slideshow
