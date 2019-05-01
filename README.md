@@ -12,7 +12,7 @@ __Slides and RStudio Binder links__:
 --
 
 ## Content outline
-  - __Part I__: Rudiments and plotting
+  - __Part I: Rudiments and plotting__
       - Basic geospatial concepts
       - Basic vector data
       - Basic plotting (`base::plot` and the `ggplot2` package)
@@ -20,13 +20,13 @@ __Slides and RStudio Binder links__:
       - Geospatial data structures (the `sf` package)
       - Managing coordinate reference systems (CRS)
       - Advanced plotting (the `tmap` package)
-  - __Part II__: Spatial analysis
+  - __Part II: Spatial analysis__
       - Review of Part I material
       - Distance-based spatial analysis
       - Relationship-based spatial analysis
       - Spatial and non-spatial joins
       - Continued mapping practice
-  - __Part III__: Raster data
+  - __Part III: Raster data__
       - Raster concepts
       - Raster data structures (the `raster` package) 
       - Mapping with raster and vector data

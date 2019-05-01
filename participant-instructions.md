@@ -15,4 +15,4 @@
 2. After installation is complete, open the [Part_1.html slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/Part_1.html#1) file in the 'docs' folder to get started.
 
 
-###Contact us with any questions!
+### Contact us with any questions!
