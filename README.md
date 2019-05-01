@@ -3,9 +3,9 @@
 This is the repository for D-Lab's __Geospatial Fundamentals in R with `sf`__ workshop.
 
 __Slides and RStudio Binder links__:
-- ![slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/Part_1.html#1), [![Part I](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_1/master?urlpath=rstudio)
-- ![slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/Part_2.html#1), [![Part II](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_2/master?urlpath=rstudio)
-- ![slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/Part_3.html#1), [![Part III](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_3/master?urlpath=rstudio)
+- [slides](https://dlab-geo.github.io/RGeo_workshop/docs/Part_1.html#1), [![Part I](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_1/master?urlpath=rstudio)
+- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/Part_2.html#1), [![Part II](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_2/master?urlpath=rstudio)
+- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/Part_3.html#1), [![Part III](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/Part_3/master?urlpath=rstudio)
 
 (For the old workshop, using the `sp` package, go ![here](https://github.com/dlab-geo/Geospatial-Fundamentals-in-R-with-sp/).)
 
