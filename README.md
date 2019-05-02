@@ -3,19 +3,19 @@
 This is the repository for D-Lab's __Geospatial Fundamentals in R with `sf`__ workshop.
 
 __View the Slides__:
-- [Part 1 slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/01-core_concepts_and_plotting.html#1) 
-- [Part 2 slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/02-spatial_analysis.html#1)
-- [Part 3 slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/03-raster_data.html#1)
+- [Part 1 slides](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/01-core_concepts_and_plotting.html#1) 
+- [Part 2 slides](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/02-spatial_analysis.html#1)
+- [Part 3 slides](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/03-raster_data.html#1)
 
 <!---
 __View the Slides or RStudio Binders__:
 HERE IS CODE FOR IF/WHEN WE IMPLEMENT BINDER
-- [Part 1 slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/01-core_concepts_and_plotting.html#1), [![Part I](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/01-core_concepts_and_plotting/master?urlpath=rstudio)
-- [Part 2 slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/02-spatial_analysis.html#1), [![Part II](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/02-spatial_analysis/master?urlpath=rstudio)
-- [Part 3 slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/03-raster_data.html#1), [![Part III](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-with-sf/docs/03-raster_data/master?urlpath=rstudio)
+- [Part 1 slides](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/01-core_concepts_and_plotting.html#1), [![Part I](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf/docs/01-core_concepts_and_plotting/master?urlpath=rstudio)
+- [Part 2 slides](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/02-spatial_analysis.html#1), [![Part II](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf/docs/02-spatial_analysis/master?urlpath=rstudio)
+- [Part 3 slides](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/03-raster_data.html#1), [![Part III](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf/docs/03-raster_data/master?urlpath=rstudio)
 --->
 
-(For the old workshop, using the `sp` package, go ![here](https://github.com/dlab-geo/r-geospatial-workshop/).)
+(For the old workshop, using the `sp` package, go [here](https://github.com/dlab-berkeley/r-geospatial-workshop/).)
 
 --
 
@@ -23,7 +23,7 @@ HERE IS CODE FOR IF/WHEN WE IMPLEMENT BINDER
   - __Part I: Core concepts, vector data, and plotting__
       - Basic geospatial concepts
       - Basic vector data
-      - Basic plotting (`base::plot` and the `ggplot2` package)
+      - Basic plotting (`base::plot` and the `ggplot3` package)
       - Basemaps and geocoding with the `ggmap` package (a glimpse)
       - Geospatial data structures (the `sf` package)
       - Managing coordinate reference systems (CRS)
@@ -66,6 +66,6 @@ highly recommended but not required.
 
 - The [Geocomputation with R](https://geocompr.robinlovelace.net/) textbook (Lovelace, Nowosad, and Muenchow, 2019) is an excellent resource for getting up and running.
 - The [`tmap` getting started](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) documentation is a great source of plotting support.
-- The [`sf` vignettes](https://cran.r-project.org/web/packages/sf/vignettes/sf1.html) and ![`sf` cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) are great resources for developing and debugging `sf` code.
+- The [`sf` vignettes](https://cran.r-project.org/web/packages/sf/vignettes/sf1.html) and [`sf` cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) are great resources for developing and debugging `sf` code.
 - The [`raster` vignettes](https://cran.r-project.org/web/packages/raster/vignettes/Raster.pdf) should help you troubleshoot that package.
 
