@@ -4,6 +4,7 @@
   * `ggplot2`
   * `ggmap`
   * `sf`
+  * `units`
   * `tmap`
   * `raster`
 

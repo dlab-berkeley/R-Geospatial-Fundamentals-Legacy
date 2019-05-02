@@ -1,6 +1,5 @@
-- keep the "tutorial" stuff?
-        - update the README and docx files, if not
-- keep the "cheatsheet" thing?
-        - update the README if not
-- finish up day 1 (see embedded TODO lists)
-- do days 2 and 3
+- standardize all slide titles?
+        - either make them all descriptive of the individual slide's content or make them all broken in section headers, not a mix of the two as we have right now
+- change 'sf' to 'SF' in all var names?
+        - to disambiguate from 'sf' the package
+- decide whether to leave 'Geospatial_Data_in_R_prep.docx' document, or incorporate into participant_instructions.md

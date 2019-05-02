@@ -10,11 +10,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-# TODO
-- update references/links at the end
-- change sf to SF in all variable names, and clean/standardize var names
-- clean/standardize slide titles?
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = normalizePath('../'))
@@ -98,7 +93,7 @@ setwd("~/Documents/Dlab/workshops/2018/rgeo/r-geospatial-workshop/r-geospatial-w
 ```
 
 
-# Load files from Part I
+# Section I: Load files from Part I
 
 ## SF Properties 2015
 
@@ -144,9 +139,22 @@ Read in the `sf_highways.shp` file with `sf`.
 sfhighways = st_read('./data', 'sfhighways')
 ```
 
-# PART II 
+# Section II: Spatial Analysis
 
-# Spatial Analysis
+## The Spatial Analysis Workflow
+
+1. Mapping / plotting to see location and distribution
+
+2. Asking questions of, or querying, your data
+
+3. Cleaning & reshaping the data
+
+4. Applying analysis methods
+
+5. Mapping analysis results
+
+6. Repeat as needed
+
 
 ## Transform data to common CRS
 
@@ -269,7 +277,7 @@ st_crs(sfhomes15_utm)$epsg
 
 Visual check
 
-```{r}
+```{r, error=T}
 plot(sfboundary_utm)
 lines(sfhighways, col='purple', lwd=4)
 points(sfhomes15_utm)
@@ -306,7 +314,7 @@ Create the same plot, as closely as possible, using `tmap`.
 ## Challenge: Solution
 
 ```{r}
-tm_shape(sfboundary) +
+challenge_map = tm_shape(sfboundary) +
   tm_polygons() +
 tm_shape(sfhighways) +
   tm_lines(col = 'purple', lwd = 4) +
@@ -316,20 +324,12 @@ tm_shape(bart_utm) +
   tm_dots(col = 'skyblue', size = 1)
 ```
 
+## Challenge: Solution
 
-## Spatial Analysis
+```{r}
+challenge_map
+```
 
-1. Mapping / plotting to see location and distribution
-
-2. Asking questions of, or querying, your data
-
-3. **Cleaning & reshaping the data**
-
-4. Applying analysis methods
-
-5. Mapping analysis results
-
-6. Repeat as needed
 
 ## Spatial Queries
 
@@ -369,7 +369,7 @@ sf_area
 
 How did it manage to give us the units?
 
-That comes from the ![`units` package](https://cran.r-project.org/web/packages/units/index.html), which `sf` imports and uses!
+That comes from the [`units` package](https://cran.r-project.org/web/packages/units/index.html), which `sf` imports and uses!
 
 ```{r}
 class(sf_area)
@@ -378,7 +378,7 @@ typeof(sf_area)
 
 ## Area in sq km
 
-[SF](https://en.wikipedia.org/wiki/San_Francisco)
+Compare to the Wikipedia page's area for [SF](https://en.wikipedia.org/wiki/San_Francisco)
  
 ```{r}
 sf_area / (1000 * 1000) # Convert to square KM
@@ -390,9 +390,12 @@ sf_area / (1000 * 1000) # Convert to square KM
 That number is right, but now we've got an annoying little problem: Our value in square
 kilometers is labeled as square meters!
 
-The `units` package provides a better way:
+The `units` package provides a better way.
+
+(This is a dependency of `sf`, so you should be able to load it in and use it.)
 
 ```{r}
+library(units)
 set_units(sf_area, km^2)
 ```
 
@@ -403,7 +406,7 @@ Neat!
 It isn't necessary to do it this way, but it's certainly neater.
 And we'll get informative error messages if we mess up our conversions:
 
-```{r}
+```{r, error=T}
 set_units(sf_area, km^3)
 set_units(sf_area, km*2)
 set_units(sf_area, sqkm)
@@ -474,7 +477,7 @@ The `st_distance` will return the min distance between two geometries.
 
 Compute the distance in kilometers between Embarcadero & Powell St Bart stations
 
-- You can check on ![Google Maps](http://maps.google.com)(always spot check!)
+(__NOTE__: You can always spot-check on [Google Maps](https://maps.google.com).)
 ```{r}
 emb_pow_dist = st_distance(bart_utm[bart_utm$STATION == 'EMBARCADERO',],
                            bart_utm[bart_utm$STATION == 'POWELL STREET',])
@@ -500,8 +503,6 @@ That means we can easily calculate the distance between all SF properties and Em
 
 ## Challenge: solution
 
-__Note__: You can use 'tidy' syntax to pipe the distances into a `set_units` call, if you prefer. 
-
 ```{r}
 dist2emb <- st_distance(bart_utm[bart_utm$STATION == 'EMBARCADERO',],
                      sfhomes15_utm)
@@ -515,7 +516,9 @@ head(dist2emb, 10)
 
 ## Challenge: solution
 
-Different syntax, equivalent result: You could just nest your calls, if you'd like.
+Different syntax, equivalent result:
+
+__You could just nest your calls, if you'd like.__
 
 ```{r}
 dist2emb <- set_units(st_distance(bart_utm[bart_utm$STATION == 'EMBARCADERO',],
@@ -526,7 +529,9 @@ head(dist2emb, 10)
 ```
 ## Challenge: solution
 
-Different syntax, equivalent result: You could also use the 'tidy' syntax, if you're into that!
+Different syntax, equivalent result:
+
+__You could also use the 'tidy' syntax, if you're into that!__
 
 ```{r}
 dist2emb <- st_distance(bart_utm[bart_utm$STATION == 'EMBARCADERO',],
@@ -595,7 +600,7 @@ Read the docs!
 Looks like we can set the `returnDist` argument to `TRUE` to get back not just the nearest neighbors' indices but also their distances.
 
 ```{r}
-nns = st_nn(sfhomes15_utm, bart_utm, returnDist)
+nns = st_nn(sfhomes15_utm, bart_utm, returnDist=T)
 ```
 
 ## Distance to nearest location
@@ -608,12 +613,22 @@ property
 2. __`dist`__: an object containing the distances from each property to its nearest neighbor
 
 ```{r}
-str(nns)
+class(nns)
+names(nns)
 ```
+## Distance to nearest location
+
+We can index out the `nn` object and look at it.
+
+```{r}
+nn_indices = nns[['nn']]
+head(nn_indices, 5)
+```
+
 
 ## Distance to nearest location
 
-We can index out the `dist` object and look at it.
+And we can index out the `dist` object and look at it.
 
 ```{r}
 nn_dists = nns$dist
@@ -622,21 +637,21 @@ head(nn_dists, 10)
 
 ## Distance to nearest location
 
-Notice that this object didn't retain the `units` annotation from the `sf` object.
-That's fine, because we know the units are meters (because we're in UTM)!
+This object didn't retain the `units` annotation from `sf`.
+That's okay, because we know the units are meters (because of UTM).
 
-We can process it a bit more to get our final answers, in km, adding it to our properties `data.frame` (ie. `sf` object).
+We can process it a bit more to get our final answers, in km, and add to `sfhomes15_utm`.
 
 ```{r}
-sfhomes15_utm$nearest_bart = nn_dists/1000
-head(sfhomes15_utm)
+sfhomes15_utm$nearest_bart = as.numeric(nn_dists/1000)
+head(sfhomes15_utm, 2)
 ```
 
 ## Distance to nearest location
 
 And of course, it always makes sense to do a visual sanity-check on our results:
 
-```{r}
+```{r, eval=F}
 tm_shape(sfboundary_utm) +
   tm_polygons() +
 tm_shape(bart_utm) +
@@ -645,10 +660,20 @@ tm_shape(sfhomes15_utm) +
   tm_dots(col = 'nearest_bart', size = 0.25)
 ```
 
+## Distance to nearest location
 
-# Spatial Relationships
+```{r, echo=F}
+tm_shape(sfboundary_utm) +
+  tm_polygons() +
+tm_shape(bart_utm) +
+  tm_dots(col = 'skyblue', size = 0.5) +
+tm_shape(sfhomes15_utm) +
+  tm_dots(col = 'nearest_bart', size = 0.25)
+```
 
-## Spatial Relationships
+# Spatial Relationship Queries
+
+## Spatial Relationship queries
 
 **Spatial relationship queries** compare the geometries of two spatial objects in the same coordinate space (CRS).
 
@@ -738,12 +763,12 @@ We could also use the `st_intersection` function to get the same results.
 
 ```{r}
 sfbart_utm = st_intersection(bart_utm, sfboundary_utm)
-sfbart_utm
+head(sfbart_utm, 2)
 ```
 
 ## Map the SF BART stations
 
-```{r}
+```{r, eval=F}
 tmap_mode("view")
 
 tm_shape(sfboundary_utm) + 
@@ -751,6 +776,18 @@ tm_shape(sfboundary_utm) +
 tm_shape(sfbart_utm) + 
   tm_dots(col="red")
 ```
+
+## Map the SF BART stations
+
+```{r, message=F, echo=F}
+tmap_mode("view")
+
+tm_shape(sfboundary_utm) + 
+  tm_polygons(col="beige", border.col="black") +
+tm_shape(sfbart_utm) + 
+  tm_dots(col="red")
+```
+
 
 ## Reset `tmap` to plot mode
 
@@ -763,9 +800,9 @@ tmap_mode("plot")
 
 - These were just a couple examples of common geometric queries used in spatial analysis.
 - We also could have used `st_intersects` instead of `st_within` to run the query the first way.
-- These, and other similar operations are neatly summarized on this great ![`sf` cheatsheet] (https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) (also available in the `./docs` subdirectory of our workshop repo):
+- These, and other similar operations are neatly summarized on this great [`sf` cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) (also available in the `./docs` subdirectory of our workshop repo):
 
-<img src="./docs/images/sf_cheatsheet_thumbnail.png" width="200px"></img>
+<img src="./images/sf_cheatsheet_thumbnail.png" width="200px"></img>
 
 
 ## SF Census Tracts
@@ -785,6 +822,10 @@ that we saw on day 1.
 ```{r}
 #read in tracts
 sftracts <- st_read("./data", "sftracts_wpop")
+```
+
+## Challenge: solution
+```{r}
 #plot
 plot(sftracts['pop14'])
 ```
@@ -903,7 +944,7 @@ nrow(sfhomes15_utm)
 ## Review the `st_within` output
 What the heck is an object of the class `sgbp`?
 
-Read the docs!
+__Read the docs!__
 
 (It's basically just a special sparse-matrix structure designed to hold the results
 returned from these binary-predicate functions.)
@@ -949,17 +990,25 @@ sfhomes15_utm$home_geoid <- sftracts_utm[unlist(homes_with_tracts),]$GEOID
 ## Check the result
 
 ```{r}
-head(sfhomes15_utm)
+head(sfhomes15_utm, 2)
 ```
 
 ## Check the result
 
 ```{r}
-tm_shape(sftracts_utm) +
+join_map = tm_shape(sftracts_utm) +
   tm_polygons() +
 tm_shape(sfhomes15_utm) +
   tm_dots(col = 'home_geoid', size = 0.25)
 ```
+
+## Check the result
+
+```{r, warning=F} 
+#Note that tmap bins our tracts because we have so many
+join_map
+```
+
 
 ## WOW
 
@@ -1016,14 +1065,9 @@ head(sfhomes15_utm, 2)
 
 ## Check the `merge` results
 
-```{r}
+```{r, message=F}
 tmap_mode("view")
 tm_shape(sfhomes15_utm) + tm_dots(col="medhhinc")
-```
-
-## Reset plot mode
-```{r}
-tmap_mode("plot")
 ```
 
 ## The Census Tract Perspective
@@ -1074,9 +1118,8 @@ Wow, so simple. What does that give us?
 
 ```{r}
 class(tracts_with_mean_val)
-head(tracts_with_mean_val)
+head(tracts_with_mean_val, 2)
 nrow(tracts_with_mean_val) == nrow(sftracts_utm)
-sum(tracts_with_mean_val$geometry == sftracts_utm$geometry) == nrow(sftracts_utm)
 ```
 
 ## sf::aggregate.sf output
@@ -1097,35 +1140,36 @@ __Note__: This only works because there are the same number of elements in both
 
 sftracts_utm$mean_totvalue <- tracts_with_mean_val$totvalue
 
-head(sftracts_utm) # check it
+head(sftracts_utm, 2) # check it
 ```
 
 ## Map it 
 
-Make a map of the results to make sure they seem reasonable.
+Map the results to make sure they seem reasonable.
 
-First, set `tmap` to interactive mode
-```{r}
-tmap_mode("view")
-```
-
-## Map the results
-
-This is called a 'choropleth' map.
+(__NOTE__: This is called a 'choropleth' map.)
 
 ```{r}
+choropleth = 
 tm_shape(sftracts_utm) +
   tm_polygons(col="mean_totvalue", border.col=NA)
 ```
 
+## Map it 
+
+```{r}
+choropleth
+```
+
+
 ## Why no values for some tracts?
 ```{r}
-tm_shape(sftracts_utm) +
-  tm_polygons(col="mean_totvalue", border.col=NA) +
-tm_shape(sfhomes15_utm) + tm_dots(size = 0.15)
+choropleth + tm_shape(sfhomes15_utm) + tm_dots(size = 0.01)
 ```
 
 # Distance queries
+
+## Distance queries
 
 Many methods of spatial analysis are based on distance queries.
 
@@ -1157,8 +1201,9 @@ Read the docs!
 ## Create the buffers
 
 It takes as input:
--__x__: an `sf*` object or objects to be buffered;
--__dist__: a buffer distance.
+
+* __x__: an `sf*` object or objects to be buffered;
+* __dist__: a buffer distance.
 
 ## Create the buffers
 
@@ -1170,7 +1215,6 @@ bart_1km_buffer <- st_buffer(sfbart_utm, dist=1000)
 
 ## Map the buffers
 ```{r}
-tmap_mode("view") 
 tm_shape(bart_1km_buffer) + tm_polygons(col="red") +
 tm_shape(sfbart_utm) + tm_dots()
 ```
@@ -1246,19 +1290,25 @@ sfhomes15_utm_near_bart <- sfhomes15_utm[unlist(homes_near_bart),]
 Then we can map our results.
 
 ```{r}
-tm_shape(sfboundary_utm) +
+homes_near_bart_map = tm_shape(sfboundary_utm) +
   tm_polygons() + 
 tm_shape(bart_sys_1km_buffer) +
   tm_polygons(col = 'red') +
 tm_shape(sfhomes15_utm_near_bart) +
-  tm_dots(col = 'black', size = 0.4)
+  tm_dots(col = 'black', size = 0.1)
+```
+
+## Map it
+
+```{r}
+homes_near_bart_map
 ```
 
 ## Take 3
 
 And now that we've accomplished that, time to break the news:
 
-__There's a one-liner for this!__
+### There's a one-liner for this!
 
 ## Challenge
 
@@ -1268,7 +1318,7 @@ __Can you figure out the one-liner?__
 
 ## Challenge: solution
 
-```{r}
+```{r, warning=F}
 #Neat, huh?
 tmap_last() + 
   tm_shape(st_intersection(sfhomes15_utm, st_buffer(bart_utm, 1000))) +
@@ -1280,8 +1330,6 @@ tm_dots(col = 'green', size = 0.1)
 ## Questions?
 
 
-# Conclusion
-
 ## Summary
 
 That was a whirlwind tour of just some of the methods of spatial analysis.
@@ -1291,18 +1339,9 @@ There was of course a lot we didn't and can't cover.
 
 ## Selected  References & Tutorials
 
-Here is that great ![`sf` cheatsheet] (https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) that we displayed earlier.
+Here's that great [`sf` cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) (also available in the `./docs` subdirectory of this repo).
 
-(It is also available in the `./docs` subdirectory of our workshop repo.)
-
-<img src="./docs/images/sf_cheatsheet_thumbnail.png" width="200px"></img>
-
-
-
-
-
-
-
+<img src="./images/sf_cheatsheet_thumbnail.png" width="200px"></img>
 
 
 Introductory Tutorials
@@ -1322,22 +1361,12 @@ Geodata Visualization emphasis
 
 Deep dive Tutorials that include spatial analysis
 
-- [An Introduction to Spatial Data Analysis and Visualisation in R](https://data.cdrc.ac.uk/tutorial/an-introduction-to-spatial-data-analysis-and-visualisation-in-r)
+- [Geocomputation in R](http://robinlovelace.net/geocompr/ )
 - [Intro to GIS and Spatial Analysis (see appendices)](https://mgimond.github.io/Spatial/index.html)
-- [Spatial Data Analysis and Modeling in R](http://www.rspatial.org/index.html)
-- [Geocomputation in R (featuring sf Package)](http://robinlovelace.net/geocompr/ )
-- [Weight Spatial Polygon Overlay tutorial, aka areal interpolation](http://rstudio-pubs-static.s3.amazonaws.com/6577_3b66f8d8f4984fb2807e91224defa854.html)
+- [An Introduction to Spatial Data Analysis and Visualisation in R](https://data.cdrc.ac.uk/tutorial/an-introduction-to-spatial-data-analysis-and-visualisation-in-r)
 
 
 CRAN Spatial Packages
 
 - [CRAN Task View: Analysis of Spatial Data](https://cran.r-project.org/web/views/Spatial.html)
-
-## Output code to script
-
-```{r, eval=F}
-library(knitr)
-purl("RGeo_pt2.Rmd", output = "scripts/RGeo_pt2.R", documentation = 2)
-```
-
 

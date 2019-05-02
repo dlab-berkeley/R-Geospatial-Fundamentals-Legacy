@@ -16,15 +16,6 @@ knitr::opts_knit$set(root.dir = normalizePath('../'))
 ```
 
 
---------------------------
-
-
-
-TODO
-2. standaradize style for all slides titles
-3. name all objects with sf in the name (for San Francisco) SF instead (to disambiguate from sf pkg)
-
-
 ## Workshop Prep
 
 1. Open <https://github.com/dlab-geo/r-geospatial-workshop>
@@ -37,7 +28,7 @@ TODO
 
 ```{r, eval=F}
 install.packages(
-  c("sf","sp","tmap","classInt","RColorBrewer",
+  c("sf","sp","tmap","classInt","RColorBrewer", "units",
     "ggplot2","leaflet", "ggmap"), dependencies=TRUE
 )
 ```

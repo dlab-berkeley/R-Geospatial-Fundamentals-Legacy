@@ -59,15 +59,7 @@ Run some raster and raster-vector operations and analyses
 
 Let's load the libraries we will use
 
-```{r, eval=FALSE}
-library(sf)     # simple features objects and methods
-library(tmap)   # mapping spatial objects
-library(raster) # reading in and operating on rasters
-```
-
-##
-
-```{r, echo=FALSE}
+```{r, message=F, warning=F}
 library(sf)     # simple features objects and methods
 library(tmap)   # mapping spatial objects
 library(raster) # reading in and operating on rasters
@@ -114,7 +106,7 @@ sfhomes15_sf = st_transform(sfhomes15_sf, st_crs(sftracts))
 st_crs(sfhomes15_sf) == st_crs(sftracts)
 ```
 
-# SECTION I: Raster Data in R
+# Section 1: Raster Data in R
 
 ## Read in a Raster
 
@@ -210,7 +202,7 @@ As for our matrix of data, it should live somewhere inside the `@data` slot, rig
 (Just like our data.frame of attribute data lives in the `Spatial*DataFrame@data` slot.)
 
 ```{r}
-DEM@data
+str(DEM@data)
 ```
 
 ## Explore the Structure
@@ -347,7 +339,7 @@ You can reproject the DEM with `raster::projectRaster`
 
 Note how the syntax is similar to `sp::spTransform`
 
-```{r}
+```{r, error=T}
 DEM_WGS = projectRaster(DEM, projectExtent(DEM, st_crs(sftracts)))
 ```
 
@@ -512,8 +504,8 @@ plot(sfhomes15_sp)
 
 ## `sp` package
 
-And should you need to convert __from `sp` to `sf`__,
-there's a function for that as well (which we already saw in Part I).
+And if you need to convert __from `sp` to `sf`__,
+there's a function for that too (which we already saw in Part I).
 
 ```{r}
 sfhomes15_sfagain = st_as_sf(sfhomes15_sp)
@@ -556,17 +548,20 @@ plot(DEM_WGS_crop)
 ## Plot Raster & Vector Data
 
 And we can plot raster and vector data together!
-Here we plot the NAD CRS version
-```{r}
+
+Here we plot the NAD CRS version.
+```{r, warning=F}
 #plot together
 plot(DEM_WGS_crop)
-plot(sftracts, add = T)
+plot(sftracts, add = T, col = NA)
 ```
 
 ## Masking Raster Data
 
 Notice that the clipping (or cropping) operation reduced our dataset
-to just the extent of the census-tract dataset, but still left us with
+to just the extent of the census-tract dataset.
+
+But it still left us with
 values outside of the census tracts themselves (because they are areas outside
 the city of San Francisco).
 
@@ -592,29 +587,25 @@ DEM_WGS_crop
 
 ## Masking Raster Data
 
-```{r, eval=F}
-DEM_WGS_crop_masked
-DEM_WGS_crop
-```
+Still a rectangular grid of cells (because a raster will __always__ be rectangular).
 
-Notice that this is still a rectangular grid of cells, with the same `nrow` and `ncol`
-as the unmasked object. This is, of course, because a raster will **always** be a
-rectangular grid of cells. What masking did was to set the cells that lie outside
-our dataset to NAs.
+Still has the same `nrow` and `ncol` as the unmasked object. 
+
+What masking did was to set the cells that lie outside our dataset to NAs.
 
 
 ## Masking Raster Data
 
 ```{r}
 plot(DEM_WGS_crop_masked)
-plot(sftracts, add = T)
+plot(sftracts, add = T, col = NA)
 ```
 
-## Plotting rasters in TMAP
+## Plotting rasters in `tmap`
 
-We can make an interactive plot using `TMAP`
+We can make an interactive plot using `tmap`
 
-```{r}
+```{r, message=F}
 my_map <- tm_shape(DEM_WGS_crop_masked) +
   tm_raster() +
 tm_shape(sftracts) + 
@@ -642,7 +633,7 @@ writeRaster(DEM_WGS_crop_masked, filename="./data/DEM_reproject_crop.tif", forma
 
 
 
-# SECTION II: Raster Operations and Spatial Analysis
+# Section 2: Raster Operations and Spatial Analysis
 
 ## Challenge section
 
@@ -666,19 +657,12 @@ head(elev)
 ## What is the output?
 
 Check out the data in the `elev` object
-```{r, eval=F}
-length(elev)
-nrow(sftracts)
-```
-
-## What is the output?
-
-A vector of the elevations for all the cells within each census tract!
-
 ```{r}
 length(elev)
 nrow(sftracts)
 ```
+It's a vector of the elevations for all the cells within each census tract!
+
 
 ## Average Raster value by Vector shape
 
@@ -690,8 +674,10 @@ head(mean_elev)
 
 ## Add elevation to Vector object
 
-Let's add this to the sftracts_NAD df
-NOTE: the order remains the same, so we can just add this right in!
+Let's add this to the sftracts_NAD `data.frame`.
+
+__Note__: the order remains the same, so we can just add this right in!
+
 ```{r}
 sftracts$mean_elev = unlist(mean_elev)
 ```
@@ -724,20 +710,23 @@ head(elev)
 
 ## Questions?
 
-Can you see the difference between mapping a vector layer on top of a raster layer (`my_map`) compared to summarizing raster values by vector polygons and then mapping the polygon features (`elev_map`)?
+Do you see the difference between those two approaches?
+
+1. Mapping a vector layer on top of a raster layer (i.e. `my_map`)
+2. Summarizing raster values by vector polygons, then mapping the polygons (`elev_map`)
 
 
 ## Challenge 1: Read in and check out new data
 
 You have another raster dataset in your `./data` directory. The file is called
 `nlcd2011_sf.tif`.
-This is data from the ![National Land Cover Database (NLCD)] (https://www.mrlc.gov/nlcd11_leg.php).
-It's 2011 data that was downloaded from https://viewer.nationalmap.gov/basic.
+
+This is data from the [National Land Cover Database (NLCD)](https://www.mrlc.gov/nlcd11_leg.php).
+
+It's 2011 data that was downloaded from [here](https://viewer.nationalmap.gov/basic).
+
 Read that file in as an object called `nlcd`, and plot it.
 
-## Work in progress...
-
-Reminder: file is called `nlcd2011_sf.tif`
 
 ## Solution
 
@@ -757,8 +746,8 @@ freq(nlcd)
 
 ## ... and a barplot
 
-(Please note that the colors in this barplot have no relations to the colors used to plot our raster! Pay attention
-instead to the numbered categories along the x-axis, instead.)
+(__Note__: The colors in this barplot have no relation to the colors in our maps!
+Just pay attention to the categories on the x-axis.)
 
 ```{r}
 barplot(nlcd)
@@ -772,14 +761,14 @@ Where do we do to figure out what the codes mean?
 This should come with the metadarad that ships with your data,
 or that is provided at the website where you downloaded it.
 
-![Here](https://www.mrlc.gov/data/legends/national-land-cover-database-2011-nlcd2011-legend)'s the NLCD legend.
+[Here](https://www.mrlc.gov/data/legends/national-land-cover-database-2011-nlcd2011-legend)'s the NLCD legend.
 
 
 ## Challenge 2: Reproject and crop our NLCD data
 
-Now that we've read in our NCLD data, check if we need to reproject it (we want it to be in the same projection as our `sftracts` object), and project it if need be. Then crop it to the extent of our `sftracts` object.
+Now that we've read in our NCLD data, check if we need to reproject it (we want it to be in the same projection as our `sftracts` object), and project it if need be.
 
-## Work in progress...
+Then crop it to the extent of our `sftracts` object.
 
 ## Solution
 
@@ -809,8 +798,9 @@ plot(nlcd_WGS_crop)
 Notice that the colors of our original, which conveniently represented the NLCD class
 colors from their website, are lost after reprojecting and cropping our raster.
 
-Those colors were actually all controlled by a bunch of information stored in the original
-NLCD file, which was read into the `@legend` slot of our RasterLayer object when we read that file in. Here's the information -- and note that the codes that look like '#435ae2', for example, are hexadecimal strings, a common way of representing colors in the programming world:
+Those colors were controlled by a bunch of information in the original
+NLCD file, which was read into the `@legend` slot of our raster object.
+Here's the info (with the commonly used hexadecimal format for color codes, e.g. '#00F900'):
 
 ```{r}
 nlcd@legend
@@ -833,130 +823,124 @@ Is there a way we could transfer that information over to our reprojected, cropp
 ## Challenge 3: Transferring our `@legend` info
 Try to figure out how to transfer the `@legend` info from the original raster object to our new object. Then plot the new object to see if it worked.
 
-## Work in progress...
-
 ## Solution
 
 Nice! Not necessary... but nice!
 
 ```{r}
 nlcd_WGS_crop@legend = nlcd@legend
-plot(nlcd_WGS_crop)
-```
+        plot(nlcd_WGS_crop)
+        ```
 
-## Reclassifying rasters
+        ## Reclassifying rasters
 
-When we're working with a categorical raster, we'll often want to reclass our data. We may want to do this because:
+        When we're working with a categorical raster, we'll often want to reclass our data. We may want to do this because:
 
-- Our original data has more classifications than we actually need for our analysis.
-- We want to represent the classifications we do have by a different numerical scheme because it somehow makes our analysis more convenient.
+        - Our original data has more classifications than we actually need for our analysis.
+        - We want to represent the classifications we do have by a different numerical scheme because it somehow makes our analysis more convenient.
 
-## Reclass the NLCD
+        ## Reclass the NLCD
 
-Let's reclass our NLCD data. First we'll need to define a reclassification
-matrix with 3 columns (low, high, to):
+        Let's reclass our NLCD data. First we'll need to define a reclassification
+        matrix with 3 columns (low, high, to):
 
-```{r, eval = FALSE}
-?reclassify
-```
+        ```{r, eval = FALSE}
+        ?reclassify
+        ```
 
-## Define reclassification matrix 
-```{r}
-reclass_vec <- c(0, 20, NA, # water will be set to NA (i.e. 'left out' of our analysis)
-                20, 21, 1, # we'll treat developed open space as greenspace, based on NLCD description
-                21, 30, 0, # developed and hardscape will have 0s
-                30, 31, NA, 
-                31, Inf, 1) # greensapce will have 1s
-reclass_vec
-reclass_m <- matrix(reclass_vec, ncol = 3, byrow = TRUE)
-reclass_m
-```
+        ## Define reclassification matrix 
+        ```{r}
+        reclass_vec <- c(0, 20, NA, # water will be set to NA (i.e. 'left out' of our analysis)
+                        20, 21, 1, # we'll treat developed open space as greenspace, based on NLCD description
+                        21, 30, 0, # developed and hardscape will have 0s
+                        30, 31, NA, 
+                        31, Inf, 1) # greensapce will have 1s
+        reclass_vec
+        reclass_m <- matrix(reclass_vec, ncol = 3, byrow = TRUE)
+        reclass_m
+        ```
 
-## Reclassify the raster 
-```{r}
-nlcd_green <- reclassify(nlcd_WGS_crop, reclass_m)
-```
+        ## Reclassify the raster 
+        ```{r}
+        nlcd_green <- reclassify(nlcd_WGS_crop, reclass_m)
+        ```
 
-## Reclassify the raster
+        ## Reclassify the raster
 
-What did we get?
+        What did we get?
 
-```{r}
-freq(nlcd_green)
-```
+        ```{r}
+        freq(nlcd_green)
+        ```
 
-## Reclassify the raster 
+        ## Reclassify the raster 
 
-What did we get?
+        What did we get?
 
-```{r}
-barplot(nlcd_green)
-```
+        ```{r}
+        barplot(nlcd_green)
+        ```
 
-## Reclassify the raster 
+        ## Reclassify the raster 
 
-What did we get?
+        What did we get?
 
-```{r}
-plot(nlcd_green)
-```
+        ```{r}
+        plot(nlcd_green)
+        ```
 
-## Challenge 4: Extract our NLCD data to our tract polygons
+        ## Challenge 4: Extract our NLCD data to our tract polygons
 
-Just like we did earlier with our elevation data, let's extract our reclassed
-NLCD data to our census-tract polygons.
+        Just like we did earlier with our elevation data, let's extract our reclassed
+        NLCD data to our census-tract polygons.
 
-## Work in progress...
+        ## Solution
 
-## Solution
+        ```{r}
 
-```{r}
+        #extract the mean nlcd_simple values to tract polygons
+        greenspace = extract(nlcd_green, sftracts, fun=mean)
 
-#extract the mean nlcd_simple values to tract polygons
-greenspace = extract(nlcd_green, sftracts, fun=mean)
+        ```
 
-```
+        ## What did we get?
 
-## What did we get?
+        ```{r}
+        greenspace
+        ```
+        ## Why?
 
-```{r}
-greenspace
-```
-## Why?
+        What's with all the NAs?
 
-What's with all the NAs?
+        Remember, we set all water cells to NA, to ignore them in our analysis.
 
-Remember, we set all water cells to NA, to ignore them in our analysis.
+        ## Challenge 5: How do we get extract to ignore our NAs?
 
-## Challenge 5: How do we get extract to ignore our NAs?
+        Try to run the same command again, but telling the extract function to ignore NAs.
 
-Try to run the same command again, but telling the extract function to ignore NAs.
+        ## Solution
 
-## Work in progress...
+        The `na.rm` argument will do this for us. See how the docs indicate that it is set to FALSE by default? 
 
-## Solution
+        ```{r, eval = FALSE}
+        ?raster::extract
+        ```
 
-The `na.rm` argument will do this for us. See how the docs indicate that it is set to FALSE by default? 
+        Good to know!  Also good to know that this is a common
+        argument across a variety of R operations.
 
-```{r, eval = FALSE}
-?raster::extract
-```
+        ## Solution
 
-Good to know!  Also good to know that this is a common
-argument across a variety of R operations.
+        ```{r}
+        #extract the mean nlcd_simple values to tract polygons,
+        #this time setting na.rm to TRUE
+        greenspace = extract(nlcd_green, sftracts, fun=mean, na.rm = T)
 
-## Solution
+        #and add to our sftracts dataframe (which we can do because order is preserved)
+        sftracts$prop_greenspace = greenspace
 
-```{r}
-#extract the mean nlcd_simple values to tract polygons,
-#this time setting na.rm to TRUE
-greenspace = extract(nlcd_green, sftracts, fun=mean, na.rm = T)
-
-#and add to our sftracts dataframe (which we can do because order is preserved)
-sftracts$prop_greenspace = greenspace
-
-```
-## Get the mean home values in each tract
+        ```
+        ## Get the mean home values in each tract
 
 Pulling code from the end of Part II of this workshop, let's aggregate our homes data to the tract level too.
 
@@ -965,27 +949,22 @@ Pulling code from the end of Part II of this workshop, let's aggregate our homes
 sftracts_w_mean_val = aggregate(x = sfhomes15_sf['totvalue'],
                                 by = sftracts,
                                 FUN = mean)
+#and add the totvalue column to our sftracts dataframe
+sftracts$mean_totvalue = sftracts_w_mean_val$totvalue
 ```
 
 ## Get the mean home values in each tract
 
 ```{r}
-#use a quick tmap to check that it looks like sensible output
 qtm(sftracts_w_mean_val, fill = 'totvalue')
-
-#and add the mean_val column to our sftracts dataframe
-sftracts$mean_totvalue = sftracts_w_mean_val$totvalue
 
 ```
 
 ## Predicting home values
 
-Do mean elevation and proportion greenspace predict mean total home values in each tract?
+Do mean elevation and proportion greenspace predict mean home values?
 
-(__DISCLAIMER__: This is not a statistically valid model!
-Statisticaly modeling is outside the scope of this workshop.
-But this should serve as a demonstrative example of
-how raster and vector data could be combined in an analysis workflow.)
+(__Note__: This is not a statistically valid model! Just a stand-in for downstream analysis.)
 
 ```{r}
 mod = lm(mean_totvalue ~ mean_elev + prop_greenspace, data = sftracts)
@@ -1002,8 +981,9 @@ Here's a workflow that puts together a bunch of what we've learned over
 Parts I to III of the workshop!
 
 ```{r}
-#First, we'll take a random subset of our 2015 homes, so that our analysis doesn't take so long to compute.
-sfhomes15_sample = sfhomes15_sf[sample(seq(nrow(sfhomes15_sf)), replace = FALSE, size = 2000), ]
+#Take a random subset of our 2015 homes, to save on computer time
+sfhomes15_sample = sfhomes15_sf[sample(seq(nrow(sfhomes15_sf)),
+                                replace = FALSE, size = 2000), ]
 ```
 
 ## Predicting home values
@@ -1014,10 +994,14 @@ than decimal degrees.
 ```{r}
 #reproject
 sfhomes15_utm <- st_transform(sfhomes15_sample, 26910)
-DEM_utm = projectRaster(DEM, projectExtent(DEM, crs(st_crs(sfhomes15_utm)$proj4string)))
-nlcd_green_utm = projectRaster(nlcd_green, projectExtent(nlcd_green, crs(st_crs(sfhomes15_utm)$proj4string)))
+DEM_utm = projectRaster(DEM,
+                        projectExtent(DEM,
+                                      crs(st_crs(sfhomes15_utm)$proj4string)))
+nlcd_green_utm = projectRaster(nlcd_green,
+                               projectExtent(nlcd_green,
+                                             crs(st_crs(sfhomes15_utm)$proj4string)))
 
-#check that the projections are all good
+#check projections
 st_crs(sfhomes15_utm) == st_crs(DEM_utm)
 st_crs(sfhomes15_utm) == st_crs(nlcd_green_utm)
 ```
@@ -1060,20 +1044,22 @@ sfhomes15_utm$elev = elev_homes
 
 ```{r}
 mod = lm(totvalue ~ elev + greenspace, data = sfhomes15_utm)
-summary(mod)
-
 ```
+
+## Predicting home values
+
 Mehhh... Some signal for elevation, but a very low $R^2$.
 
-But this should be a demonstrative analysis!
+But again, this is just a stand-in for downstream analysis.
 
+```{r}
+summary(mod)
+```
 
 ## Questions?
 
 
-
-
-# SECTION III: RasterStacks and RasterBricks
+# Section 3: RasterStacks and RasterBricks
 
 ## RasterStacks
 
@@ -1102,19 +1088,14 @@ karl <- stack(paste0('./data/CalMnYr/', karl_files))
 karl
 
 ```
-*A RasterStack object -  literally what it sounds like!*
+**A RasterStack object** -  literally what it sounds like!
 
 ## Plot the Stack
 
 ```{r}
-#plot one
-plot(karl[[7]])
-plot(sftracts, add = T)
+#plot a few
+plot(karl[[7:9]])
 ```
-
-## CRS
-
-What's the projection of the RasterStack?
 
 ## CRS
 
@@ -1137,7 +1118,7 @@ st_crs(karl_WGS) == st_crs(sftracts)
 ```
 
 
-##  What??
+##  What did we get?
 
 What type of spatial object did that give us?
 
@@ -1260,18 +1241,22 @@ summary(mod)
 
 ## Comments
 
-Neat! Census-tract mean elevation has a significant, positive effect on
+Neat!
+
+Census-tract mean elevation has a significant, positive effect on
 mean fogginess (with each meter increase in elevation causing on average
 a .011 hour, or about 39-second increase in time spent in fog on an average
-summer day. Though this only explains about 4% of the variance in our data!
+summer day.
+
+Though this barely explains about 4% of the variance in our data!
+
+Of course, these are __not statistically valid__ models! Just analytical stand-ins.
 
 ## Questions?
 
 **Additional Resources**
- https://cran.r-project.org/web/packages/raster/vignettes/Raster.pdf 
 
- https://www.neonscience.org/raster-data-r
-
- https://nceas.github.io/oss-lessons/spatial-data-gis-law/4-tues-spatial-analysis-in-r.html
-
- https://geoscripting-wur.github.io/IntroToRaster/
+- The [`raster` package vignettes](https://cran.r-project.org/web/packages/raster/vignettes/Raster.pdf)
+ - A [National Ecological Observatory Network tutorial](https://www.neonscience.org/raster-data-r)
+- A [National Center for Ecological Analysis and Synthesis tutorial](https://nceas.github.io/oss-lessons/spatial-data-gis-law/4-tues-spatial-analysis-in-r.html)
+- A [Waginingen University & Research tutorial](https://geoscripting-wur.github.io/IntroToRaster/)
