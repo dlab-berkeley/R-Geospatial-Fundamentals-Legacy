@@ -15,7 +15,7 @@ HERE IS CODE FOR IF/WHEN WE IMPLEMENT BINDER
 - [Part 3 slides](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/03-raster_data.html#1), [![Part III](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf/docs/03-raster_data/master?urlpath=rstudio)
 --->
 
-(For the old workshop, using the `sp` package, go [here](https://github.com/dlab-geo/r-geospatial-workshop/).)
+(For the old workshop, using the `sp` package, go [here](https://github.com/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sp).)
 
 --
 
