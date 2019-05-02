@@ -1,5 +1,5 @@
 ---
-title: "Geospatial Programming in R, Pt. I"
+title: "Geospatial Fundamentals in R with sf, Part I"
 author: "Patty Frontiera and Drew Hart, UC Berkeley D-Lab"
 date: "Spring 2019"
 output:
