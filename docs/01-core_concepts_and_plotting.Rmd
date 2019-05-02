@@ -2,7 +2,8 @@
 title: "Geospatial Programming in R, Pt. I"
 author: "Patty Frontiera and Drew Hart, UC Berkeley D-Lab"
 date: "Spring 2019"
-output: ioslides_presentation:
+output:
+  ioslides_presentation:
     widescreen: true
     smaller: true
 editor_options: 
@@ -20,12 +21,9 @@ knitr::opts_knit$set(root.dir = normalizePath('../'))
 
 
 TODO
-1. change repo URL at top once we have it
 2. standaradize style for all slides titles
 3. name all objects with sf in the name (for San Francisco) SF instead (to disambiguate from sf pkg)
 
-
--------------------------
 
 ## Workshop Prep
 
@@ -96,7 +94,7 @@ represent location more specifically with **coordinates**
 
 `46.130479, -117.134167`
   
-<img width="600px" src="./docs/images/anatone_google.png"></img>
+<img width="600px" src="./images/anatone_google.png"></img>
 
 
 ## Coordinate Reference Systems
@@ -164,13 +162,13 @@ Vector and Raster Data
 
 Points, lines and Polygons
 
-<img width="800px" src="./docs/images/vector_data.png"></img>
+<img width="800px" src="./images/vector_data.png"></img>
 
 ## Raster Data
 
 Regular grid of cells (or pixels)
 
-<img width="800px" src="./docs/images/raster_data.png"></img>
+<img width="800px" src="./images/raster_data.png"></img>
 
 *We cover raster data only in Day 3 of this workshop*
 
@@ -381,13 +379,13 @@ ggplot() + geom_point(data=sfhomes, aes(lon,lat), size=1) + coord_map()
 
 Allows you to associate a map projection with geographic coord data.
 
-<img src="./docs/images/coord_map_help.png" width="600px"></img>
+<img src="./images/coord_map_help.png" width="600px"></img>
 
 ## Map Projections
 
 `Map Projection`: mathematial transformation from curved to flat surface
 
-<img width="600px" src="./docs/images/projection.gif"></img>
+<img width="600px" src="./images/projection.gif"></img>
 
 A `Projected CRS` applies a **map projection** to a Geographic CRS
 
@@ -405,7 +403,7 @@ Selection depends on location, extent and purpose
 
 ##  Different Projected CRSs
 
-<img height="500px" src="./docs/images/diff_crs.png"></img>
+<img height="500px" src="./images/diff_crs.png"></img>
 
 ## `coord_map("mercator")`
 
@@ -735,7 +733,7 @@ head(landmarks)
 
 The ESRI Shapefile is the most common file format for geospatial data.
 
-<img src="./docs/images/shapefile.png" width="400px"></img>
+<img src="./images/shapefile.png" width="400px"></img>
 
 `ggplot` and `ggmap` cannot **directly** read in or plot shapefile data.
 
@@ -784,9 +782,9 @@ A 'feature' is just a representation of a thing in the real world (e.g. a buildi
 Here are the most common simple features geometries,
 which are used represent vector data in `sf`.
 
-<img src="./docs/images/sf-classes.png" width="400px"></img>
+<img src="./images/sf-classes.png" width="400px"></img>
 
-(From the ![Geocomputation in R](https://geocompr.robinlovelace.net/spatial-class.html) textbook.)
+(From the [Geocomputation in R](https://geocompr.robinlovelace.net/spatial-class.html) textbook, Chapter 2, Figure 2.2)
 
 
 ## `sf` package
@@ -902,9 +900,9 @@ Some of you may have gotten this plot instead:
 plot(tracts$NAME)
 ```
 
-What's wrong here?
-
 ## Challenge: Solution
+
+What went wrong?
 
 ```{r}
 class(tracts['NAME'])
@@ -912,6 +910,8 @@ class(tracts[, 'NAME'])
 class(subset(tracts, select='NAME'))
 class(tracts$NAME)
 ```
+
+## Challenge: Solution
 
 When we use bracket syntax or the subset function,
 `sf` objects return new, subsetted `sf` objects.
@@ -921,7 +921,6 @@ But when we use the '$' notation, we just get a vector of the column's values!
 As always, we need to **be careful and check what kinds of objects we're working with!**
 
 
-
 ## `sf` objects: geometries
 
 The nice thing about `sf` objects is that they are just `data.frame`s!
@@ -929,9 +928,9 @@ The nice thing about `sf` objects is that they are just `data.frame`s!
 The geometry data is just stored in its own special column,
 usually named `geom` or `geometry`.
 
-For the most part, we will not want to manually manipulate the data in the geometry column.
+<br>
 
-However, when we're just getting started, it can be enlightening to introspect its contents...
+For the most part, we will not want to manually manipulate the data in the geometry column. But when we're just getting started, it can be helpful to tinker.
 
 
 ## `sf` objects: geometries
@@ -1064,10 +1063,20 @@ But `sf` does provide functions for doing so.
 Here are the geometries from our previous slide:
 
 ```{r}
+#create a point
 pnt = st_point(c(2, 4))
+#create a multipoint
 mpnt = st_multipoint(rbind(c(2, 2), c(3, 3), c(3, 2)))
+#create a line
 line = st_linestring(rbind(c(0, 3), c(1, 4), c(2, 3)))
+#create a polygon
 poly = st_polygon(list(rbind(c(1, 0), c(3, 4), c(5, 1), c(1, 0))))
+```
+## `sf` objects: geometries
+
+Then we can plot them.
+
+```{r}
 plot(poly, col = 'yellow')
 plot(line, col = 'blue', lwd = 3, add = T)
 plot(mpnt, col = 'red', add = T)
@@ -1133,16 +1142,16 @@ columns..
  * The geometry column is a simple features collection (`sfc`) object.
  * Each value in an `sfc` is a simple features geometry (`sfg`) object.
 
-<img src="./docs/images/sf_annotated_fig.png" width="400px"></img>
+<img src="./images/sf_annotated_fig.png" width="800px"></img>
 
-(From the ![`sf` docs] (https://r-spatial.github.io/sf/articles/sf1.html.))
+(From the [`sf` docs](https://r-spatial.github.io/sf/articles/sf1.html.))
 
 
 ## `sf` objects: summary
 
-And here's another depicition (from the ![`sf` Github Repo] (https://github.com/r-spatial/sf)):
+And here's another depicition (from the [`sf` Github Repo](https://github.com/r-spatial/sf)):
 
-<img src="./docs/images/sticky_geometries.jpg" width="400px"></img>
+<img src="./images/sticky_geometries.jpg" width="800px"></img>
 
 ## `sf` objects: summary
 
@@ -1205,7 +1214,7 @@ st_crs(sfhomes15, n = 1)
 
 The #1 reason...
 
-<img width="600px" src="./docs/images/not_working.jpeg"></img>
+<img width="600px" src="./images/not_working.jpeg"></img>
 
 
 ## Reconciling projections
@@ -1314,7 +1323,7 @@ We want all data in the same CRS
 
 Which one is best?
 
-<img src="./docs/images/shrugging_baby.jpg" width="400px"></img>
+<img src="./images/shrugging_baby.jpg" width="800px"></img>
 
 
 
@@ -1459,7 +1468,7 @@ ggplot() + geom_sf(data = tracts_lonlat) +
 
 Success!
 
-```{r}
+```{r, echo=F}
 ggplot() + geom_sf(data = tracts_lonlat) + 
            geom_sf(data = sfhomes15_sf, aes(col = totvalue))
 ```
@@ -1482,7 +1491,7 @@ Work through the following steps:
 
 ## Challenge: Solution
 
-\1. Coerce the landmarks dataframe to an `sf` object,
+1: Coerce the landmarks dataframe to an `sf` object,
    with EPSG: `3857`, Web Mercator as its CRS.
 
 ```{r}
@@ -1491,7 +1500,7 @@ landmarks_sf = st_as_sf(landmarks, coords = c('X', 'Y'), crs = 3857)
 
 ## Challenge: Solution
 
-\2. Read in the 'sfboundary' shapefile, from the './data' subdirectory.
+2: Read in the 'sfboundary' shapefile, from the './data' subdirectory.
 
 ```{r}
 sfboundary = st_read('./data', 'sfboundary')
@@ -1500,7 +1509,7 @@ sfhighways = st_read('./data', 'sfhighways')
 
 ## Challenge: Solution
 
-\3. Reproject any of those layers to the CRS of sfhomes15\_sf, as needed.
+3: Reproject any of those layers to the CRS of sfhomes15\_sf, as needed.
 
 `sfboundary` doesn't need to be transformed
 
@@ -1510,7 +1519,7 @@ st_crs(sfboundary) == st_crs(sfhomes15_sf)
 ```
 ## Challenge: Solution
 
-\3. Reproject any of those layers to the CRS of sfhomes15\_sf, as needed.
+3: Reproject any of those layers to the CRS of sfhomes15\_sf, as needed.
 
 `sfhighways` needs to be transformed
 
@@ -1522,7 +1531,7 @@ sfhighways_lonlat = st_transform(sfhighways, st_crs(sfhomes15_sf))
 ```
 ## Challenge: Solution
 
-\3. Reproject any of those layers to the CRS of sfhomes15\_sf, as needed.
+3: Reproject any of those layers to the CRS of sfhomes15\_sf, as needed.
 
 We know `landmarks` does, because we just assinged it EPSG 3857.
 
@@ -1533,21 +1542,9 @@ landmarks_lonlat = st_transform(landmarks_sf, st_crs(sfhomes15_sf))
 
 ## Challenge: Solution
 
-\4. Plot tracts, boundary, highways, homes, and landmarks together.
+4: Plot tracts, boundary, highways, homes, and landmarks together.
    Make the border purple, and the highways and the landmarks red.
    Color the homes by the 'totvalue' column.
-
-```{r, eval=F}
-challenge_map = ggplot() +
-geom_sf(data = sfboundary, col = 'purple') +
-geom_sf(data = tracts_lonlat, alpha = 0.2) +  #alpha = 0.2 for transparency, so we can see sfboundary
-geom_sf(data= sfhighways_lonlat, col = 'red') +
-geom_sf(data = sfhomes15_sf, aes(col = totvalue)) +
-geom_sf(data = landmarks_sf, col = 'red')
-challenge_map
-```
-
-## Challenge: Solution
 
 ```{r}
 challenge_map = ggplot() +
@@ -1556,6 +1553,11 @@ geom_sf(data = tracts_lonlat, alpha = 0.2) +  #alpha = 0.2 for transparency, so 
 geom_sf(data= sfhighways_lonlat, col = 'red') +
 geom_sf(data = sfhomes15_sf, aes(col = totvalue)) +
 geom_sf(data = landmarks_sf, col = 'red')
+```
+
+## Challenge: Solution
+
+```{r}
 challenge_map
 ```
 
@@ -1636,7 +1638,7 @@ We've seen how to control some plot aesthetics, to make our maps data-rich.
 We will continue to explore similar functionalities. But we'll do so using the `tmap` package.
 
 We won't spend a ton of time reviewing `tmap`, because you'll get more practice with
-it during Parts 2 and 3.
+it in Parts 2 and 3.
 
 
 ## `tmap`
@@ -1706,11 +1708,9 @@ qtm(sfhomes15_sf) # Interactive - click on the points
 
 ## `tmap`: modes
 
-Notice that this is a live, interactive map!
-* click on the points to see the `Popups`
-* look at the `Layer selector`
+Notice that this is a live, interactive map!  Click to see Popups! Click on the Layer Selector!
 
-```{r, echo=F}
+```{r, echo=F, message=F}
 tmap_mode("view")
 qtm(sfhomes15_sf)
 ```
@@ -1942,6 +1942,7 @@ We can also customize the popups!
 Notice the changes relative to the previous code.
 
 ```{r, eval=F}
+tmap_mode('view')
 tm_shape(sfboundary) + 
   tm_polygons(col="beige", border.col="black") +
   
@@ -1949,7 +1950,7 @@ tm_shape(sfhighways_lonlat) +
   tm_lines(col="black") +
 
 tm_shape(sfhomes15_sf) + 
-  tm_dots(col="totvalue", size=.25, 
+  tm_dots(col="totvalue", size=.05, 
           title = "San Francisco Property Values (2015)",
           popup.vars=c("SalesYear","totvalue","NumBedrooms",
                        "NumBathrooms","AreaSquareFeet")) + 
@@ -1959,9 +1960,8 @@ tm_layout(inner.margins=c(.05, .2, .15, .05)) # bottom, left, top, right
 
 ## `tmap`: advanced customization
 
-We can also customize the popups!
-
-```{r, echo=F}
+```{r, echo=F, message=F}
+tmap_mode('view')
 tm_shape(sfboundary) + 
   tm_polygons(col="beige", border.col="black") +
   
@@ -1969,7 +1969,7 @@ tm_shape(sfhighways_lonlat) +
   tm_lines(col="black") +
 
 tm_shape(sfhomes15_sf) + 
-  tm_dots(col="totvalue", size=.25, 
+  tm_dots(col="totvalue", size=.05, 
           title = "San Francisco Property Values (2015)",
           popup.vars=c("SalesYear","totvalue","NumBedrooms",
                        "NumBathrooms","AreaSquareFeet")) + 
@@ -1982,52 +1982,48 @@ And we can access a wide variety of basemaps.
 
 ([Here](http://leaflet-extras.github.io/leaflet-providers/preview/)'s a list.)
 
+Let's try watercolor!
+
 ```{r, eval=FALSE}
 tm_basemap("Stamen.Watercolor") +
 tm_shape(sfhomes15_sf) + 
-tm_dots(col="totvalue", size=.25, title = "San Francisco Property Values (2015)") +
+tm_dots(col="totvalue", size=.05, title = "San Francisco Property Values (2015)") +
 tm_tiles("Stamen.TonerLabels")
 ```
 
 ## `tmap`: advanced customization
 
-```{r, eval=F}
+Let's try watercolor!
+
+```{r, echo=F, message=F}
 tmap_mode('view')
 tm_basemap("Stamen.Watercolor") +
 tm_shape(sfhomes15_sf) + 
-tm_dots(col="totvalue", size=.25, title = "San Francisco Property Values (2015)") +
+tm_dots(col="totvalue", size=.05, title = "San Francisco Property Values (2015)") +
 tm_tiles("Stamen.TonerLabels")
 ```
 
 ## `tmap`: advanced customization
 
-```{r, message=F, echo=F}
-tmap_mode('view')
-tm_basemap("Stamen.Watercolor") +
-tm_shape(sfhomes15_sf) + 
-tm_dots(col="totvalue", size=.25, title = "San Francisco Property Values (2015)") +
-tm_tiles("Stamen.TonerLabels")
-```
-
-## `tmap`: advanced customization
-Here's another type of basemap.
+And here's another type of basemap.
 
 ```{r, eval=F}
 tmap_mode('view')
 tm_basemap('OpenStreetMap.HOT') + 
 tm_shape(sfhomes15_sf) + 
-tm_dots(col="totvalue", size=.25, title = "San Francisco Property Values (2015)") +
+tm_dots(col="totvalue", size=.05, title = "San Francisco Property Values (2015)") +
 tm_tiles("Stamen.TonerLabels")
 ```
 
 ## `tmap`: advanced customization
-Here's another type of basemap.
+
+And here's another type of basemap.
 
 ```{r, echo=F, message=F}
 tmap_mode('view')
 tm_basemap('OpenStreetMap.HOT') + 
 tm_shape(sfhomes15_sf) + 
-tm_dots(col="totvalue", size=.25, title = "San Francisco Property Values (2015)") +
+tm_dots(col="totvalue", size=.05, title = "San Francisco Property Values (2015)") +
 tm_tiles("Stamen.TonerLabels")
 ```
 
@@ -2117,15 +2113,15 @@ challenge_map
 
 ```{r}
 challenge_map_2 = tm_shape(sfboundary) +
-    tm_polygons(border.col = 'darkgray') +
+    tm_polygons(border.col = 'purple', alpha = 0) +
 tm_shape(tracts_lonlat) +
-    tm_polygons(col = 'beige', border.col = 'lightgray', alpha = 0.4) + 
+    tm_polygons(col = 'lightgray', border.col = 'darkgray', alpha = 0.3) + 
 tm_shape(sfhighways_lonlat) +
-    tm_lines(col = 'black') +
+    tm_lines(col = 'red') +
 tm_shape(sfhomes15_sf) +
-    tm_dots(col = 'totvalue', size = 0.05, palette = '-RdBu') +
+    tm_dots(col = 'totvalue', size = 0.05, palette = '-Blues') +
 tm_shape(landmarks_sf) +
-    tm_dots(col = 'black', size = 0.1) 
+    tm_dots(col = 'red', size = 0.1) 
 ```
 
 

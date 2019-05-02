@@ -2,7 +2,8 @@
 title: "Geospatial Fundamentals in R with sf, Part 2"
 author: "Patty Frontiera and Drew Hart, UC Berkeley D-Lab"
 date: "May 2019"
-output: ioslides_presentation:
+output:
+  ioslides_presentation:
     widescreen: true
     smaller: true
 editor_options: 
@@ -16,6 +17,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = normalizePath('../'))
 ```
 
 ## Part II Prep

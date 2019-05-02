@@ -3,9 +3,9 @@
 This is the repository for D-Lab's __Geospatial Fundamentals in R with `sf`__ workshop.
 
 __View the Slides or RStudio Binders__:
-- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-sf/docs/RGeo_pt1.html#1), [![Part I](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-sf/docs/Part_1/master?urlpath=rstudio)
-- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-sf/docs/RGeo_pt2.html#1), [![Part II](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-sf/docs/Part_2/master?urlpath=rstudio)
-- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-sf/docs/RGeo_pt3.html#1), [![Part III](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-sf/docs/Part_3/master?urlpath=rstudio)
+- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-sf/docs/01-core_concepts_and_plotting.html#1), [![Part I](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-sf/docs/01-core_concepts_and_plotting/master?urlpath=rstudio)
+- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-sf/docs/02-spatial_analysis.html#1), [![Part II](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-sf/docs/02-spatial_analysis/master?urlpath=rstudio)
+- [slides](https://dlab-geo.github.io/Geospatial-Fundamentals-in-R-sf/docs/03-raster_data.html#1), [![Part III](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-geo/Geospatial-Fundamentals-in-R-sf/docs/03-raster_data/master?urlpath=rstudio)
 
 (For the old workshop, using the `sp` package, go ![here](https://github.com/dlab-geo/r-geospatial-workshop/).)
 
