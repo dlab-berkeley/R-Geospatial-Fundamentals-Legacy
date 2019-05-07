@@ -1,3 +1,0 @@
-#ggmap key that will be deleted after the workshop
-my_gkey <- "AIzaSyBws8es7WgI5hXpFM2w2YUYylDoocZyBxw"
-#register_google(my_gkey)
