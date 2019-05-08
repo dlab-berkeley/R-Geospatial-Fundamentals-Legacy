@@ -1385,7 +1385,7 @@ We want all data in the same CRS.
 
 Which one is best???
 
-<img src="./images/shrugging_baby.jpg" width="600px"></img>
+<img src="./images/shrugging_baby.jpg" width="400px"></img>
 
 ## Reprojecting
 
