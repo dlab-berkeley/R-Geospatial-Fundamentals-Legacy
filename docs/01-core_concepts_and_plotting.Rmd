@@ -18,22 +18,50 @@ knitr::opts_knit$set(root.dir = normalizePath('../'))
 
 ## Workshop Prep
 
-1. Open <https://github.com/dlab-geo/r-geospatial-workshop>
+1. Open <https://github.com/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf>
     - Download & unzip the zip file
     - Make a note of the folder in which it is located
 
-2. Start **RStudio** and open a new script file
+2. Start **RStudio** and open a new script file or today's .Rmd file.
 
-3. Install required libraries in RStudio - if you do not have them already
+3. Set your working directory to the repository you downloaded and unzipped.
+
+4. Install the required libraries in RStudio - if you do not have them already
 
 ```{r, eval=F}
 install.packages(
-  c("sf","sp","tmap","classInt","RColorBrewer", "units",
-    "ggplot2","leaflet", "ggmap"), dependencies=TRUE
-)
+  c("ggplot2", "ggmap", "dplyr", "sf", "units", "tmap", "raster"),
+  dependencies=TRUE)
 ```
 
-# Geospatial Data in R
+## About Me...
+
+
+## About you...
+
+Who are you?
+
+Why are you here?
+
+## How to Follow Along
+
+You have options:
+
+1. Open the slides in your browser (click on the link in the repo, or launch from your local copy of the HTML file).
+
+2. Open the Rmd script (or a blank script) in RStudio.
+
+3. Both of the above.
+
+4. Just chill and watch.
+
+Slides
+`./docs/01-core-concepts-and-plotting.html`
+
+RMarkdown Code
+`./docs/01-core-concepts-and-plotting.Rmd`
+
+*Make sure you can cut and paste into RStudio*
 
 ## Workshop Goals
 
@@ -49,32 +77,12 @@ Intro to working with geospatial data in R
 
 *Key goal is `familiarity`, competency takes lots of practice*
 
-## About Me
 
-
-## About you
-
-Who are you?
-
-Why are you here?
-
-## Follow Along
-
-Open one of the tutorial files in a web browser
-
-Slides
-`./docs/RGeo_pt1.html`
-
-Raw Code
-`./docs/RGeo_pt1.Rmd`
-
-*Make sure you can cut and paste into RStudio*
-# Geographic Data
-
+# Geospatial Data in R
 
 ## Geographic Data
 
-are data about *locations* on or near the surface of the *Earth*.
+are data with  *locations* on or near the surface of the *Earth*.
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Anatone_WA.jpg/640px-Anatone_WA.jpg"></img>
 
@@ -163,7 +171,7 @@ Regular grid of cells (or pixels)
 
 *We cover raster data only in Day 3 of this workshop*
 
-# Softare for working with Geospatial Data
+# Software for working with Geospatial Data
 
 ## Geospatial data require
 
@@ -213,15 +221,14 @@ Cutting edge
 
 # Geospatial Data in R
 
-## Prep reminder
+## Prep reminder 
 
 Make sure you have set your working directory to the location of the workshop files.
 
 Make sure you have the packages we are going to use installed.
 
 ```{r, eval=F}
-our_packages<- c("sf","sp","tmap","classInt","RColorBrewer",
-                 "ggplot2","leaflet", "ggmap","dplyr")
+our_packages<- c("ggplot2", "ggmap", "dplyr", "sf", "units", "tmap", "raster")
 
 for (i in our_packages){
   if ( i %in% rownames(installed.packages()) == FALSE) {
@@ -229,7 +236,6 @@ for (i in our_packages){
   } 
 }
 ```
-
 
 ## Geospatial Data in R
 
@@ -318,7 +324,7 @@ plot(sfhomes$lon, sfhomes$lat) # using base plot function
 ```
 
 
-# `ggplot2`
+# ggplot2
 
 ## `ggplot2`
 
@@ -505,35 +511,46 @@ Load the libary
 library(ggmap)
 ```
 
-## A note on the recent change in `ggmap` authorization
+## A note on `ggmap` installation
 
-Some `ggmap` functionality may require you to register a Google API key
+If you have problems with `ggmap`, you may need to reinstall the library from github (using the code below).
 
-Beginning July 2018 Google requires a credit card on file to access online APIs
-
-The setup of an API key is beyond the scope of this workshop. So, we we'll only call Google APIs as a demo in this tutorial. This way, at least you can still see what's available to you.
-
-
-## A note on `ggmap` installation and usage
-
-If you happen to already have a configured Google Maps API key (with Geocoding, Geolocation, and Static Maps APIs all enabled), then you are welcome to try this on your machine by running:
-
-  `register_google(<YOUR_API_KEY_HERE>)`
-
-(If you have problems with `ggmap` you may need to reinstall the library from github.
-
-- See this [StackOverflow discussion](https://stackoverflow.com/questions/34402979/increase-the-api-limit-in-ggmaps-geocode-function-in-r))
-
-Otherwise, just watch for the next few steps!
-
+(See this [StackOverflow discussion](https://stackoverflow.com/questions/34402979/increase-the-api-limit-in-ggmaps-geocode-function-in-r) for details.)
 
 ```{r, eval=F}
-#devtools::install_github("dkahle/ggmap")
+devtools::install_github("dkahle/ggmap")
 library(ggmap)
 ```
 
+## A note on Google Maps authorization
+
+`ggmap` requires you to have a registered Google Maps API key
+
+This requires having a credit card on file.
+
+For your own use you'll want to set this up privately (outside the scope of this workshop).
+
+But for today, we have provided you a temporary API key (in `tmp_key.txt`), just for running this demo.
+
+## Authorization
+
+First, let's load and register our API key.
+
+(The API key will be different in each workshop. See `tmp_key.txt`. But the code should look as follows.)
+
+```{r, eval=F}
+api_key = "AS24AHFAN322D3FN92NFN297FBNSLWU228RNN292F82NENDO9KSKW9"
+register_google(api_key)
+```
+
+```{r, include=F}
+#Hidden code for reading in Drew's API key, to knit on his machine
+filename = '/home/drew/Desktop/gmapi.txt'
+register_google(gsub('\n', '', readChar(filename, file.info(filename)$size)))
+```
+
 ##  get_map
-Let's check out the `get_map` function. This will allow us to fetch map tiles to display in our maps.
+Now let's check out the `get_map` function. This will allow us to fetch map tiles to display in our maps.
 
 `get_map` uses a number of online mapping services including `Google`, `Stamen` and `OpenStreetMap (OSM)`
 
@@ -547,14 +564,6 @@ See `?get_map` for details
 Let's fetch a simple map on which we can display our points
 
 Here we are centering the map on San Francisco & using the stamen `toner-lite` basemap.
-
-```{r}
-#Load my API key from file
-#(NOTE: THIS WON'T RUN ON OTHERS' MACHINES!)
-filename = '/home/drew/Desktop/gmapi.txt'
-register_google(gsub('\n', '', readChar(filename, file.info(filename)$size)))
-```
-
 
 ```{r, warning=FALSE}
 sf_center_point <- c(lon=-122.445144, lat=37.769335 )
@@ -747,7 +756,7 @@ The ESRI Shapefile is the most common file format for geospatial data.
 # Spatial Data Objects in R
 
 
-# `sf` package
+# sf
 
 ## Aside: `sf` vs. `sp`
 
@@ -766,7 +775,10 @@ It will be necessary for our raster work on Day 3, so we'll see a bit of it then
 `sf` stands for 'simple features', which is a standard (developed by the Open
 Geospatial Consortium) for storing various geometry types in a hierarchical data model.
 
-A 'feature' is just a representation of a thing in the real world (e.g. a building, a city...). In other words, each feature consists of both a geometric representation of an object and some other information about it (building: height, name, etc..., city: population, area, etc...).
+A 'feature' is just a representation of a thing in the real world (e.g. a building, a city...). 
+
+In other words, each feature consists of both a **geometric representation** of an object
+and **some associated information** (building: height, name, etc..., city: population, area, etc...).
 
 ## `sf` package
 
@@ -1140,9 +1152,9 @@ columns..
 
 ## `sf` objects: summary
 
-And here's another depicition (from the [`sf` Github Repo](https://github.com/r-spatial/sf)):
+And here's another depiction (from the [`sf` Github Repo](https://github.com/r-spatial/sf)):
 
-<img src="./images/sticky_geometries.jpg" width="800px"></img>
+<img src="./images/sticky_geometries.jpg" width="650px"></img>
 
 ## `sf` objects: summary
 
@@ -1262,63 +1274,56 @@ So, what is it?...
 
 ## CRS Definitions and Transformations
 
-The coordinate reference system (CRS) defines the mathematical model
-of the planet within which the locations of spatial data objects are expressed.
-
-A CRS can be unprojected (if coordinates are expressed as positions on a spheroidal surface),
-or projected (if they're expressed on a plane resulting from projecting that surface).
-
 GIS software will have a database of definitions for thousands of Earth-referenced
 CRSs and methods for using those definitions to define or transform a CRS.
+
+We just need to know how to specify our data's CRS
+(unprojected lat/lon with a WGS84 ellipsoid and datum) in terms that
+will allow R to correctly indentify it within that database.
 
 
 ## Referencing the WGS84 CRS
 
-Our homes data are just decimal degrees on a spheroid. In other words, they are
-unprojected longitude & latitude ('longlat').
+To do this, we can create a `proj4` string, as follows:
 
-The most common datum and ellipsoid for that sort of CRS are 'WGS84'.
+`st_crs("+proj=longlat +ellps=WGS84 +datum=WGS84")`
 
-So we can express our CRS in a `proj4` string as follows:
-
-`CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")`
-
-`proj4` strings are a standard format.
+The `proj4` string is a standard format used across a wide variety of GIS.
 
 
 ## EPSG codes
 
-However, the `proj4` string format is long and complicated.
+However, the `proj4` string is long and complicated, and leaves a lot of room for error.
 And there are *lots* of CRSs out there!
 
 So the **E**uropean **P**etroluem **S**urvey **G**roup devised a simpler system
 of numerical codes, called **EPSG** codes.
 
-The longlat, WGS84 EPSG code is:
+The longlat, WGS84 EPSG code is 4326.
 
-`CRS("+init=epsg:4326")`
+So we could create our CRS instead using just the EPSG code in a proj4string:
+
+`st_crs("+init=epsg:4326")`
+
+Which, in `sf`, can be simplified even further:
+
+```{r}
+st_crs(4326)
+```
 
 
 ## Proj4 CRS Definitions
 
-Some additional info on CRS definitions:
+Here is some additional info on CRS definitions, for your reference:
 
 [Proj4](http://proj4.org/) is the standard library for defining and transforming map projections and coordinate reference systems.
 
 [Here](https://github.com/OSGeo/proj.4/blob/master/nad/epsg) is an example file of proj4 CRS definitions
 
 
-## Projections, CRS, oh my!
-
-We want all data in the same CRS
-
-Which one is best?
-
-<img src="./images/shrugging_baby.jpg" width="800px"></img>
-
-
-
 ## Common CRS Codes
+
+And here are some common codes:
 
 **Geographic CRSs**
 
@@ -1340,9 +1345,10 @@ Which one is best?
 
 ## Finding CRS Codes
 
-See [http://spatialreference.org/](http://spatialreference.org/)
+And here's a resource for looking up EPSG codes and proj4 strings,
+should you need to:
 
-Use this site to find EPSG codes and proj4 CRS strings
+[http://spatialreference.org/](http://spatialreference.org/)
 
 
 ## Creating `sf` objects
@@ -1373,8 +1379,13 @@ That takes care of both steps 1 (create `sf` object) and 2 (define CRS)!
 Now that our homes are an `sf` object with the correct CRS, we'll need to reproject
 either `sfhomes15_sf` or `tracts`, so that they are in the same projection.
 
-Which one should we project, and why?...
+## Reprojecting
 
+We want all data in the same CRS.
+
+Which one is best???
+
+<img src="./images/shrugging_baby.jpg" width="600px"></img>
 
 ## Reprojecting
 
