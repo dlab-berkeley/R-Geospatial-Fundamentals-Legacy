@@ -70,7 +70,6 @@ Let's load the libraries we will use
 
 ```{r, eval=FALSE}
 library(sf)     # spatial objects and methods
-library(rgeos)  # geometric operations
 library(tmap)   # mapping spatial objects
 ```
 
@@ -78,7 +77,6 @@ library(tmap)   # mapping spatial objects
 
 ```{r, echo=FALSE}
 library(sf)     # spatial objects and methods
-library(rgeos)  # geometric operations
 library(tmap)   # mapping spatial objects
 ```
  
