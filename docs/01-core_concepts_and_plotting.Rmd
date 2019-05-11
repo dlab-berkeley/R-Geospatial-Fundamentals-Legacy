@@ -18,21 +18,23 @@ knitr::opts_knit$set(root.dir = normalizePath('../'))
 
 ## Workshop Prep
 
-1. Open <https://github.com/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf>
-    - Download & unzip the zip file
-    - Make a note of the folder in which it is located
+1. Open the repo at <https://github.com/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf>
+    - Download and unzip the zip file
+    - Take note of where the folder is located
 
-2. Start **RStudio** and open a new script file or today's .Rmd file.
+2. Start RStudio and open a new script, or **./docs/01-core_concepts_and_plotting.Rmd** 
 
-3. Set your working directory to the repository you downloaded and unzipped.
+3. Set your working directory to the folder you unzipped 
 
-4. Install the required libraries in RStudio - if you do not have them already
+4. Install the required libraries in RStudio, if you do not have them already
 
 ```{r, eval=F}
 install.packages(
-  c("ggplot2", "ggmap", "dplyr", "sf", "units", "tmap", "raster"),
+  c("ggplot2", "ggmap", "sf", "units", "tmap", "nngeo", "raster"),
   dependencies=TRUE)
 ```
+5. Open the slides, **./docs/01-core_concepts_and_plotting.Rmd**, in your browser (or click the "Part 1 Slides" link the repo).
+
 
 ## About Me...
 
@@ -228,7 +230,7 @@ Make sure you have set your working directory to the location of the workshop fi
 Make sure you have the packages we are going to use installed.
 
 ```{r, eval=F}
-our_packages<- c("ggplot2", "ggmap", "dplyr", "sf", "units", "tmap", "raster")
+our_packages<- c("ggplot2", "ggmap", "sf", "units", "tmap", "raster")
 
 for (i in our_packages){
   if ( i %in% rownames(installed.packages()) == FALSE) {
@@ -536,7 +538,7 @@ But for today, we have provided you a temporary API key (in `tmp_key.txt`), just
 
 First, let's load and register our API key.
 
-(The API key will be different in each workshop. See `tmp_key.txt`. But the code should look as follows.)
+(The API key will be different in each workshop. See `tmp_key.txt`. But the code should look something like the following.)
 
 ```{r, eval=F}
 api_key = "AS24AHFAN322D3FN92NFN297FBNSLWU228RNN292F82NENDO9KSKW9"
@@ -805,10 +807,9 @@ which are used represent vector data in `sf`.
 
 ## `sf` package
 
-First, of course, we'll need to load the package and `dplyr` which it depends on:
+First, of course, we'll need to load the package:
 
 ```{r}
-library(dplyr)
 library(sf)
 ```
 

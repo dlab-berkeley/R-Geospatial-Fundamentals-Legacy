@@ -18,32 +18,22 @@ knitr::opts_knit$set(root.dir = normalizePath('../'))
 
 ## Part III Prep
 
-1. https://github.com/dlab-geo/r-geospatial-workshop
+1. Open the repo at <https://github.com/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf>
+    - Download and unzip the zip file
+    - Take note of where the folder is located
 
-- Click *Clone or Download* and download the zip file
-- Upzip the zip file and make a note of the folder in which it is located
+2. Start RStudio and open a **new script**, or **./docs/03-raster_data.Rmd**
 
-2. Open RStudio and start a **new script** or continue the one from last week
+3. Set your working directory to the folder you unzipped 
 
-3. Set your working directory to where you downloaded and unzipped the files
+4. Install the required libraries in RStudio, if you do not have them already
 
-4. Follow along by opening `r-geospatial-workshop-pt3.html` in a web browser
-
-5. Make sure required libraries are installed. 
-
-- sp, rgdal, rgeos, tmap, raster
-
-## Follow Along
-
-Open one of the tutorial files in a web browser
-
-Slides
-`r-geospatial-workshop-pt3.html `
-
-R Code
-`scripts/r-geospatial-workshop-pt3.Rmd`
-
-*Make sure you can cut and paste into RStudio*
+```{r, eval=F}
+install.packages(
+  c("ggplot2", "ggmap", "sf", "units", "tmap", "nngeo", "raster"),
+  dependencies=TRUE)
+```
+5. Open the slides, **./docs/03-raster_data.html**, in your browser (or click the "Part 3 Slides" link the repo).
 
 ## Part III Overview
 
@@ -199,7 +189,6 @@ of the object (as determined by its projection).
 ## Explore the Structure
 
 As for our matrix of data, it should live somewhere inside the `@data` slot, right?
-(Just like our data.frame of attribute data lives in the `Spatial*DataFrame@data` slot.)
 
 ```{r}
 str(DEM@data)
@@ -276,7 +265,7 @@ projection, and has incorrect extent and resolution.
 You can imagine that you could then use
 the DEM object's information to assign the new `RasterLayer` its appropriate metadata
 (much like what we did with unprojected point data that we read in from a CSV and
-coerced to a `SpatialPointsDataFrame`). 
+coerced to an `sf` object).
 
 Because there's a much easier way to do all of this...
 
@@ -505,7 +494,7 @@ plot(sfhomes15_sp)
 ## `sp` package
 
 And if you need to convert __from `sp` to `sf`__,
-there's a function for that too (which we already saw in Part I).
+there's a function for that too (which we already saw in Part 1!).
 
 ```{r}
 sfhomes15_sfagain = st_as_sf(sfhomes15_sp)
@@ -517,7 +506,7 @@ plot(sfhomes15_sfagain['totvalue'])
 We will not go into any greater detail on `sp` in this workshop.
 
 However, if you find you need to learn more then please visit our
-![former R geospatial workshop] (https://github.com/dlab-geo/r-geospatial-workshop),
+[former R geospatial workshop](https://github.com/dlab-geo/r-geospatial-workshop),
 which is based on `sp`.
 
 (It uses the same data and runs more or less the same operations as this workshop,
@@ -798,9 +787,8 @@ plot(nlcd_WGS_crop)
 Notice that the colors of our original, which conveniently represented the NLCD class
 colors from their website, are lost after reprojecting and cropping our raster.
 
-Those colors were controlled by a bunch of information in the original
-NLCD file, which was read into the `@legend` slot of our raster object.
-Here's the info (with the commonly used hexadecimal format for color codes, e.g. '#00F900'):
+Those colors were controlled by information in the original file,
+which was read into the `@legend` slot. Here's the info (with hexadecimal format for color codes, e.g. '#00F900'):
 
 ```{r}
 nlcd@legend
@@ -829,118 +817,118 @@ Nice! Not necessary... but nice!
 
 ```{r}
 nlcd_WGS_crop@legend = nlcd@legend
-        plot(nlcd_WGS_crop)
-        ```
+plot(nlcd_WGS_crop)
+```
 
-        ## Reclassifying rasters
+## Reclassifying rasters
 
-        When we're working with a categorical raster, we'll often want to reclass our data. We may want to do this because:
+When we're working with a categorical raster, we'll often want to reclass our data. We may want to do this because:
 
-        - Our original data has more classifications than we actually need for our analysis.
-        - We want to represent the classifications we do have by a different numerical scheme because it somehow makes our analysis more convenient.
+- Our original data has more classifications than we actually need for our analysis.
+- We want to represent the classifications we do have by a different numerical scheme because it somehow makes our analysis more convenient.
 
-        ## Reclass the NLCD
+## Reclass the NLCD
 
-        Let's reclass our NLCD data. First we'll need to define a reclassification
-        matrix with 3 columns (low, high, to):
+Let's reclass our NLCD data. First we'll need to define a reclassification
+matrix with 3 columns (low, high, to):
 
-        ```{r, eval = FALSE}
-        ?reclassify
-        ```
+```{r, eval = FALSE}
+?reclassify
+```
 
-        ## Define reclassification matrix 
-        ```{r}
-        reclass_vec <- c(0, 20, NA, # water will be set to NA (i.e. 'left out' of our analysis)
-                        20, 21, 1, # we'll treat developed open space as greenspace, based on NLCD description
-                        21, 30, 0, # developed and hardscape will have 0s
-                        30, 31, NA, 
-                        31, Inf, 1) # greensapce will have 1s
-        reclass_vec
-        reclass_m <- matrix(reclass_vec, ncol = 3, byrow = TRUE)
-        reclass_m
-        ```
+## Define reclassification matrix 
+```{r}
+reclass_vec <- c(0, 20, NA, # water will be set to NA (i.e. 'left out' of our analysis)
+                20, 21, 1, # we'll treat developed open space as greenspace, based on NLCD description
+                21, 30, 0, # developed and hardscape will have 0s
+                30, 31, NA, 
+                31, Inf, 1) # greensapce will have 1s
+reclass_vec
+reclass_m <- matrix(reclass_vec, ncol = 3, byrow = TRUE)
+reclass_m
+```
 
-        ## Reclassify the raster 
-        ```{r}
-        nlcd_green <- reclassify(nlcd_WGS_crop, reclass_m)
-        ```
+## Reclassify the raster 
+```{r}
+nlcd_green <- reclassify(nlcd_WGS_crop, reclass_m)
+```
 
-        ## Reclassify the raster
+## Reclassify the raster
 
-        What did we get?
+What did we get?
 
-        ```{r}
-        freq(nlcd_green)
-        ```
+```{r}
+freq(nlcd_green)
+```
 
-        ## Reclassify the raster 
+## Reclassify the raster 
 
-        What did we get?
+What did we get?
 
-        ```{r}
-        barplot(nlcd_green)
-        ```
+```{r}
+barplot(nlcd_green)
+```
 
-        ## Reclassify the raster 
+## Reclassify the raster 
 
-        What did we get?
+What did we get?
 
-        ```{r}
-        plot(nlcd_green)
-        ```
+```{r}
+plot(nlcd_green)
+```
 
-        ## Challenge 4: Extract our NLCD data to our tract polygons
+## Challenge 4: Extract our NLCD data to our tract polygons
 
-        Just like we did earlier with our elevation data, let's extract our reclassed
-        NLCD data to our census-tract polygons.
+Just like we did earlier with our elevation data, let's extract our reclassed
+NLCD data to our census-tract polygons.
 
-        ## Solution
+## Solution
 
-        ```{r}
+```{r}
 
-        #extract the mean nlcd_simple values to tract polygons
-        greenspace = extract(nlcd_green, sftracts, fun=mean)
+#extract the mean nlcd_simple values to tract polygons
+greenspace = extract(nlcd_green, sftracts, fun=mean)
 
-        ```
+```
 
-        ## What did we get?
+## What did we get?
 
-        ```{r}
-        greenspace
-        ```
-        ## Why?
+```{r}
+greenspace
+```
+## Why?
 
-        What's with all the NAs?
+What's with all the NAs?
 
-        Remember, we set all water cells to NA, to ignore them in our analysis.
+Remember, we set all water cells to NA, to ignore them in our analysis.
 
-        ## Challenge 5: How do we get extract to ignore our NAs?
+## Challenge 5: How do we get extract to ignore our NAs?
 
-        Try to run the same command again, but telling the extract function to ignore NAs.
+Try to run the same command again, but telling the extract function to ignore NAs.
 
-        ## Solution
+## Solution
 
-        The `na.rm` argument will do this for us. See how the docs indicate that it is set to FALSE by default? 
+The `na.rm` argument will do this for us. See how the docs indicate that it is set to FALSE by default? 
 
-        ```{r, eval = FALSE}
-        ?raster::extract
-        ```
+```{r, eval = FALSE}
+?raster::extract
+```
 
-        Good to know!  Also good to know that this is a common
-        argument across a variety of R operations.
+Good to know!  Also good to know that this is a common
+argument across a variety of R operations.
 
-        ## Solution
+## Solution
 
-        ```{r}
-        #extract the mean nlcd_simple values to tract polygons,
-        #this time setting na.rm to TRUE
-        greenspace = extract(nlcd_green, sftracts, fun=mean, na.rm = T)
+```{r}
+#extract the mean nlcd_simple values to tract polygons,
+#this time setting na.rm to TRUE
+greenspace = extract(nlcd_green, sftracts, fun=mean, na.rm = T)
 
-        #and add to our sftracts dataframe (which we can do because order is preserved)
-        sftracts$prop_greenspace = greenspace
+#and add to our sftracts dataframe (which we can do because order is preserved)
+sftracts$prop_greenspace = greenspace
 
-        ```
-        ## Get the mean home values in each tract
+```
+## Get the mean home values in each tract
 
 Pulling code from the end of Part II of this workshop, let's aggregate our homes data to the tract level too.
 
@@ -1250,7 +1238,7 @@ summer day.
 
 Though this barely explains about 4% of the variance in our data!
 
-Of course, these are __not statistically valid__ models! Just analytical stand-ins.
+Of course, again, these are __not statistically valid models!__ Just analytical stand-ins.
 
 ## Questions?
 

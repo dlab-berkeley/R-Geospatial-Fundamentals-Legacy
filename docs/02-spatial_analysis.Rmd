@@ -17,32 +17,24 @@ knitr::opts_knit$set(root.dir = normalizePath('../'))
 
 ## Part II Prep
 
-1. https://github.com/dlab-geo/r-geospatial-workshop
+1. Open the repo at <https://github.com/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf>
+    - Download and unzip the zip file
+    - Take note of where the folder is located
 
-- Click *Clone or Download* and download the zip file
-- Upzip the zip file and make a note of the folder in which it is located
+2. Start RStudio and open a **new script**, or **./docs/02-spatial_analysis.Rmd**
 
-2. Open RStudio and start a **new script** or continue the one from last week
+3. Set your working directory to the folder you unzipped 
 
-3. Set your working directory to where you downloaded and unzipped the files
+4. Install the required libraries in RStudio, if you do not have them already
 
-4. Follow along by opening `r-geospatial-workshop-pt2.html` in a web browser
+```{r, eval=F}
+install.packages(
+  c("ggplot2", "ggmap", "sf", "units", "tmap", "nngeo", "raster"),
+  dependencies=TRUE)
+```
 
-5. Make sure required libraries are installed. 
+5. Open the slides, **./docs/02-spatial-analysis.html**, in your browser (or click the "Part 2 Slides" link the repo).
 
-- sp, rgdal, rgeos, tmap, ggplot2, RColorbrewer, classInt
-
-## Follow Along
-
-Open one of the tutorial files in a web browser
-
-Slides
-`./docs/RGeo_pt2.html`
-
-Raw Code
-`./docs/RGeo_pt2.Rmd`
-
-*Make sure you can cut and paste into RStudio*
 
 ## Part II Overview
 
@@ -72,8 +64,6 @@ Let's load the libraries we will use
 library(sf)     # spatial objects and methods
 library(tmap)   # mapping spatial objects
 ```
-
-##
 
 ```{r, echo=FALSE}
 library(sf)     # spatial objects and methods
@@ -323,6 +313,10 @@ tm_shape(bart_utm) +
 ```
 
 ## Challenge: Solution
+
+```{r, echo=F, message=F}
+tmap_mode('plot')
+```
 
 ```{r}
 challenge_map
@@ -652,21 +646,22 @@ And of course, it always makes sense to do a visual sanity-check on our results:
 ```{r, eval=F}
 tm_shape(sfboundary_utm) +
   tm_polygons() +
-tm_shape(bart_utm) +
-  tm_dots(col = 'skyblue', size = 0.5) +
 tm_shape(sfhomes15_utm) +
-  tm_dots(col = 'nearest_bart', size = 0.25)
+  tm_dots(col = 'nearest_bart', size = 0.05) +
+tm_shape(bart_utm) +
+  tm_dots(col = 'skyblue', size = 0.15)
 ```
 
 ## Distance to nearest location
 
-```{r, echo=F}
+```{r, echo=F, message=F}
+tmap_mode("view")
 tm_shape(sfboundary_utm) +
   tm_polygons() +
-tm_shape(bart_utm) +
-  tm_dots(col = 'skyblue', size = 0.5) +
 tm_shape(sfhomes15_utm) +
-  tm_dots(col = 'nearest_bart', size = 0.25)
+  tm_dots(col = 'nearest_bart', size = 0.05) +
+tm_shape(bart_utm) +
+  tm_dots(col = 'skyblue', size = 0.15) 
 ```
 
 # Spatial Relationship Queries
@@ -874,9 +869,6 @@ homes_with_tracts <- st_within(sfhomes15_utm, sftracts)
 If not, why not?
 
 
-# Coordinate reference systems (CRS) must be the same!
-
-
 ## CRSs must be the same
 
 The `st_within` function, like almost all spatial analysis functions, requires that both data sets be spatial objects (they are) with the same coordinate reference system (CRS). Let's investigate
@@ -1032,13 +1024,13 @@ med_hh_inc <- read.csv("data/sf_med_hh_income2015.csv", stringsAsFactors = F,
 head(med_hh_inc)
 ```
 
-## Spatial*DataFrame to Data Frame Joins
+## Joining an `sf` `data.frame` to a regular `data.frame` 
 
-We can use `merge` to join the `med_hh_inc` DF to the `sfhomes15_utm` SPDF.
+We can use `merge` to join the `med_hh_inc` DF to the `sfhomes15_utm` `sf` object.
 
 We should make sure that they share a column of common values - GEOID / home_geoid
 
-## Join by Attribute - a DF to a SPDF
+## Joining an `sf` `data.frame` to a regular `data.frame` 
 
 Join two data objects based on common values in a column.
 
@@ -1233,7 +1225,7 @@ head(homes_near_bart,3)
 
 ## What properties are within 1km of a bart station?
 
-What happened?
+**AAAAH!** What happened?
 
 We got an 835x8 matrix. That's a row for each property and a column for each
 BART station.
@@ -1320,7 +1312,7 @@ __Can you figure out the one-liner?__
 #Neat, huh?
 tmap_last() + 
   tm_shape(st_intersection(sfhomes15_utm, st_buffer(bart_utm, 1000))) +
-tm_dots(col = 'green', size = 0.1)
+tm_dots(col = 'green', size = 0.03)
 
 ```
 
@@ -1342,20 +1334,24 @@ Here's that great [`sf` cheatsheet](https://github.com/rstudio/cheatsheets/blob/
 <img src="./images/sf_cheatsheet_thumbnail.png" width="200px"></img>
 
 
-Introductory Tutorials
+Introductory tutorials
 
 - [Spatial Data in R tutorial](https://cengel.github.io/rspatial)
 - [NEON Spatial Data tutorials](http://neondataskills.org/tutorial-series/)
 - [GIS in R](http://www.nickeubank.com/gis-in-r)
 
-Geodata Visualization emphasis
+
+## Selected  References & Tutorials
+
+Emphasis on geodata visualization
 
 - [Tmap in a Nutshell](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-nutshell.html)
 - [Intro to visualizing Spatial Data in R](https://github.com/Robinlovelace/Creating-maps-in-R)
 - [RStudio Leaflet in R tutorial](https://rstudio.github.io/leaflet)
 - [Blog on mapping census data in R](http://zevross.com/blog/2015/10/14/manipulating-and-mapping-us-census-data-in-r-using-the-acs-tigris-and-leaflet-packages-3/)
 
-## Selected  References & Tutorials
+
+## Selected references & tutorials
 
 Deep dive Tutorials that include spatial analysis
 
@@ -1363,6 +1359,7 @@ Deep dive Tutorials that include spatial analysis
 - [Intro to GIS and Spatial Analysis (see appendices)](https://mgimond.github.io/Spatial/index.html)
 - [An Introduction to Spatial Data Analysis and Visualisation in R](https://data.cdrc.ac.uk/tutorial/an-introduction-to-spatial-data-analysis-and-visualisation-in-r)
 
+<br>
 
 CRAN Spatial Packages
 

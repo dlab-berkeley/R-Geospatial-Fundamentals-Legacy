@@ -6,6 +6,7 @@
   * `sf`
   * `units`
   * `tmap`
+  * `nngeo`
   * `raster`
 
   If you are __prompted by the question__, "Do you want to install from sources the package which needs compilation? (Yes/no/cancel)", type "no" in your console and press Enter.
