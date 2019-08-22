@@ -1,7 +1,7 @@
 ---
 title: "Geospatial Fundamentals in R with sf, Part I"
 author: "Patty Frontiera and Drew Hart, UC Berkeley D-Lab"
-date: "Spring 2019"
+date: "Fall 2019"
 output:
   ioslides_presentation:
     widescreen: true
@@ -19,8 +19,8 @@ knitr::opts_knit$set(root.dir = normalizePath('../'))
 ## Workshop Prep
 
 1. Open the repo at <https://github.com/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf>
-    - Download and unzip the zip file
-    - Take note of where the folder is located
+    - Clone the repo or download and unzip the zip file
+    - Take note of the folder in which the files are located
 
 2. Start RStudio and open a new script, or **./docs/01-core_concepts_and_plotting.Rmd** 
 
@@ -30,8 +30,9 @@ knitr::opts_knit$set(root.dir = normalizePath('../'))
 
 ```{r, eval=F}
 install.packages(
-  c("ggplot2", "ggmap", "sf", "units", "tmap", "nngeo", "raster"),
+  c("ggplot2", "dplyr", "sf", "units", "tmap", "nngeo", "raster"),
   dependencies=TRUE)
+}
 ```
 5. Open the slides, **./docs/01-core_concepts_and_plotting.Rmd**, in your browser (or click the "Part 1 Slides" link the repo).
 
@@ -230,14 +231,28 @@ Make sure you have set your working directory to the location of the workshop fi
 Make sure you have the packages we are going to use installed.
 
 ```{r, eval=F}
-our_packages<- c("ggplot2", "ggmap", "sf", "units", "tmap", "raster")
+#
+# Geospatial Data in R Workshop
+#
+
+# Make sure needed packages are installed
+our_packages<- c("ggplot2", "dplyr", "sf", "units", "tmap", "raster", "nngeo")
 
 for (i in our_packages){
   if ( i %in% rownames(installed.packages()) == FALSE) {
+    print(paste(i, "needs to be installed!"))
     install.packages(i)
+    
+  } else {
+    print(paste0(i, " [", packageVersion(i), "] is already installed!"))
+    
   } 
 }
+
+# Set working directory to folder with workshop files
+#setwd("~/Documents/Dlab/workshops/2019/Geospatial-Fundamentals-in-R-with-sf")
 ```
+
 
 ## Geospatial Data in R
 
@@ -495,151 +510,15 @@ ggplot() +
 ```
 
 
-# ggmap
-
-## `ggmap` extends `ggplot`
-It allows you to:
-
-- Create _basemaps_ on which you can display your data.
-
-- Use the `Google Geocoding API` to get coordinates for place names and addresses (i.e. to _'geocode'_)
-
-- and more...
-
-## ggmap
-
-Load the libary
-```{r}
-library(ggmap)
-```
-
-## A note on `ggmap` installation
-
-If you have problems with `ggmap`, you may need to reinstall the library from github (using the code below).
-
-(See this [StackOverflow discussion](https://stackoverflow.com/questions/34402979/increase-the-api-limit-in-ggmaps-geocode-function-in-r) for details.)
-
-```{r, eval=F}
-devtools::install_github("dkahle/ggmap")
-library(ggmap)
-```
-
-## A note on Google Maps authorization
-
-`ggmap` requires you to have a registered Google Maps API key
-
-This requires having a credit card on file.
-
-For your own use you'll want to set this up privately (outside the scope of this workshop).
-
-But for today, we have provided you a temporary API key (in `tmp_key.txt`), just for running this demo.
-
-## Authorization
-
-First, let's load and register our API key.
-
-(The API key will be different in each workshop. See `tmp_key.txt`. But the code should look something like the following.)
-
-```{r, eval=F}
-api_key = "AS24AHFAN322D3FN92NFN297FBNSLWU228RNN292F82NENDO9KSKW9"
-register_google(api_key)
-```
-
-```{r, include=F}
-#Hidden code for reading in Drew's API key, to knit on his machine
-filename = '/home/drew/Desktop/gmapi.txt'
-register_google(gsub('\n', '', readChar(filename, file.info(filename)$size)))
-```
-
-##  get_map
-Now let's check out the `get_map` function. This will allow us to fetch map tiles to display in our maps.
-
-`get_map` uses a number of online mapping services including `Google`, `Stamen` and `OpenStreetMap (OSM)`
-
-`get_map` requires as input a location, expressed as point coordinates.
-
-See `?get_map` for details
-
-
-## get_map
-
-Let's fetch a simple map on which we can display our points
-
-Here we are centering the map on San Francisco & using the stamen `toner-lite` basemap.
-
-```{r, warning=FALSE}
-sf_center_point <- c(lon=-122.445144, lat=37.769335 )
-
-sf_map <- get_map(sf_center_point)  
-```
-
-## Use `ggmap` to display the map
-
-```{r}
-ggmap(sf_map)
-```
-
-
-## `ggmap` with point overlay
-
-Syntax similar to `ggplot`
-
-But `ggmap` takes the name of the map object returned by `get_map()`
-
-```{r, eval=F}
-# ggplot() +
-
-ggmap(sf_map) + 
-  geom_point(data=sfhomes, aes(x=lon, y=lat, col=totvalue))
-
-```
-
-## `ggmap` with point overlay
-
-```{r}
-ggmap(sf_map) +
-  geom_point(data=sfhomes, aes(x=lon, y=lat, col=totvalue))
-```
-
-## Setting the map Extent
-
-That map is fine but the zoom level isn't right.
-
-We want to zoom in on the data by setting the map extent.
-
-## Customize `get_map` Extent
-
-We can set the map extent by centering the map on our data and increasing the zoom level.
-
-- Note: `get_map` prints a lot of messages to the screen!
-
-```{r, results='hide'}
-
-# Get the center point of the data
-sf_ctr <- c(lon = mean(sfhomes$lon), lat = mean(sfhomes$lat))
-sf_ctr  # take a look
- 
-# create the map - setting the zoom level to 12
-sf_basemap <- get_map(sf_ctr, source="stamen",
-                      maptype="toner-lite", zoom=12)
-```
-
-
-## Customize `get_map` Extent
-
-Now, view the data on top of the `sf_basemap` with `ggmap`
-
-```{r}
-ggmap(sf_basemap) +
-   geom_point(data=sfhomes, aes(x=lon, y=lat, col=totvalue))
-```
-
 
 ## Map Overlays
 
-Finally, let's add another geospatial data layer to our `ggmap`. 
+Let's add another geospatial data layer to our map. 
 
-You can use this method to add as many layers as you want to a `ggmap` or `ggplot`.
+You can use this method to add as many layers as you want to a `ggplot`.
+
+*Map overlay is the fundamental technique of visual geographical analysis.*
+
 
 ## Bart Stations and Landmarks
 
@@ -657,14 +536,14 @@ For the maps from here on out, to deal with a smaller example dataset, we're goi
 for only those rows that pertain to year 2015.
 
 ```{r}
-sfhomes15 <- subset(sfhomes, as.numeric(SalesYear) == 2015)
+sfhomes15 <- subset(sfhomes_high2low, as.numeric(SalesYear) == 2015)
 ```
 
 
 ## Add BART stations to map
 ```{r, results="hide"}
-sfmap_with_bart <- ggmap(sf_basemap) +
-  geom_point(data=sfhomes15, aes(x=lon, y=lat))  +
+sfmap_with_bart <- ggplot() +
+  geom_point(data=sfhomes15, aes(x=lon, y=lat, col=totvalue))  +
   geom_point(data=bart, aes(x=X,y=Y), col="red", size=3) 
 ```
 
@@ -673,12 +552,32 @@ sfmap_with_bart <- ggmap(sf_basemap) +
 sfmap_with_bart
 ```
 
-## Questions?
+## Add BART stations to map
 
-That's all we'll do with `ggmap` maps for now, since you're probably not able to run the code yourself on your own computer. 
+Let's just display SF BART Stations
+```{r, results="hide"}
+sfmap_with_bart <- ggplot() +
+  geom_point(data=sfhomes15, aes(x=lon, y=lat, col=totvalue))  +
+  geom_point(data=bart[bart$CO=='SF',], aes(x=X,y=Y), col="red", size=3) 
+```
 
-But we'll get a quick glimpse of ggmap's geocoding functionality toward the end of today's material.
+## Add BART stations to map
 
+Are the higher valued homes near BART?
+```{r }
+sfmap_with_bart
+```
+
+## Add BART stations to map
+
+What could we do to improve our map?
+```{r }
+sfmap_with_bart
+```
+
+
+## Any Questions?
+<img width="600px" src="https://upload.wikimedia.org/wikipedia/en/b/b5/David_S._Pumpkins_dance.jpg"> </img>
 
 ## Let's add one more layer
 
@@ -700,7 +599,7 @@ Let's create a map of the SF homes, BART Stations and Landmarks all together.
 ```{r, results = "hide"}
 sfmap_bart_landmarks <- ggplot() +
   geom_point(data=sfhomes15, aes(x=lon, y=lat))  +
-  geom_point(data=bart, aes(x=X,y=Y), col="red", size=3) +
+  geom_point(data=bart[bart$CO=='SF',], aes(x=X,y=Y), col="red", size=3) +
   geom_point(data=landmarks, aes(x=X,y=Y), shape=22, 
              col="black", fill="grey", size=4)
 ```
@@ -713,22 +612,30 @@ sfmap_bart_landmarks <- ggplot() +
 sfmap_bart_landmarks
 ```
 
-# GGMap and GGPlot are great!
+# GGPlot is a powerful tool for creating maps!
 
 
 ## BUT!
 
-There are limits to what you can do with geospatial data stored in a data frame.
+There are limits to what you can do with geospatial data stored in a `data frame`.
+
+- i.e. where there is no specific geospatial data object(s)
+```{r}
+head(landmarks)
+
+```
 
 
 ## Can't transform Coordinate Data
 
 The Landmark data do not have geographic coordinates - longitude and latitude.
 
-You can't map these with `ggmap`.
+You can't transform these coordinate data with `ggplot`.
 
-```{r, echo=F}
-head(landmarks)
+```{r}
+ggplot() +
+  geom_point(data=landmarks, aes(x=X,y=Y), shape=22, 
+             col="black", fill="grey", size=4)
 ```
 
 ## Can't read & plot geospatial data files
@@ -737,13 +644,13 @@ The ESRI Shapefile is the most common file format for geospatial data.
 
 <img src="./images/shapefile.png" width="400px"></img>
 
-`ggplot` and `ggmap` cannot **directly** read in or plot shapefile data.
+`ggplot` cannot **directly** read in or plot shapefile data.
 
 - *though you can do it with a round-about set of commands* :(
 
 ## Can't Perform Spatial Analysis
 
- `ggplot` & `ggmap` can't answer questions like
+ `ggplot` can't answer questions like
 
 - *What properties are in the Noe Valley neighborhood?*
 
@@ -753,24 +660,9 @@ The ESRI Shapefile is the most common file format for geospatial data.
 
 - *What properties are within walking distance (.25 miles) of the Mission neighborhood?*
 
- You need `spatial data objects` and `spatial methods` for that!
+You need libaries that support `spatial data objects` and `spatial methods` for that!
 
 # Spatial Data Objects in R
-
-
-# sf
-
-## Aside: `sf` vs. `sp`
-
-The `sf` package is the most commonly used to construct and manipulate spatial data objects in R. 
-
-`sf` supersedes the package `sp` and its ecosystem of related packages (mainly 
-`rgeos` and `rgdal`). As such, it is a one-stop shop for core geospatial data objects
-and operations that used to be spread across those 3 packages.
-
-(`sp` is still frequently used, but its spatial objects are a bit less streamlined.
-It will be necessary for our raster work on Day 3, so we'll see a bit of it then.)
-
 
 ## `sf` package
 
@@ -782,16 +674,44 @@ A 'feature' is just a representation of a thing in the real world (e.g. a buildi
 In other words, each feature consists of both a **geometric representation** of an object
 and **some associated information** (building: height, name, etc..., city: population, area, etc...).
 
+## `sf` vs. `sp`
+
+`sf` is a relatively new package. 
+
+`sf` supersedes the package `sp` and its ecosystem of related packages (mainly 
+`rgeos` and `rgdal`). As such, it is a one-stop shop for core geospatial data objects
+and operations that used to be spread across those 3 packages.
+
+`sp` is still frequently used, but its spatial objects are a bit less streamlined.
+It will be necessary for our raster work on Day 3, so we'll see a bit of it then.
+
 ## `sf` package
 
 Here are the most common simple features geometries,
-which are used represent vector data in `sf`.
+which are used to represent vector data in `sf`.
 
+<table border=0>
+<tr>
+<td>
 <img src="./images/sf-classes.png" width="400px"></img>
+</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td>
+- Point
+- Linestring
+- Polygon
+- Multipoint
+- MultiLinestring
+- MultiPolygon
+- Geometry Collection
+</td>
+</tr>
+</table>
 
+ 
 (From the [Geocomputation in R](https://geocompr.robinlovelace.net/spatial-class.html) textbook, Chapter 2, Figure 2.2)
-
-
+ 
+ 
 ## `sf` package
 
 `sf` offers numerous specific benefits, including:
@@ -800,9 +720,9 @@ which are used represent vector data in `sf`.
 * enhanced plotting
 * integration with R data structures (it uses `data.frame`s)
 * integration with tidyverse packages, `%>%` piping syntax
-* consistent function names (all starting with `st_`)
-* increasingly supported by other geospatial packages (e.g. `tmap`)
-* alighed with other GIS software that use simple features (e.g. QGIS, PostGIS) or a similar data model (e.g. Python's Geopandas)
+* consistent function names (all starting with `st_` for spatial type)
+* increasingly supported by other geospatial packages (e.g. `tmap`, `ggplot`)
+* aligned with other GIS software that use simple features (e.g. QGIS, PostGIS) or a similar data model (e.g. Python's Geopandas)
 
 
 ## `sf` package
@@ -817,8 +737,16 @@ library(sf)
 
 We can then read in a spatial dataset into an `sf` object using  the `st_read` function.
 
-Here we're reading in a shapefile of SF census tracts:
+Let's start with a shapefile of San Francisco census tracts.
 
+*First take a look at the file...*
+```{r}
+dir("data", pattern = "sftracts.")
+```
+
+## `sf` objects: IO
+
+Now let's use the `sf` function `st_read` to load the file in R.
 ```{r}
 tracts = st_read(dsn = './data', layer = 'sftracts')
 ```
@@ -835,7 +763,7 @@ tracts
 
 ## `sf` objects: structure
 
-```{r, eval=FALSE}
+```{r, eval=T, echo=F}
 #the object displays a compact summary, when its name is called
 tracts
 ```
@@ -843,16 +771,31 @@ tracts
 ## `sf` objects: structure
 
 What sort of object is this?
-```{r}
-#the object is of both the 'sf' and 'data.frame' classes
+```{r, eval=F}
 class(tracts)
-#it has a number of columns (i.e. attributes, fields), including a geometry column
+```
+
+## `sf` objects: structure
+```{r}
+# the object is of both the 'sf' and 'data.frame' classes
+class(tracts)
+```
+
+## `sf` objects: structure
+
+It has a number of columns (i.e. attributes, fields), including a geometry column
+```{r}
 str(tracts)
-#we can use basic data.frame functions on it
+```
+
+## `sf` objects: structure
+
+We can use basic data.frame functions on it
+
+```{r}
 nrow(tracts)
-ncol(tracts)
 colnames(tracts)
-head(tracts)
+head(tracts, 4)
 ```
 
 ## `sf` objects: basic plotting
@@ -880,6 +823,12 @@ Note that we get an array of plots, one for each variable
 
 So then we should be able to plot a single variable by just subsetting
 the `sf` dataframe for that variable, then plotting the subsetted dataframe.
+
+```{r, echo=F}
+plot(tracts)
+```
+
+
 
 ## Challenge 
 
@@ -924,6 +873,11 @@ But when we use the '$' notation, we just get a vector of the column's values!
 
 As always, we need to **be careful and check what kinds of objects we're working with!**
 
+```{r}
+head(tracts$NAME)
+head(tracts['NAME'])
+```
+
 
 ## `sf` objects: geometries
 
@@ -962,6 +916,10 @@ This includes:
 * the bounding box,
 * the CRS arguments
 * the CRS' EPSG code (which we'll learn about in a bit)
+
+```{r}
+tracts$geometry[[1]]
+```
 
 ## `sf` objects: geometries
 
@@ -1035,6 +993,25 @@ Here's what those classes mean:
 
 - `MULTIPOLYGON` just indicates the type of that geometry (which, as we saw earlier, could also be `POINT`, `LINESTRING`, ...)
 
+## Plotting `sf` geometries
+
+What do you think you will get when you plot an `sf` geometry column?
+
+```{r, eval=F}
+plot(tracts$geometry)
+plot(tracts['geometry'])
+```
+
+Try it!
+
+## Plotting `sf` geometries
+
+```{r}
+plot(tracts$geometry)
+```
+
+This is often the first thing you do when you load a data file into an `sf` object.
+
 
 ## `sf` objects: geometries
 
@@ -1094,7 +1071,7 @@ For comparison, we can take a look at one of the `sfg` objects in our census tra
 ```{r}
 geom = tracts$geometry[[1]]
 str(geom)
-geom[[1]]
+geom  # Or geom[[1]]
 ```
 Again, note that the first and last coordinate-pairs are the same,
 because this is a polygon!
@@ -1363,7 +1340,14 @@ sfhomes15_sf = st_as_sf(sfhomes15, coords = c('lon', 'lat'), crs = 4326)
 
 ## Check it
 
-Once we set the CRS we can check it with `st_crs`:
+We can check the object type by displaying a summary.
+```{r}
+sfhomes15_sf
+```
+
+## Check it
+
+We can specifically check the CRS with `st_crs`:
 
 ```{r}
 st_crs(sfhomes15_sf)
@@ -1377,7 +1361,7 @@ Looks good!
 
 That takes care of both steps 1 (create `sf` object) and 2 (define CRS)!
 
-Now that our homes are an `sf` object with the correct CRS, we'll need to reproject
+Now that our homes are an `sf` object with the correctly defined CRS, we'll need to **reproject**
 either `sfhomes15_sf` or `tracts`, so that they are in the same projection.
 
 ## Reprojecting
@@ -1413,16 +1397,20 @@ using the `st_transform` function.
 
 The only arguments we need are:
 
-**x**: The object to be transformed
+* The object to be transformed
 
-**crs**: The CRS to transform x to (which can be provided as just an integer of the EPSG code)
+* The target CRS to transform x to (which can be provided as just an integer of the EPSG code)
 
+Syntax...
+```{r,eval=F}
+new_sf_object = st_transform(original_sf_object, crs=target_crs_epsg_code)
+```
 
 
 ## Challenge
 
-Transform the tracts object to the same CRS as the sfhomes15\_sf object.
-Name the new object 'tracts\_lonlat' (to indicate that its CRS is unprojected
+Transform the `tracts` object to the same CRS as the `sfhomes15_sf` object.
+Name the new object `tracts_lonlat` (to indicate that its CRS is unprojected
 longitude and latitude).
 
 
@@ -1480,8 +1468,8 @@ ggplot() + geom_sf(data = tracts_lonlat) +
 
 Work through the following steps:
 
-1. Coerce the landmarks dataframe to an `sf` object,
-   with EPSG: `3857`, Web Mercator as its CRS.
+1. Transform the landmarks `dataframe` to an `sf` object,
+   setting its CRS to EPSG: `3857`, which is the code for Web Mercator.
 
 2. Read in the 'sfboundary' and 'sfhighways' shapefiles, from the './data' subdirectory.
 
@@ -1494,8 +1482,8 @@ Work through the following steps:
 
 ## Challenge: Solution
 
-1: Coerce the landmarks dataframe to an `sf` object,
-   with EPSG: `3857`, Web Mercator as its CRS.
+1: Transform the landmarks `dataframe` to an `sf` object,
+   setting its CRS to EPSG: `3857`, which is the code for Web Mercator.
 
 ```{r}
 landmarks_sf = st_as_sf(landmarks, coords = c('X', 'Y'), crs = 3857)
@@ -1569,55 +1557,6 @@ challenge_map
 Excellent! Everything lines up!
 
 
-## Quick aside: Geocoding with `ggmap`
-Note: Now that we've transformed our landmarks' coordinates to geographic coordinates, let's see how to get geocoded coordinates from `ggmap`, to see how the results compare:
-
-__NOTE__: `ggmap::geocode` prints a lot of output.
-
-```{r}
-#prep our names for geocoding with the Google Maps API
-place_names = paste0(landmarks$name, ',  San Francisco, CA')
-#geocode them
-geocode_coords = geocode(place_names)
-```
-
-## Quick aside: Geocoding with `ggmap`
-
-Let's look at the coordinates we transformed to lon/lat.
-
-```{r}
-#transformed coords
-landmarks_lonlat
-```
-
-## Quick aside: Geocoding with `ggmap`
-
-How do they compare to our geocoded coordinates?
-
-```{r}
-#geocoded coords
-geocode_coords
-```
-
-
-## Quick aside: Geocoding with `ggmap`
-
-Why so little precision?
-
-There are actually more significant digits. They're just truncated by R's display.
-
-```{r}
-#geocoded coords
-cbind(geocode_coords$lon, geocode_coords$lat)
-```
-
-## Quick aside: Geocoding with `ggmap`
-
-Nice! Extremely close.
-
-(The ones that differ just come down to differences in where Google Maps places
-the pins for these landmarks versus where our dataset does.)
-
 
 # Plotting: `tmap` package
 
@@ -1634,7 +1573,7 @@ For this, we'll turn to __`tmap`__.
 
 ## `tmap`
 
-We've already mapped with base R's `plot`, `ggplot`, and `ggmap`.
+We've already mapped with base R's `plot`, `ggplot`, and `sf:plot`.
 
 We've seen how to control some plot aesthetics, to make our maps data-rich.
 
@@ -2135,7 +2074,7 @@ challenge_map_2
 ## Recap
 
 - Geospatial Data in R
-- CSV > Data Frame > ggplot/ggmap
+- CSV > Data Frame > ggplot
 - `sf` library - spatial objects and methods in R
 - Convert data frame to `sf`
 - CRS definitions and transformations
