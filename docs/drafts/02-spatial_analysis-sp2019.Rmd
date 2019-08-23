@@ -1,0 +1,1367 @@
+---
+title: "Geospatial Fundamentals in R with sf, Part 2"
+author: "Patty Frontiera and Drew Hart, UC Berkeley D-Lab"
+date: "May 2019"
+output:
+  ioslides_presentation:
+    widescreen: true
+    smaller: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = normalizePath('../'))
+```
+
+## Part II Prep
+
+1. Open the repo at <https://github.com/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf>
+    - Download and unzip the zip file
+    - Take note of where the folder is located
+
+2. Start RStudio and open a **new script**, or **./docs/02-spatial_analysis.Rmd**
+
+3. Set your working directory to the folder you unzipped 
+
+4. Install the required libraries in RStudio, if you do not have them already
+
+```{r, eval=F}
+install.packages(
+  c("ggplot2", "ggmap", "sf", "units", "tmap", "nngeo", "raster"),
+  dependencies=TRUE)
+```
+
+5. Open the slides, **./docs/02-spatial-analysis.html**, in your browser (or click the "Part 2 Slides" link the repo).
+
+
+## Part II Overview
+
+Recap Part I
+
+Tour of Spatial Analysis
+
+## Part I Recap
+
+In Part I, we:
+
+- Loaded geospatial data from CSV files
+- Mapped data with `ggplot` and `ggmap`
+- Geocoded addresses with `ggmap`
+- Coerced data frames to `sf` objects with `sf::st_as_sf`
+- Loaded geodata from shapefiles with `sf::st_read`
+- Defined `CRSs` with `sf::st_crs`
+- Transformed CRSs with `sf::st_transform`
+- Saved sf objects as a shapefile using `sf::st_write`
+- Mapped data with `tmap`
+
+## R Spatial Libraries
+
+Let's load the libraries we will use
+
+```{r, eval=FALSE}
+library(sf)     # spatial objects and methods
+library(tmap)   # mapping spatial objects
+```
+
+```{r, echo=FALSE}
+library(sf)     # spatial objects and methods
+library(tmap)   # mapping spatial objects
+```
+ 
+## Set your working directory
+
+Use `setwd` to set your working directory to the location of the tutorial files.
+
+For example:
+
+```{r, eval=FALSE}
+setwd("~/Documents/Dlab/workshops/2018/rgeo/r-geospatial-workshop/r-geospatial-workshop")
+```
+
+
+# Section I: Load files from Part I
+
+## SF Properties 2015
+
+Read in the SF properties data from a CSV,
+and coerce to an `sf` object.
+
+```{r}
+# Read in from CSV file
+sfhomes <- read.csv('data/sf_properties_25ksample.csv', 
+                    stringsAsFactors = FALSE)
+# subset the data
+sfhomes15 <- subset(sfhomes, as.numeric(SalesYear) == 2015)
+
+# coerce to an `sf` object
+sfhomes15_sf <- st_as_sf(sfhomes15, coords = c('lon', 'lat'),
+                         crs = 4326)
+
+```
+
+## BART Stations
+
+Read in the BART data from a CSV.
+
+```{r}
+# Read in the Bart data from CSV file
+bart <- read.csv("./data/bart.csv", stringsAsFactors = F)
+
+```
+
+## SF Boundary
+
+Read in the `sf_boundary.shp` file with `sf`.
+
+```{r}
+sfboundary <- st_read('./data', 'sfboundary')
+
+```
+
+## SF Highways
+
+Read in the `sf_highways.shp` file with `sf`.
+```{r}
+sfhighways = st_read('./data', 'sfhighways')
+```
+
+# Section II: Spatial Analysis
+
+## The Spatial Analysis Workflow
+
+1. Mapping / plotting to see location and distribution
+
+2. Asking questions of, or querying, your data
+
+3. Cleaning & reshaping the data
+
+4. Applying analysis methods
+
+5. Mapping analysis results
+
+6. Repeat as needed
+
+
+## Transform data to common CRS
+
+In order to perform spatial analysis we need to first convert all data objects to a common CRS.
+
+Which type? Projected or Geographic CRS?
+
+
+## Geographic vs. Projected CRS
+
+If my goal is to create maps, I may convert all data to a geographic CRS.
+
+- Why?  Which one?
+
+If my goal is to do spatial analysis, I will convert to a projected CRS.
+
+- Why? Which one?
+
+
+## Common CRS EPSG Codes
+
+**Geographic CRSs**
+
+* `4326` Geographic, WGS84 (default for lon/lat)
+
+* `4269` Geographic, NAD83 (USA Fed agencies like Census)
+
+
+**Projected CRSs**
+
+* `5070` USA Contiguous Albers Equal Area Conic
+
+* `3310` CA ALbers Equal Area
+
+* `26910` UTM Zone 10, NAD83 (Northern Cal)
+
+* `3857` Web Mercator (web maps)
+
+
+## Transform all layers to UTM 10N, NAD83
+
+Use `spTransform` to transform `sfhomes15_sp` and `bart` to `UTM 10N, NAD83`
+
+- `highways` and `sfboundary` already have this CRS
+
+Recall, this transformation is called `projecting` or `reprojecting`
+
+
+## Transform all layers to UTM 10, NAD83
+
+First, transform `sfhomes15_sp`
+
+(*Remember, this is also called `reprojecting`.*)
+
+Note the two methods for doing same thing:
+
+```{r}
+#highways are already in 26910!
+st_crs(sfhighways)
+
+#so we can use them as the target CRS
+sfhomes15_utm <- st_transform(sfhomes15_sf, st_crs(sfhighways))
+
+#OR we could just use the EPSG code directly
+#sfhomes15_utm <- st_transform(sfhomes15_sf, 26910)
+```
+
+## Transform the boundary?
+
+```{r}
+# Check the CRS
+st_crs(sfboundary) == st_crs(sfhomes15_utm)
+
+# Transform
+sfboundary_utm <- st_transform(sfboundary, st_crs(sfhomes15_utm))
+
+# Check again
+st_crs(sfboundary_utm) == st_crs(sfhomes15_utm)
+```
+
+## BART data
+
+The bart data is still a data.frame object.
+
+So it needs:
+
+1. to be coerced correctly to `sf` (including correct EPSG for its unproject, lon-lat CRS)
+
+2. to be transformed to our UTM CRS
+
+Try it....
+
+## Challenge
+
+Prep the BART data, by coercing it to `sf`, then transforming it to UTM.
+
+## Challenge: Solution
+
+```{r}
+# coerce to `sf`
+bart_sf = st_as_sf(bart, coords = c('X', 'Y'), crs = 4326)
+
+# transform to UTM
+bart_utm <- st_transform(bart_sf, st_crs(sfhomes15_utm))
+```
+
+
+## Check
+
+Do the CRSs all match?
+
+```{r}
+st_crs(bart_utm)$epsg
+st_crs(sfboundary_utm)$epsg
+st_crs(sfhighways)$epsg
+st_crs(sfhomes15_utm)$epsg
+```
+
+## Map all layers
+
+Visual check
+
+```{r, error=T}
+plot(sfboundary_utm)
+lines(sfhighways, col='purple', lwd=4)
+points(sfhomes15_utm)
+plot(bart_utm, col="red", pch=15, add=T)
+```
+
+## Map all layers
+
+What happened?
+
+Two things:
+
+1. Remember, by default, `sf`'s `plot` method will plot a grid of maps,
+   one for each variable in the `data.frame`!
+2. We can't just plot `sf` objects directly with calls to R's `lines` and `points` functions.
+
+## Map all layers
+
+However, we can get what we want easily, with the help of the `st_geometry` function:
+
+```{r}
+plot(st_geometry(sfboundary_utm))
+plot(st_geometry(sfhighways), col='purple', lwd=4, add = T)
+plot(st_geometry(sfhomes15_utm), add = T, pch = 19, cex = 0.5)
+plot(st_geometry(bart_utm), col="skyblue", pch=19, cex = 1, add=T)
+```
+
+
+## Challenge
+
+Create the same plot, as closely as possible, using `tmap`.
+
+
+## Challenge: Solution
+
+```{r}
+challenge_map = tm_shape(sfboundary) +
+  tm_polygons() +
+tm_shape(sfhighways) +
+  tm_lines(col = 'purple', lwd = 4) +
+tm_shape(sfhomes15_sf) +
+  tm_dots(col = 'black', size = 0.5) + 
+tm_shape(bart_utm) +
+  tm_dots(col = 'skyblue', size = 1)
+```
+
+## Challenge: Solution
+
+```{r, echo=F, message=F}
+tmap_mode('plot')
+```
+
+```{r}
+challenge_map
+```
+
+
+## Spatial Queries
+
+There are two key types of spatial queries
+
+- **spatial measurement** queries, 
+    - e.g. area, length, distance
+
+
+- **spatial relationship** queries, 
+    - e.g. what locations in A are also in B.
+
+These types are often combined, e.g.
+
+- What is the area of region A is within region B?
+
+# Spatial Measurement Queries
+
+## Computing Area
+
+What is the area of San Francisco?
+
+What data would we use to answer that question?
+
+## Area of San Francisco
+
+- Use `sf::st_area` to compute the area of `sf` objects with polygons
+
+- Check results against Wikipedia for [SF](https://en.wikipedia.org/wiki/San_Francisco)
+
+```{r}
+sf_area = st_area(sfboundary_utm)
+sf_area
+```
+
+## Area of San Francisco
+
+How did it manage to give us the units?
+
+That comes from the [`units` package](https://cran.r-project.org/web/packages/units/index.html), which `sf` imports and uses!
+
+```{r}
+class(sf_area)
+typeof(sf_area)
+```
+
+## Area in sq km
+
+Compare to the Wikipedia page's area for [SF](https://en.wikipedia.org/wiki/San_Francisco)
+ 
+```{r}
+sf_area / (1000 * 1000) # Convert to square KM
+
+```
+
+## Area in sq km
+
+That number is right, but now we've got an annoying little problem: Our value in square
+kilometers is labeled as square meters!
+
+The `units` package provides a better way.
+
+(This is a dependency of `sf`, so you should be able to load it in and use it.)
+
+```{r}
+library(units)
+set_units(sf_area, km^2)
+```
+
+## Area in sq km
+
+Neat!
+
+It isn't necessary to do it this way, but it's certainly neater.
+And we'll get informative error messages if we mess up our conversions:
+
+```{r, error=T}
+set_units(sf_area, km^3)
+set_units(sf_area, km*2)
+set_units(sf_area, sqkm)
+```
+
+## Area in sq km
+
+That last error gave us a very helpful suggestion: Let's see a table of the valid units.
+
+(Note that the 'ud' comes from the `udunits` package, a dependency of the `units` package.)
+
+```{r}
+head(valid_udunits(), 2)
+```
+
+
+## Area of San Francisco
+
+What if we gave `st_area` the SF boundary in an unprojected CRS?
+
+```{r, eval=FALSE}
+st_area(sfboundary)
+```
+
+## Area of San Francisco
+
+It still gives us the measurement in a reasonable unit
+(rather than squared decimal degrees).
+
+(However, this isn't a reason not to choose a reasonable, projected CRS for our data! Still best practice.
+
+(Also notice the slight difference in our answers. This is not an equal-area projection!)
+
+```{r}
+st_area(sfboundary)
+```
+
+
+## Length of highways
+
+Use the function `st_length` to compute length of linear geometries.
+```{r}
+st_length(sfhighways)
+```
+
+## Length of highways
+
+Oh! We got the length of every segment, in meters.
+
+How do we get the total length of highways, in km?
+
+## Challenge
+
+Calculate the total length of SF highways in our dataset, in km.
+
+
+## Challenge: solution
+
+```{r}
+tot_length = set_units(sum(st_length(sfhighways)), km)
+tot_length
+```
+
+
+## Distance
+
+The `st_distance` will return the min distance between two geometries.
+
+Compute the distance in kilometers between Embarcadero & Powell St Bart stations
+
+(__NOTE__: You can always spot-check on [Google Maps](https://maps.google.com).)
+```{r}
+emb_pow_dist = st_distance(bart_utm[bart_utm$STATION == 'EMBARCADERO',],
+                           bart_utm[bart_utm$STATION == 'POWELL STREET',])
+emb_pow_dist = set_units(emb_pow_dist, km)
+emb_pow_dist
+```
+
+## Distance
+
+Take note of the print-out. What's up with the `[1,]` and `[,1]` around the value?
+
+`st_distance` is going to calculate a matrix of pairwise distances, by default!
+(We just happened to subset our `sf` object to two new objects, each with a single feature, i.e. row.)
+
+Read the docs:
+```{r, eval = F}
+?st_distance
+```
+
+## Challenge
+
+That means we can easily calculate the distance between all SF properties and Embarcadero station. So go ahead and do that!
+
+## Challenge: solution
+
+```{r}
+dist2emb <- st_distance(bart_utm[bart_utm$STATION == 'EMBARCADERO',],
+                     sfhomes15_utm)
+dist2emb <- set_units(dist2emb, km)
+
+# check output
+length(dist2emb)
+nrow(sfhomes15_utm)
+head(dist2emb, 10)
+```
+
+## Challenge: solution
+
+Different syntax, equivalent result:
+
+__You could just nest your calls, if you'd like.__
+
+```{r}
+dist2emb <- set_units(st_distance(bart_utm[bart_utm$STATION == 'EMBARCADERO',],
+sfhomes15_utm), km)
+
+# check output
+head(dist2emb, 10)
+```
+## Challenge: solution
+
+Different syntax, equivalent result:
+
+__You could also use the 'tidy' syntax, if you're into that!__
+
+```{r}
+dist2emb <- st_distance(bart_utm[bart_utm$STATION == 'EMBARCADERO',],
+                     sfhomes15_utm) %>% set_units(km)
+# check output
+head(dist2emb, 10)
+```
+
+
+## Distance between locations
+
+What if we just wanted the distance to be measured to the center of a whole layer
+(rather than to each separate feature)?
+
+`st_combine` to the rescue!
+
+For our `bart_utm` data, it will create a geometry set with 1 feature: a multipoint!
+
+```{r}
+bart_sys = st_combine(bart_utm)
+bart_sys
+```
+
+## Distance between locations
+
+Then we can use that to calculate the distance of each house to the BART system's center.
+
+```{r}
+dist_to_bart_sys = st_distance(sfhomes15_utm, bart_sys)
+head(dist_to_bart_sys, 10)
+```
+
+## Distance between locations
+
+However, that's not all that meaningful, is it?
+
+What we probably _really_ want is to calculate the distance of each house to its _nearest_ BART station.
+
+There are a number of ways we could go about this, but one way uses a common geospatial concept: __Nearest neighbors__.
+
+## Distance to nearest location
+
+One of the nice things about doing GIS work in R is that there is a robust ecosystem of
+special-purpose geospatial packages that we can draw upon. So we usually don't need to reinvent the wheel.
+
+For example, we can use the `nngeo` package to calculate the nearest-neighbor BART station for each
+home.
+
+```{r}
+library(nngeo)
+```
+
+## Distance to nearest location
+
+The `st_nn` function calculates nearest neighbors between pairs of `sf` objects.
+Like a lot of spatial functions, it has a variety of optional arugments we can toy
+with, and multiple funtional modes.
+
+Read the docs!
+
+```{r, eval=F}
+?st_nn
+```
+
+## Distance to nearest location
+Looks like we can set the `returnDist` argument to `TRUE` to get back not just the nearest neighbors' indices but also their distances.
+
+```{r}
+nns = st_nn(sfhomes15_utm, bart_utm, returnDist=T)
+```
+
+## Distance to nearest location
+
+If we take a look at the object returned, we can see that we get a `list`, within which
+are:
+
+1. __`nn`__: another `list`, containing the index-number of the nearest BART station to each
+property
+2. __`dist`__: an object containing the distances from each property to its nearest neighbor
+
+```{r}
+class(nns)
+names(nns)
+```
+## Distance to nearest location
+
+We can index out the `nn` object and look at it.
+
+```{r}
+nn_indices = nns[['nn']]
+head(nn_indices, 5)
+```
+
+
+## Distance to nearest location
+
+And we can index out the `dist` object and look at it.
+
+```{r}
+nn_dists = nns$dist
+head(nn_dists, 10)
+```
+
+## Distance to nearest location
+
+This object didn't retain the `units` annotation from `sf`.
+That's okay, because we know the units are meters (because of UTM).
+
+We can process it a bit more to get our final answers, in km, and add to `sfhomes15_utm`.
+
+```{r}
+sfhomes15_utm$nearest_bart = as.numeric(nn_dists/1000)
+head(sfhomes15_utm, 2)
+```
+
+## Distance to nearest location
+
+And of course, it always makes sense to do a visual sanity-check on our results:
+
+```{r, eval=F}
+tm_shape(sfboundary_utm) +
+  tm_polygons() +
+tm_shape(sfhomes15_utm) +
+  tm_dots(col = 'nearest_bart', size = 0.05) +
+tm_shape(bart_utm) +
+  tm_dots(col = 'skyblue', size = 0.15)
+```
+
+## Distance to nearest location
+
+```{r, echo=F, message=F}
+tmap_mode("view")
+tm_shape(sfboundary_utm) +
+  tm_polygons() +
+tm_shape(sfhomes15_utm) +
+  tm_dots(col = 'nearest_bart', size = 0.05) +
+tm_shape(bart_utm) +
+  tm_dots(col = 'skyblue', size = 0.15) 
+```
+
+# Spatial Relationship Queries
+
+## Spatial Relationship queries
+
+**Spatial relationship queries** compare the geometries of two spatial objects in the same coordinate space (CRS).
+
+There are many, often similar, functions to perform these queries (can be confusing!).
+
+These operations may return logical values, lists, matrices, dataframes, geometries or spatial objects
+
+- you need to check what type of object is returned 
+
+- you need to check what values are returned to make sure they make sense
+
+
+
+## BART stations in SF?
+
+This is a very common type of spatial query called a `point-in-polygon` query.
+
+We can use the `st_within` function to answer this.
+
+We'll start with the simplest question: __Are there BART stations in SF?__
+
+We already know the answer, but let's see how it's done.
+
+## Are there any BART stations in SF?
+
+What does it return by default?
+
+```{r}
+bart_stations_in_sf <-st_within(bart_utm, sfboundary_utm) 
+
+head(bart_stations_in_sf)
+```
+
+## BART stations in SF?
+
+The docs for the function (`?st_within`) explain that it returns a sparse-matrix
+object by default.
+This is more efficient, but more complicated to work with. For our purposes, let's disable this behavior:
+
+```{r}
+bart_stations_in_sf <-st_within(bart_utm, sfboundary_utm, sparse=F)
+
+head(bart_stations_in_sf)
+```
+
+## BART stations in SF?
+
+That's a bit more obvious! Looks like we got a logical value for each BART station.
+
+Let's check the object's size:
+
+```{r}
+dim(bart_stations_in_sf)
+dim(bart_utm)
+```
+
+## BART stations in SF?
+
+So, to answer the simple question, we just need to know if there's at least one `TRUE`
+in that list.
+
+```{r}
+T %in% bart_stations_in_sf
+```
+
+## Which Bart stations are in SF?
+
+What about this question?
+
+We can use the same output, but now leverage its station-by-station structure!
+
+## Challenge
+
+Return the names of the BART stations that are within SF.
+
+## Challenge: solution
+
+```{r}
+bart_utm[bart_stations_in_sf, ]$STATION
+```
+
+## Which Bart stations are in SF?
+
+And of course, there are multiple ways to do a thing!
+
+We could also use the `st_intersection` function to get the same results.
+
+```{r}
+sfbart_utm = st_intersection(bart_utm, sfboundary_utm)
+head(sfbart_utm, 2)
+```
+
+## Map the SF BART stations
+
+```{r, eval=F}
+tmap_mode("view")
+
+tm_shape(sfboundary_utm) + 
+  tm_polygons(col="beige", border.col="black") +
+tm_shape(sfbart_utm) + 
+  tm_dots(col="red")
+```
+
+## Map the SF BART stations
+
+```{r, message=F, echo=F}
+tmap_mode("view")
+
+tm_shape(sfboundary_utm) + 
+  tm_polygons(col="beige", border.col="black") +
+tm_shape(sfbart_utm) + 
+  tm_dots(col="red")
+```
+
+
+## Reset `tmap` to plot mode
+
+
+```{r}
+tmap_mode("plot")
+```
+
+## `st_within`, `st_intersects`, `st_intersection`, and friends
+
+- These were just a couple examples of common geometric queries used in spatial analysis.
+- We also could have used `st_intersects` instead of `st_within` to run the query the first way.
+- These, and other similar operations are neatly summarized on this great [`sf` cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) (also available in the `./docs` subdirectory of our workshop repo):
+
+<img src="./images/sf_cheatsheet_thumbnail.png" width="200px"></img>
+
+
+## SF Census Tracts
+
+Let's consider the `sfhomes15_utm` data along with the SF census tract data 
+that we saw on day 1.
+
+
+## Challenge
+
+- Read in the SF Census Tracts.
+  - The filename is `sftracts_wpop.shp`.
+  - The file is located in `./data`.
+- Plot a population choropleth.
+
+## Challenge: solution
+```{r}
+#read in tracts
+sftracts <- st_read("./data", "sftracts_wpop")
+```
+
+## Challenge: solution
+```{r}
+#plot
+plot(sftracts['pop14'])
+```
+
+## Spatial join
+
+A spatial join associates rows of data in one object with rows in another object based on the spatial relationship between the two objects.
+
+A spatial join is based on the comparison of two sets of geometries in the same coordinate space. 
+
+ - This is also called a **spatial overlay**.
+
+## Spatial join
+
+We could use any of a family of spatial relationships that all return matrices of logical values.
+`sf` refers to these as 'geometric binary predicates', and collects all their documentation into one document, which we've already seen:
+
+```{r, eval=F}
+?st_within
+```
+
+
+## In what census tract is each property located?
+
+We need to **spatially join** the `sftracts` and `sfhomes15_utm` to answer this.
+
+What spatial object are we joining data from? to?
+
+ 
+## Spatial join
+
+We have points, which are pretty much certain to be either inside or outside polygons.
+So we'll use `st_within` again as our spatial relationship.
+
+We want to associate with each home the name of the census tract within which it falls.
+
+
+## So here goes...
+
+*In what census tract is each SF property located?* 
+
+```{r, eval=F}
+homes_with_tracts <- st_within(sfhomes15_utm, sftracts)
+```
+
+## Did it work?
+
+If not, why not?
+
+
+## CRSs must be the same
+
+The `st_within` function, like almost all spatial analysis functions, requires that both data sets be spatial objects (they are) with the same coordinate reference system (CRS). Let's investigate
+
+```{r, eval=F}
+
+# What is the CRS of the property data?
+st_crs(sfhomes15_utm)
+
+# What is the CRS of the census tracts?
+st_crs(sftracts)
+```
+
+
+## Transform the CRS
+
+```{r}
+#transform to UTM
+sftracts_utm = st_transform(sftracts, st_crs(sfhomes15_utm))
+
+# make sure the CRSs are the same
+st_crs(sftracts_utm) == st_crs(sfhomes15_utm) 
+```
+
+Now let's try that overlay operation again
+
+## Try 2
+
+*In what tract is each SF property is located?*
+
+```{r}
+homes_with_tracts <- st_within(sfhomes15_utm, sftracts_utm)
+```
+
+
+## Review the `st_within` output
+
+What is our output? Does it answer our question?
+
+What type of data object did the over function return?
+
+```{r, eval=F}
+homes_with_tracts <- st_within(sfhomes15_utm, sftracts_utm)
+
+class(homes_with_tracts)
+length(homes_with_tracts)
+nrow(sftracts_utm)
+nrow(sfhomes15_utm)
+```
+
+## Review the `st_within` output
+
+What do we have here?
+```{r}
+homes_with_tracts <- st_within(sfhomes15_utm, sftracts_utm)
+class(homes_with_tracts)
+length(homes_with_tracts)
+nrow(sftracts_utm)
+nrow(sfhomes15_utm)
+
+```
+
+## Review the `st_within` output
+What the heck is an object of the class `sgbp`?
+
+__Read the docs!__
+
+(It's basically just a special sparse-matrix structure designed to hold the results
+returned from these binary-predicate functions.)
+```{r, eval=F}
+?sgbp
+```
+
+## Review the `st_within` output
+
+What data does the output object _store_?
+
+```{r}
+head(homes_with_tracts)
+```
+
+## Review the `st_within` output
+
+We have a `list`, where each item's _index_ is a `sfhomes15_utm` property's index,
+and each _value_ is the index of the `sftracts_utm` census tract within which it is found.
+
+We're halfway there!
+
+## Spatial join
+
+We can now finish the operation by:
+
+1. using that `st_within` output object to subset
+the `sftracts_utm` `data.frame`;
+2. grabbing the desired columns from that subsetted `data.frame` and adding
+   them to our `sfhomes15_utm` `data.frame`.
+
+In our case, the desired column will just be the `GEOID` column (a standardized ID
+that we can then use to link up to non-spatial census data).
+
+## Add the GEOID column
+
+*CAUTION: this only works because the data are in the right order!*
+```{r}
+sfhomes15_utm$home_geoid <- sftracts_utm[unlist(homes_with_tracts),]$GEOID
+
+```
+
+## Check the result
+
+```{r}
+head(sfhomes15_utm, 2)
+```
+
+## Check the result
+
+```{r}
+join_map = tm_shape(sftracts_utm) +
+  tm_polygons() +
+tm_shape(sfhomes15_utm) +
+  tm_dots(col = 'home_geoid', size = 0.25)
+```
+
+## Check the result
+
+```{r, warning=F} 
+#Note that tmap bins our tracts because we have so many
+join_map
+```
+
+
+## WOW
+
+Data linkage via space!
+
+The `st_within` operation gave us the census tract data info for each point in `sfhomes15_utm`
+
+We added the `GEOID` for each point to the `sfhomes15_utm` `data.frame`.
+
+We can now join `sfhomes15_utm` points by `GEOID` to any census variable, eg median household income, and then do an analysis of the relationship between, for example, property value and that variable.
+
+**How would we do that?**
+
+## Read in the census data
+
+The `sf_med_hh_income2015.csv` file only has two columns: `GEOID` and `medhhinc`.
+
+Because `GEOIDs` can have leading zeros, we set the `colClasses` to make sure they are not stripped.
+```{r}
+med_hh_inc <- read.csv("data/sf_med_hh_income2015.csv", stringsAsFactors = F, 
+                       colClasses = c("character","numeric"))
+
+head(med_hh_inc)
+```
+
+## Joining an `sf` `data.frame` to a regular `data.frame` 
+
+We can use `merge` to join the `med_hh_inc` DF to the `sfhomes15_utm` `sf` object.
+
+We should make sure that they share a column of common values - GEOID / home_geoid
+
+## Joining an `sf` `data.frame` to a regular `data.frame` 
+
+Join two data objects based on common values in a column.
+
+Use `merge` to join two `data.frame`s. 
+
+(Notice, again, that our `sf data.frame`s will conveniently behave
+just like regular old `data.frame`s in this way.)
+
+```{r}
+#make sure we're using `base` `merge` (because multiple other packages
+#that you might have read in also have a `merge` function)
+sfhomes15_utm <- base::merge(sfhomes15_utm, 
+                       med_hh_inc, by.x="home_geoid", by.y="GEOID")
+```
+
+## Take a look at output
+
+```{r}
+head(sfhomes15_utm, 2)
+```
+
+
+## Check the `merge` results
+
+```{r, message=F}
+tmap_mode("view")
+tm_shape(sfhomes15_utm) + tm_dots(col="medhhinc")
+```
+
+## The Census Tract Perspective
+
+We now know the tract for each property.
+
+Now let's think about this question from the tract perspective. 
+
+Let's ask the question
+
+- What is the average propety value per tract?
+
+
+
+## Non-Spatial Aggregation
+
+Since we joined GEOID to each property we can use the non-spatial `aggregate` function to compute the mean of totvalues for each GEOID.
+
+But we'll use `sf`'s spatial implementation of aggregate.
+
+We'll start by...
+
+Reading the docs!
+
+```{r, eval=F}
+?sf::aggregate.sf
+```
+
+## sf::aggregate.sf
+
+We see that we can provide arguments:
+- __`x`__: `sf` object to be aggregated
+- __`by`__: can be another `sf` object whose geometries will generate the groupings
+- __`FUN`__: function to be used to summarize the grouped values
+
+
+## What is the mean home value in each census tract?
+```{r}
+tracts_with_mean_val <- aggregate(x = sfhomes15_utm["totvalue"], 
+                                  by = sftracts_utm,
+                                  FUN = mean)
+```
+
+Wow, so simple. What does that give us?
+
+
+## Examine output of `sf::aggregate.sf`
+
+```{r}
+class(tracts_with_mean_val)
+head(tracts_with_mean_val, 2)
+nrow(tracts_with_mean_val) == nrow(sftracts_utm)
+```
+
+## sf::aggregate.sf output
+
+`sf::aggregate.sf` returned a new `sf data.frame`.
+
+The new `data.frame` has the same geometry as `sftracts_utm`
+
+But it only contains one column, with the mean `totvalue` for each tract.
+
+To make these data more useful, let's add this value to `sftracts_utm`!
+
+## 
+
+__Note__: This only works because there are the same number of elements in both
+`data.frame`s and they are in the same order!
+```{r}
+
+sftracts_utm$mean_totvalue <- tracts_with_mean_val$totvalue
+
+head(sftracts_utm, 2) # check it
+```
+
+## Map it 
+
+Map the results to make sure they seem reasonable.
+
+(__NOTE__: This is called a 'choropleth' map.)
+
+```{r}
+choropleth = 
+tm_shape(sftracts_utm) +
+  tm_polygons(col="mean_totvalue", border.col=NA)
+```
+
+## Map it 
+
+```{r}
+choropleth
+```
+
+
+## Why no values for some tracts?
+```{r}
+choropleth + tm_shape(sfhomes15_utm) + tm_dots(size = 0.01)
+```
+
+# Distance queries
+
+## Distance queries
+
+Many methods of spatial analysis are based on distance queries.
+
+For example, point pattern analysis considers the distance between features to determine whether or not they are clustered.
+
+We can also use distance as a way to select features spatially.
+
+## Selecting by Distance
+
+*What properties are within walking distance of BART?*
+
+In order to select properties with 1KM of BART, we can:
+
+1. create a 1km-radius buffer polygon around each BART point
+
+2. do a point-in-polygon operation to either count the number of properties within the buffer or compute mean values.
+
+## Create the buffers 
+
+For this, we'll use---surprise, suprise---`st_buffer`.
+
+But first, we'll...
+
+Read the docs!
+```{r, eval=F}
+?st_buffer
+```
+
+## Create the buffers
+
+It takes as input:
+
+* __x__: an `sf*` object or objects to be buffered;
+* __dist__: a buffer distance.
+
+## Create the buffers
+
+Let's assume 1km is our 'standard walking distance'.
+```{r}
+#remember: our units are meters!
+bart_1km_buffer <- st_buffer(sfbart_utm, dist=1000)
+```
+
+## Map the buffers
+```{r}
+tm_shape(bart_1km_buffer) + tm_polygons(col="red") +
+tm_shape(sfbart_utm) + tm_dots()
+```
+
+## What properties are within 1km of a bart station?
+
+What operation can we use here?
+
+Once again, `st_intersects` will do!
+
+```{r}
+#return non-sparse, to see full structure better
+homes_near_bart <-  st_intersects(sfhomes15_utm, bart_1km_buffer, sparse=F)
+class(homes_near_bart)
+dim(homes_near_bart)
+head(homes_near_bart,3)
+```
+
+## What properties are within 1km of a bart station?
+
+**AAAAH!** What happened?
+
+We got an 835x8 matrix. That's a row for each property and a column for each
+BART station.
+
+But we don't care _which_ BART station a home is near. We just care if it's near _any_ BART station!
+
+In other words, we just want a single `TRUE` or `FALSE` for each home!
+(That is, an 835x1 matrix.)
+
+## Challenge
+
+Rerun the last few steps, but try to tweak something in some way so that we get
+an 835x1 matrix as a result.
+
+(Hint: You can do this with the help of some other operation we've seen once before...)
+
+## Challenge: solution
+
+This was a tricky one, so no worries if you weren't sure how to do it!
+
+```{r}
+#buffer the whole BART system as a single geometry (a multipolygon)
+bart_sys_1km_buffer <- st_buffer(st_combine(sfbart_utm), dist=1000)
+#intersect the BART system and the homes
+homes_near_bart <-  st_intersects(sfhomes15_utm, bart_sys_1km_buffer, sparse=F)
+dim(homes_near_bart)
+```
+
+## Challenge: solution
+
+Note that we could have also done it this way (remember the `bart_sys` object?):
+
+```{r}
+#buffer the whole BART system as a single geometry (a multipolygon)
+bart_sys_1km_buffer <- st_buffer(bart_sys, dist=1000)
+#intersect the BART system and the homes
+homes_near_bart <-  st_intersects(sfhomes15_utm, bart_sys_1km_buffer, sparse=F)
+dim(homes_near_bart)
+```
+
+## What properties are within 1km of a bart station?
+
+Now that we have the result we were first expecting, we can use it to subset our homes.
+
+```{r}
+sfhomes15_utm_near_bart <- sfhomes15_utm[unlist(homes_near_bart),]
+
+```
+
+## Map it
+
+Then we can map our results.
+
+```{r}
+homes_near_bart_map = tm_shape(sfboundary_utm) +
+  tm_polygons() + 
+tm_shape(bart_sys_1km_buffer) +
+  tm_polygons(col = 'red') +
+tm_shape(sfhomes15_utm_near_bart) +
+  tm_dots(col = 'black', size = 0.1)
+```
+
+## Map it
+
+```{r}
+homes_near_bart_map
+```
+
+## Take 3
+
+And now that we've accomplished that, time to break the news:
+
+### There's a one-liner for this!
+
+## Challenge
+
+As your final, brain-teaser challenge for the day...
+
+__Can you figure out the one-liner?__
+
+## Challenge: solution
+
+```{r, warning=F}
+#Neat, huh?
+tmap_last() + 
+  tm_shape(st_intersection(sfhomes15_utm, st_buffer(bart_utm, 1000))) +
+tm_dots(col = 'green', size = 0.03)
+
+```
+
+
+## Questions?
+
+
+## Summary
+
+That was a whirlwind tour of just some of the methods of spatial analysis.
+
+There was of course a lot we didn't and can't cover.
+
+
+## Selected  References & Tutorials
+
+Here's that great [`sf` cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) (also available in the `./docs` subdirectory of this repo).
+
+<img src="./images/sf_cheatsheet_thumbnail.png" width="200px"></img>
+
+
+Introductory tutorials
+
+- [Spatial Data in R tutorial](https://cengel.github.io/rspatial)
+- [NEON Spatial Data tutorials](http://neondataskills.org/tutorial-series/)
+- [GIS in R](http://www.nickeubank.com/gis-in-r)
+
+
+## Selected  References & Tutorials
+
+Emphasis on geodata visualization
+
+- [Tmap in a Nutshell](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-nutshell.html)
+- [Intro to visualizing Spatial Data in R](https://github.com/Robinlovelace/Creating-maps-in-R)
+- [RStudio Leaflet in R tutorial](https://rstudio.github.io/leaflet)
+- [Blog on mapping census data in R](http://zevross.com/blog/2015/10/14/manipulating-and-mapping-us-census-data-in-r-using-the-acs-tigris-and-leaflet-packages-3/)
+
+
+## Selected references & tutorials
+
+Deep dive Tutorials that include spatial analysis
+
+- [Geocomputation in R](http://robinlovelace.net/geocompr/ )
+- [Intro to GIS and Spatial Analysis (see appendices)](https://mgimond.github.io/Spatial/index.html)
+- [An Introduction to Spatial Data Analysis and Visualisation in R](https://data.cdrc.ac.uk/tutorial/an-introduction-to-spatial-data-analysis-and-visualisation-in-r)
+
+<br>
+
+CRAN Spatial Packages
+
+- [CRAN Task View: Analysis of Spatial Data](https://cran.r-project.org/web/views/Spatial.html)
+

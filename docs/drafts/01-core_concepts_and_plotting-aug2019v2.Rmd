@@ -1,0 +1,2146 @@
+---
+title: "Geospatial Fundamentals in R with sf, Part I"
+author: "Patty Frontiera and Drew Hart, UC Berkeley D-Lab"
+date: "Fall 2019"
+output:
+  ioslides_presentation:
+    widescreen: true
+    smaller: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = normalizePath('../'))
+```
+
+
+## Workshop Prep
+
+1. Open the repo at <https://github.com/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf>
+    - Clone the repo or download and unzip the zip file
+    - Take note of the folder in which the files are located
+
+2. Start RStudio and open a new script, or **./docs/01-core_concepts_and_plotting.Rmd** 
+
+3. Set your working directory to the folder you unzipped 
+
+4. Install the required libraries in RStudio, if you do not have them already
+
+```{r, eval=F}
+install.packages(
+  c("ggplot2", "dplyr", "sf", "units", "tmap", "nngeo", "raster"),
+  dependencies=TRUE)
+}
+```
+5. Open the slides, **./docs/01-core_concepts_and_plotting.Rmd**, in your browser (or click the "Part 1 Slides" link the repo).
+
+
+## About Me...
+
+
+## About you...
+
+Who are you?
+
+Why are you here?
+
+## How to Follow Along
+
+You have options:
+
+1. Open the slides in your browser (click on the link in the repo, or launch from your local copy of the HTML file).
+
+2. Open the Rmd script (or a blank script) in RStudio.
+
+3. Both of the above.
+
+4. Just chill and watch.
+
+Slides
+`./docs/01-core-concepts-and-plotting.html`
+
+RMarkdown Code
+`./docs/01-core-concepts-and-plotting.Rmd`
+
+*Make sure you can cut and paste into RStudio*
+
+## Workshop Goals
+
+Intro to working with geospatial data in R
+
+- Geospatial data files and formats
+- Loading geospatial data in R
+- R packages for working with geospatial data
+- Coordinate reference systems & map projections
+- Mapping geospatial data
+
+</br>
+
+*Key goal is `familiarity`, competency takes lots of practice*
+
+
+# Geospatial Data in R
+
+## Geographic Data
+
+are data with  *locations* on or near the surface of the *Earth*.
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Anatone_WA.jpg/640px-Anatone_WA.jpg"></img>
+
+
+## Geospatial data
+
+represent location more specifically with **coordinates**
+
+`46.130479, -117.134167`
+  
+<img width="600px" src="./images/anatone_google.png"></img>
+
+
+## Coordinate Reference Systems
+
+Coordinates only make sense when associated with a CRS!
+
+<img width="700px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Latitude_and_Longitude_of_the_Earth.svg/640px-Latitude_and_Longitude_of_the_Earth.svg.png"></img>
+
+Geographic Coordinates: `Latitude` and `Longitude`
+
+## Coordinate Reference Systems
+
+Define:
+
+- the shape of the Earth
+
+- the origin (0,0 point)
+
+- the relationship between the system and the real world
+
+- the units
+
+*Because of variations in these, there are **many** geographic CRSs!*
+
+## WGS84
+
+The [World Geodetic System of 1984](https://en.wikipedia.org/wiki/World_Geodetic_System) is the most widely used geographic coordinate reference system.
+
+`WGS84` is the default CRS for most GIS software
+
+Almost all longitude and latitude data are assumed to be **WGS84** unless otherwise specified
+
+*Historical data much trickier*
+
+## Geospatial data are powerful!
+
+You can 
+
+- dynamically determine spatial metrics like area, length, distance and direction
+
+- spatial relationships like intersects, inside, contains, etc 
+
+and
+
+- link data by location, like census data and crime data
+
+## Spatial Data
+
+Spatial data is a broader term than geographic data. 
+
+Methods for working with spatial data are valid for geospatial data 
+
+All spatial data are encoded with some type of coordinate reference system
+
+Geospatial data require the CRS to be a model of locations on the Earth
+
+# Types of Spatial Data
+
+## Types of Spatial Data
+
+Vector and Raster Data
+
+
+## Vector Data
+
+Points, lines and Polygons
+
+<img width="800px" src="./images/vector_data.png"></img>
+
+## Raster Data
+
+Regular grid of cells (or pixels)
+
+<img width="800px" src="./images/raster_data.png"></img>
+
+*We cover raster data only in Day 3 of this workshop*
+
+# Software for working with Geospatial Data
+
+## Geospatial data require
+
+software that can import, create, store, edit, visualize and analyze geospatial data
+
+- represented as geometric data objects *referenced to the surface of the earth via CRSs*
+    
+- with methods to operate on those representations
+
+## GIS
+
+We call software for working with geospatial data **GIS**
+
+**Geographic Information System**
+
+This term is commonly associated with desktop software applications.
+
+## Types of GIS Software
+
+Desktop GIS - `ArcGIS`, `QGIS`
+
+Spatial Databases - `PostgreSQL/PostGIS`
+
+Web-based GIS - `ArcGIS Online`, `CARTO`
+
+Software geospatial data support - `Tableau`
+
+Programming languages with geospatial data support 
+
+- `R`, `Python`, `Javascript`
+
+
+# Why R for Geospatial Data?
+
+## Why R for Geospatial Data?
+
+You already use R
+
+Reproducibility 
+
+Free & Open Source
+
+Strong support for geospatial data and analysis
+
+Cutting edge
+
+
+# Geospatial Data in R
+
+## Prep reminder 
+
+Make sure you have set your working directory to the location of the workshop files.
+
+Make sure you have the packages we are going to use installed.
+
+```{r, eval=F}
+#
+# Geospatial Data in R Workshop
+#
+
+# Make sure needed packages are installed
+our_packages<- c("ggplot2", "dplyr", "sf", "units", "tmap", "raster", "nngeo")
+
+for (i in our_packages){
+  if ( i %in% rownames(installed.packages()) == FALSE) {
+    print(paste(i, "needs to be installed!"))
+    install.packages(i)
+    
+  } else {
+    print(paste0(i, " [", packageVersion(i), "] is already installed!"))
+    
+  } 
+}
+
+# Set working directory to folder with workshop files
+#setwd("~/Documents/Dlab/workshops/2019/Geospatial-Fundamentals-in-R-with-sf")
+```
+
+
+## Geospatial Data in R
+
+There are many approaches to and packages for working with geospatial data in R.
+
+One approach is to keep it simple and store geospatial data in a data frame.
+
+This approach is most common when 
+
+- the data are point data in CSV files and
+
+- you want to map rather than spatially transform or analyze the data 
+
+## About the Sample Data
+
+`sf_properties_25ksample.csv`
+
+**San Francisco Open Data Portal**
+[https://data.sfgov.org](https://data.sfgov.org)
+
+[SF Property Tax Rolls](https://data.sfgov.org/Housing-and-Buildings/Assessor-Historical-Secured-Property-Tax-Rolls/wv5m-vpq2)
+
+This data set includes the Office of the Assessor-Recorder’s secured property tax roll spanning from 2007 to 2016.
+
+We are using a subset of these data as a proxy for home values.
+
+## Load the CSV file into a data frame
+
+```{r, eval=F}
+sfhomes <- read.csv('data/sf_properties_25ksample.csv', 
+                    stringsAsFactors = FALSE)
+
+# Take a look at first 5 rows and a few of the columns
+sfhomes[1:5,c("YearBuilt","totvalue","AreaSquareFeet","Neighborhood",
+              "NumBedrooms")]
+
+```
+*Make sure your working directory is set to the folder where you downloaded the workshop files!*
+
+##
+
+```{r, eval=T}
+sfhomes <- read.csv('data/sf_properties_25ksample.csv', 
+                    stringsAsFactors = FALSE)
+
+# Take a look at first 5 rows and a few of the columns
+sfhomes[1:5,c("YearBuilt","totvalue","AreaSquareFeet","Neighborhood",
+              "NumBedrooms")]
+
+```
+## Explore the data
+
+```{r, eval=F}
+class(sfhomes)            # what is the data object type?
+dim(sfhomes)              # how many rows and columns
+str(sfhomes)              # display the structure of the object
+head(sfhomes)             # take a look at the first 10 records
+summary(sfhomes)          # explore the range of values
+summary(sfhomes$totvalue) # explore the range of values for one column
+hist(sfhomes$totvalue)    # histogram for the totvalue column
+```
+
+## Questions:
+
+- What columns contain the geographic data?
+- Are these data vector or raster data?
+- What type of geometry do the data contain? 
+    - Points, lines, polygons, grid cells?
+- What is the CRS of these data?
+
+
+## Plot of points
+
+Use the R base `plot` function to create a simple map
+
+```{r, eval=FALSE}
+plot(sfhomes$lon, sfhomes$lat) # using base plot function
+```
+
+## Plot of points
+
+Use the R base `plot` function to create a simple map
+
+```{r}
+plot(sfhomes$lon, sfhomes$lat) # using base plot function
+```
+
+
+# ggplot2
+
+## `ggplot2`
+
+Most widely used plotting library in R
+
+Not specifically for geospatial data
+
+But can be used to make fabulous maps
+
+Great choice if you already know `ggplot2`
+
+
+## `ggplot2`
+
+Load the library
+
+```{r}
+library(ggplot2)
+```
+
+## Maps with `ggplot2`
+
+Basic map with ggplot
+
+```{r, eval=F}
+library(ggplot2)
+
+ggplot() + geom_point(data=sfhomes, aes(lon,lat))
+
+```
+
+
+## Maps with `ggplot2`
+
+Basic map with ggplot
+
+```{r}
+ggplot() + geom_point(data=sfhomes, aes(lon,lat), size=1)
+```
+
+
+## Coord_map Option
+
+```{r}
+ggplot() + geom_point(data=sfhomes, aes(lon,lat), size=1) + coord_map()
+```
+
+## coord_map option
+
+Allows you to associate a map projection with geographic coord data.
+
+<img src="./images/coord_map_help.png" width="600px"></img>
+
+## Map Projections
+
+`Map Projection`: mathematial transformation from curved to flat surface
+
+<img width="600px" src="./images/projection.gif"></img>
+
+A `Projected CRS` applies a **map projection** to a Geographic CRS
+
+## Many Map Projections & Projected CRSs
+
+All introduce distortion, 
+
+- in shape, area, distance, direction, or combo
+
+- the larger the area the greater the distortion
+
+No one map projection best for all purposes
+
+Selection depends on location, extent and purpose
+
+##  Different Projected CRSs
+
+<img height="500px" src="./images/diff_crs.png"></img>
+
+## `coord_map("mercator")`
+
+`Mercator` is the default map projection used by the `get_coord()` function.
+
+- You don't have to specify it!
+
+It's important to know that you can customize the map projection and parameters if you wish.
+
+But doing this is beyond the scope of this workshop.
+
+## Map points symbolized by `totvalue`
+
+*Data driven symbology*
+```{r, eval=F}
+ggplot() + geom_point(data=sfhomes, aes(lon,lat, col=totvalue)) + 
+  coord_map()
+```
+
+
+## Map points symbolized by `totvalue`
+
+```{r, echo=F}
+ggplot() + 
+  geom_point(data=sfhomes, aes(lon,lat, col=totvalue), size=1) + 
+  coord_map()
+```
+
+## Data Order
+
+*What's happening here?*  
+
+
+```{r, eval=F}
+sfhomes_low2high <- sfhomes[order(sfhomes$totvalue, decreasing = FALSE),]
+
+ggplot() + 
+  geom_point(data=sfhomes_low2high, aes(lon,lat, col=totvalue)) + 
+  coord_map()
+```
+
+Try it - Does the output map look different from previous one?
+
+
+## Data Order
+
+The order of the data in the data frame changes the map display!
+
+```{r, echo=F}
+sfhomes_low2high <- sfhomes[order(sfhomes$totvalue, decreasing = FALSE),]
+
+ggplot() + 
+  geom_point(data=sfhomes_low2high, aes(lon,lat, col=totvalue)) + 
+  coord_map()
+```
+
+## Challenge
+
+Map the sfhomes data in decreasing order by `totvalue`.
+
+
+## Decreasing order by `totvalue`
+
+```{r}
+sfhomes_high2low <- sfhomes[order(sfhomes$totvalue, decreasing = T),]
+ggplot() + geom_point(data=sfhomes_high2low, aes(lon,lat, col=totvalue)) + 
+  coord_map()
+```
+
+## More `ggplot` Goodness
+
+What does this code do?
+```{r, eval=F}
+sfhomes2010_15 <- subset(sfhomes_low2high, as.numeric(SalesYear) > 2009)
+
+ggplot() +
+  geom_point(aes(lon, lat, col=totvalue), data = sfhomes2010_15 )  +
+  facet_wrap(~ SalesYear)
+```
+
+## More `ggplot` Goodness
+
+Visual spatial analysis!
+```{r, echo=F}
+sfhomes2010_15 <- subset(sfhomes_low2high, as.numeric(SalesYear) > 2009)
+
+ggplot() +
+  geom_point(aes(lon, lat, col=totvalue), data = sfhomes2010_15 )  +
+  facet_wrap(~ SalesYear)
+```
+
+
+
+## Map Overlays
+
+Let's add another geospatial data layer to our map. 
+
+You can use this method to add as many layers as you want to a `ggplot`.
+
+*Map overlay is the fundamental technique of visual geographical analysis.*
+
+
+## Bart Stations and Landmarks
+
+Use the `read.csv` function to read in a file of Bart Station locations. What is the name of the column with the longitude values? latitude?
+
+```{r}
+bart <- read.csv("./data/bart.csv")
+
+# take a look
+head (bart)
+```
+
+## Subset for year 2015
+For the maps from here on out, to deal with a smaller example dataset, we're going to also subset our data
+for only those rows that pertain to year 2015.
+
+```{r}
+sfhomes15 <- subset(sfhomes_high2low, as.numeric(SalesYear) == 2015)
+```
+
+
+## Add BART stations to map
+```{r, results="hide"}
+sfmap_with_bart <- ggplot() +
+  geom_point(data=sfhomes15, aes(x=lon, y=lat, col=totvalue))  +
+  geom_point(data=bart, aes(x=X,y=Y), col="red", size=3) 
+```
+
+## Add BART stations to map
+```{r }
+sfmap_with_bart
+```
+
+## Add BART stations to map
+
+Let's just display SF BART Stations
+```{r, results="hide"}
+sfmap_with_bart <- ggplot() +
+  geom_point(data=sfhomes15, aes(x=lon, y=lat, col=totvalue))  +
+  geom_point(data=bart[bart$CO=='SF',], aes(x=X,y=Y), col="red", size=3) 
+```
+
+## Add BART stations to map
+
+Are the higher valued homes near BART?
+```{r }
+sfmap_with_bart
+```
+
+## Add BART stations to map
+
+What could we do to improve our map?
+```{r }
+sfmap_with_bart
+```
+
+
+## Any Questions?
+<img width="600px" src="https://upload.wikimedia.org/wikipedia/en/b/b5/David_S._Pumpkins_dance.jpg"> </img>
+
+## Let's add one more layer
+
+*SF Landmarks*
+
+`data/landmarks.csv`
+
+## SF Landmarks
+
+```{r}
+landmarks <- read.csv("./data/landmarks.csv")
+head(landmarks)
+```
+
+## Map Landmarks
+
+Let's create a map of the SF homes, BART Stations and Landmarks all together.
+
+```{r, results = "hide"}
+sfmap_bart_landmarks <- ggplot() +
+  geom_point(data=sfhomes15, aes(x=lon, y=lat))  +
+  geom_point(data=bart[bart$CO=='SF',], aes(x=X,y=Y), col="red", size=3) +
+  geom_point(data=landmarks, aes(x=X,y=Y), shape=22, 
+             col="black", fill="grey", size=4)
+```
+
+## Map Landmarks
+
+*All good - are all layers displayed?*  If not, why not?
+ 
+```{r, echo=F}
+sfmap_bart_landmarks
+```
+
+# GGPlot is a powerful tool for creating maps!
+
+
+## BUT!
+
+There are limits to what you can do with geospatial data stored in a `data frame`.
+
+- i.e. where there is no specific geospatial data object(s)
+```{r}
+head(landmarks)
+
+```
+
+
+## Can't transform Coordinate Data
+
+The Landmark data do not have geographic coordinates - longitude and latitude.
+
+You can't transform these coordinate data with `ggplot`.
+
+```{r}
+ggplot() +
+  geom_point(data=landmarks, aes(x=X,y=Y), shape=22, 
+             col="black", fill="grey", size=4)
+```
+
+## Can't read & plot geospatial data files
+
+The ESRI Shapefile is the most common file format for geospatial data.
+
+<img src="./images/shapefile.png" width="400px"></img>
+
+`ggplot` cannot **directly** read in or plot shapefile data.
+
+- *though you can do it with a round-about set of commands* :(
+
+## Can't Perform Spatial Analysis
+
+ `ggplot` can't answer questions like
+
+- *What properties are in the Noe Valley neighborhood?*
+
+- *What is the average property value in each SF neighborhood?*
+
+- *What is the area of each SF Neighborhood and the property density?*
+
+- *What properties are within walking distance (.25 miles) of the Mission neighborhood?*
+
+You need libaries that support `spatial data objects` and `spatial methods` for that!
+
+# Spatial Data Objects in R
+
+## `sf` package
+
+`sf` stands for 'simple features', which is a standard (developed by the Open
+Geospatial Consortium) for storing various geometry types in a hierarchical data model.
+
+A 'feature' is just a representation of a thing in the real world (e.g. a building, a city...). 
+
+In other words, each feature consists of both a **geometric representation** of an object
+and **some associated information** (building: height, name, etc..., city: population, area, etc...).
+
+## `sf` vs. `sp`
+
+`sf` is a relatively new package. 
+
+`sf` supersedes the package `sp` and its ecosystem of related packages (mainly 
+`rgeos` and `rgdal`). As such, it is a one-stop shop for core geospatial data objects
+and operations that used to be spread across those 3 packages.
+
+`sp` is still frequently used, but its spatial objects are a bit less streamlined.
+It will be necessary for our raster work on Day 3, so we'll see a bit of it then.
+
+## `sf` package
+
+Here are the most common simple features geometries,
+which are used to represent vector data in `sf`.
+
+<table border=0>
+<tr>
+<td>
+<img src="./images/sf-classes.png" width="400px"></img>
+</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td>
+- Point
+- Linestring
+- Polygon
+- Multipoint
+- MultiLinestring
+- MultiPolygon
+- Geometry Collection
+</td>
+</tr>
+</table>
+
+ 
+(From the [Geocomputation in R](https://geocompr.robinlovelace.net/spatial-class.html) textbook, Chapter 2, Figure 2.2)
+ 
+ 
+## `sf` package
+
+`sf` offers numerous specific benefits, including:
+
+* fast IO (**I**nput and **O**utput)
+* enhanced plotting
+* integration with R data structures (it uses `data.frame`s)
+* integration with tidyverse packages, `%>%` piping syntax
+* consistent function names (all starting with `st_` for spatial type)
+* increasingly supported by other geospatial packages (e.g. `tmap`, `ggplot`)
+* aligned with other GIS software that use simple features (e.g. QGIS, PostGIS) or a similar data model (e.g. Python's Geopandas)
+
+
+## `sf` package
+
+First, of course, we'll need to load the package:
+
+```{r}
+library(sf)
+```
+
+## `sf` objects: IO
+
+We can then read in a spatial dataset into an `sf` object using  the `st_read` function.
+
+Let's start with a shapefile of San Francisco census tracts.
+
+*First take a look at the file...*
+```{r}
+dir("data", pattern = "sftracts.")
+```
+
+## `sf` objects: IO
+
+Now let's use the `sf` function `st_read` to load the file in R.
+```{r}
+tracts = st_read(dsn = './data', layer = 'sftracts')
+```
+
+## `sf` objects: structure
+
+Then, as always, we can explore the basic aspects of the object returned,
+using base R functions:
+
+```{r, eval=FALSE}
+#the object displays a compact summary, when its name is called
+tracts
+```
+
+## `sf` objects: structure
+
+```{r, eval=T, echo=F}
+#the object displays a compact summary, when its name is called
+tracts
+```
+
+## `sf` objects: structure
+
+What sort of object is this?
+```{r, eval=F}
+class(tracts)
+```
+
+## `sf` objects: structure
+```{r}
+# the object is of both the 'sf' and 'data.frame' classes
+class(tracts)
+```
+
+## `sf` objects: structure
+
+It has a number of columns (i.e. attributes, fields), including a geometry column
+```{r}
+str(tracts)
+```
+
+## `sf` objects: structure
+
+We can use basic data.frame functions on it
+
+```{r}
+nrow(tracts)
+colnames(tracts)
+head(tracts, 4)
+```
+
+## `sf` objects: basic plotting
+
+We can plot an `sf` object using its plot method.
+
+In other words, when we just call R's base `plot` function on an `sf` object,
+R will recognize that it's an `sf` object and thus plot it accordingly.
+
+```{r, eval=F}
+plot(tracts)
+```
+
+## `sf` objects: basic plotting
+
+```{r}
+plot(tracts)
+```
+
+
+## `sf` objects: basic plotting
+
+Note that we get an array of plots, one for each variable
+(or 'field', or 'attribute') in our dataset (up to the first 9).
+
+So then we should be able to plot a single variable by just subsetting
+the `sf` dataframe for that variable, then plotting the subsetted dataframe.
+
+```{r, echo=F}
+plot(tracts)
+```
+
+
+
+## Challenge 
+
+Plot just the 'NAME' column's data.
+
+(Note: This will be an example of what we call a 'choropleth' map.)
+
+
+## Challenge: Solution
+
+```{r}
+#read in a shapefile of SF census tracts
+plot(tracts['NAME'])
+```
+
+
+## Challenge: Solution
+
+Some of you may have gotten this plot instead:
+
+```{r}
+plot(tracts$NAME)
+```
+
+## Challenge: Solution
+
+What went wrong?
+
+```{r}
+class(tracts['NAME'])
+class(tracts[, 'NAME'])
+class(subset(tracts, select='NAME'))
+class(tracts$NAME)
+```
+
+## Challenge: Solution
+
+When we use bracket syntax or the subset function,
+`sf` objects return new, subsetted `sf` objects.
+
+But when we use the '$' notation, we just get a vector of the column's values!
+
+As always, we need to **be careful and check what kinds of objects we're working with!**
+
+```{r}
+head(tracts$NAME)
+head(tracts['NAME'])
+```
+
+
+## `sf` objects: geometries
+
+The nice thing about `sf` objects is that they are just `data.frame`s!
+
+The geometry data is just stored in its own special column,
+usually named `geom` or `geometry`.
+
+<br>
+
+For the most part, we will not want to manually manipulate the data in the geometry column. But when we're just getting started, it can be helpful to tinker.
+
+
+## `sf` objects: geometries
+
+As we saw earlier, the geometry data is stored in its own column.
+Let's take a closer look at that column:
+
+```{r, eval=F}
+tracts$geometry
+```
+
+## `sf` objects: geometries
+
+```{r}
+tracts$geometry
+```
+
+
+## `sf` objects: geometries
+
+One thing we can see is that our CRS and some other metadata is stored as part of this column.
+This includes:
+
+* the geometry type and its dimensionality
+* the bounding box,
+* the CRS arguments
+* the CRS' EPSG code (which we'll learn about in a bit)
+
+```{r}
+tracts$geometry[[1]]
+```
+
+## `sf` objects: geometries
+
+Of course, all the geometries in the column must have the same CRS.
+
+We can check the CRS of an `sf` object using the `st_crs` function:
+
+```{r}
+st_crs(tracts)
+```
+
+
+## `sf` objects: geometries
+
+And we can get our bounding box using `st_bbox`,
+or subset certain values:
+
+```{r}
+bbox = st_bbox(tracts)
+bbox
+bbox$xmin
+```
+
+## `sf` objects: geometries
+
+We can also see that this column is some sort of special object.
+
+Unlike with the 'NAME' column, when we subset
+the 'geometry' column with '$' we don't just get a vector of values.
+
+Of course, we _can't_ just get a vector, because the values are
+complex objects (geometries). 
+
+Instead, we get a __"list column"__.
+
+
+## `sf` objects: geometries
+
+So, what sort of object is this?
+
+```{r}
+class(tracts$geometry)
+```
+An `sfc` object!
+
+This is short for 'simple features collection', which is
+basically just an R `list` of geometries (because as we just said,
+a vector wouldn't work).
+
+## `sf` objects: geometries
+
+So then, what sort of object is each individual geometry?
+
+(Note the **double-bracket** notation, which indexes values out of a `list`.
+Single brackets would just return us a new, subsetted list---in this case, a new,
+subsetted `sfc` object.)
+
+```{r}
+class(tracts$geometry[[1]])
+```
+It's an object of the `XY`, `MULTIPOLYGON`, and `sfg` classes!
+
+## `sf` objects: geometries
+
+Here's what those classes mean:
+
+- `sfg` is short for 'simple features geometry'; this is the geometry data itself!
+
+- `XY` just indicates the dimensionality of that geometry (for all our purposes this will
+  be `XY`, but some less commonly used data models include a `Z` dimension)
+
+- `MULTIPOLYGON` just indicates the type of that geometry (which, as we saw earlier, could also be `POINT`, `LINESTRING`, ...)
+
+## Plotting `sf` geometries
+
+What do you think you will get when you plot an `sf` geometry column?
+
+```{r, eval=F}
+plot(tracts$geometry)
+plot(tracts['geometry'])
+```
+
+Try it!
+
+## Plotting `sf` geometries
+
+```{r}
+plot(tracts$geometry)
+```
+
+This is often the first thing you do when you load a data file into an `sf` object.
+
+
+## `sf` objects: geometries
+
+A simple features geometry is typically either stored as well-known text (WKT) or well-known binary (WKB).
+
+The latter is more easily machine-readable. But the former is human-readable, and is what we see in an `sf` geometry column.
+
+
+## `sf` objects: geometries
+
+The WKT is just a very simple written representation of the 'connect-the-dots' vector data model.
+
+Here's a point: `POINT (2 4)`
+
+Here's a multipoint: `MULTIPOINT (2 2, 3 3, 3 2)`
+
+Here's a linestring: `LINESTRING (0 3, 1 4, 2 3)`
+
+And here's a polygon: `POLYGON ((1 0, 3 4, 5 1, 1 0))`
+
+(Notice that the polygon's first and last coordinate-pairs are the same!)
+
+## `sf` objects: geometries
+
+Typically, you won't need to create your own geometries from scratch
+because you'll just be reading them in from geospatial data files.
+
+But `sf` does provide functions for doing so.
+
+Here are the geometries from our previous slide:
+
+```{r}
+#create a point
+pnt = st_point(c(2, 4))
+#create a multipoint
+mpnt = st_multipoint(rbind(c(2, 2), c(3, 3), c(3, 2)))
+#create a line
+line = st_linestring(rbind(c(0, 3), c(1, 4), c(2, 3)))
+#create a polygon
+poly = st_polygon(list(rbind(c(1, 0), c(3, 4), c(5, 1), c(1, 0))))
+```
+## `sf` objects: geometries
+
+Then we can plot them.
+
+```{r}
+plot(poly, col = 'yellow')
+plot(line, col = 'blue', lwd = 3, add = T)
+plot(mpnt, col = 'red', add = T)
+plot(pnt, col = 'black', add = T)
+```
+
+##`sf` objects: geometries
+
+For comparison, we can take a look at one of the `sfg` objects in our census tracts:
+
+```{r}
+geom = tracts$geometry[[1]]
+str(geom)
+geom  # Or geom[[1]]
+```
+Again, note that the first and last coordinate-pairs are the same,
+because this is a polygon!
+
+
+## `sf` objects: geometries
+
+So this should clarify the geometry column:
+
+It is a simple features collection (`sfc`), where each item is just a simple
+features geometry (`sfg`).
+
+Each `sfg` holds a WKT representation of the geometry (`sfg`),
+and pertains to a row, which typically contains other data describing the row.
+
+## `sf` objects: summary
+
+And that brings us full circle!
+
+Now we can see how we could build our own `sf` object.
+
+We would just combine a plain old dataframe with a geometry column for it.
+
+```{r, eval=F}
+df = data.frame(list('name' = c('someplace'), 'pop' = c(2)))
+new_sf = st_sf(df, geometry = st_sfc(poly))
+```
+
+## `sf` objects: summary 
+
+```{r}
+df = data.frame(list('name' = c('someplace'), 'pop' = c(2)))
+new_sf = st_sf(df, geometry = st_sfc(poly))
+new_sf
+```
+
+## `sf` objects: summary
+
+```{r}
+plot(new_sf)
+```
+
+## `sf` objects: summary
+
+To recap:
+
+ * `sf` objects are `data.frame` objects with special 'geom' or 'geometry'
+columns..
+ * The geometry column is a simple features collection (`sfc`) object.
+ * Each value in an `sfc` is a simple features geometry (`sfg`) object.
+
+<img src="./images/sf_annotated_fig.png" width="800px"></img>
+
+(From the [`sf` docs](https://r-spatial.github.io/sf/articles/sf1.html.))
+
+
+## `sf` objects: summary
+
+And here's another depiction (from the [`sf` Github Repo](https://github.com/r-spatial/sf)):
+
+<img src="./images/sticky_geometries.jpg" width="650px"></img>
+
+## `sf` objects: summary
+
+And here's our census tracts data again.
+Hopefully now you can see all the pieces.
+
+```{r}
+tracts
+```
+
+## `sf` objects: plotting
+
+So what about our homes data? Let's plot them with the tracts data!
+
+To do that, we'll need to use ggplot (because the homes data is not an sf object).
+The `geom_sf` function will allow us to add data from an `sf` object to a ggplot.
+
+```{r, eval=F}
+ggplot() + geom_sf(data = tracts) +
+geom_point(data = sfhomes15, aes(lon, lat, col = totvalue))
+         
+```
+
+## `sf` objects: plotting
+
+```{r}
+ggplot() + geom_sf(data = tracts) +
+geom_point(data = sfhomes15, aes(lon, lat, col = totvalue))
+         
+```
+
+
+## `sf` objects: plotting
+
+What happened?
+
+Our data wound up at totally opposite ends of our map!
+
+Why?
+
+
+
+## `sf` objects: plotting
+
+What's the CRS of our census tracts?...
+```{r}
+st_crs(tracts)
+```
+
+And what's the CRS of the SF homes data?...
+```{r}
+st_crs(sfhomes15, n = 1)
+```
+
+**We can't plot our data if it's not in the same CRS!**
+
+
+
+## CRS Problems
+
+The #1 reason...
+
+<img width="600px" src="./images/not_working.jpeg"></img>
+
+
+## Reconciling projections
+
+Every spatial object needs a reference to its CRS.
+
+If it is lacking this reference, we'll need to **define** it.
+
+Note the **important difference** between *defining* and *transforming* projections!
+
+**Defining** just makes a spatial object aware of the CRS of its geometries. (This does not change the data's coordinate values.)
+
+**Transforming** converts the geometries to a new CRS. (This changes the coordinate values.)
+
+
+## Reconciling projections
+
+So we need our data all in the same projection.
+In order to do this, we're going to need to do 3 things:
+
+1. Make our homes an explicitly geospatial object, using `sf`.
+
+2. **Define** (or assign, or set) that object's CRS.
+
+3. **Transform** (or reproject) one of our two objects to the CRS of the other.
+
+
+## Creating `sf` objects
+
+First, we need to coerce our homes data to an `sf` object.
+
+We saw a crude example of constructing an `sf` object, above.
+
+But we can actually do this in a single line of code, using the `st_as_sf` function!
+
+
+## Creating `sf` objects
+
+To do this, we need to provide 3 pieces of information to 3 arguments:
+
+__x__: The object to be converted to an `sf` object
+
+__coords__: The columns containing the coordinates.
+
+__crs__: The CRS of the coordinates contained in those columns.
+
+
+## Coordinate Reference Systems
+
+In order to this, we need to know the CRS of our homes data.
+
+So, what is it?...
+
+
+## CRS Definitions and Transformations
+
+GIS software will have a database of definitions for thousands of Earth-referenced
+CRSs and methods for using those definitions to define or transform a CRS.
+
+We just need to know how to specify our data's CRS
+(unprojected lat/lon with a WGS84 ellipsoid and datum) in terms that
+will allow R to correctly indentify it within that database.
+
+
+## Referencing the WGS84 CRS
+
+To do this, we can create a `proj4` string, as follows:
+
+`st_crs("+proj=longlat +ellps=WGS84 +datum=WGS84")`
+
+The `proj4` string is a standard format used across a wide variety of GIS.
+
+
+## EPSG codes
+
+However, the `proj4` string is long and complicated, and leaves a lot of room for error.
+And there are *lots* of CRSs out there!
+
+So the **E**uropean **P**etroluem **S**urvey **G**roup devised a simpler system
+of numerical codes, called **EPSG** codes.
+
+The longlat, WGS84 EPSG code is 4326.
+
+So we could create our CRS instead using just the EPSG code in a proj4string:
+
+`st_crs("+init=epsg:4326")`
+
+Which, in `sf`, can be simplified even further:
+
+```{r}
+st_crs(4326)
+```
+
+
+## Proj4 CRS Definitions
+
+Here is some additional info on CRS definitions, for your reference:
+
+[Proj4](http://proj4.org/) is the standard library for defining and transforming map projections and coordinate reference systems.
+
+[Here](https://github.com/OSGeo/proj.4/blob/master/nad/epsg) is an example file of proj4 CRS definitions
+
+
+## Common CRS Codes
+
+And here are some common codes:
+
+**Geographic CRSs**
+
+* `4326` Geographic, WGS84 (default for lon/lat)
+
+* `4269` Geographic, NAD83 (USA Fed agencies like Census)
+
+
+**Projected CRSs**
+
+* `5070` USA Contiguous Albers Equal Area Conic
+
+* `3310` CA ALbers Equal Area
+
+* `26910` UTM Zone 10, NAD83 (Northern Cal)
+
+* `3857` Web Mercator (web maps)
+
+
+## Finding CRS Codes
+
+And here's a resource for looking up EPSG codes and proj4 strings,
+should you need to:
+
+[http://spatialreference.org/](http://spatialreference.org/)
+
+
+## Creating `sf` objects
+
+Now that we know our homes have are in unprojected coordinates with a WGS84 datum
+(i.e. EPSG code: 4326), we can call `st_as_sf` as follows:
+
+```{r}
+sfhomes15_sf = st_as_sf(sfhomes15, coords = c('lon', 'lat'), crs = 4326)
+```
+
+## Check it
+
+We can check the object type by displaying a summary.
+```{r}
+sfhomes15_sf
+```
+
+## Check it
+
+We can specifically check the CRS with `st_crs`:
+
+```{r}
+st_crs(sfhomes15_sf)
+```
+
+Looks good!
+
+
+
+## Reprojecting
+
+That takes care of both steps 1 (create `sf` object) and 2 (define CRS)!
+
+Now that our homes are an `sf` object with the correctly defined CRS, we'll need to **reproject**
+either `sfhomes15_sf` or `tracts`, so that they are in the same projection.
+
+## Reprojecting
+
+We want all data in the same CRS.
+
+Which one is best???
+
+<img src="./images/shrugging_baby.jpg" width="400px"></img>
+
+## Reprojecting
+
+There's no universally right answer to that question.
+Usually the answer will depend on what operations you plan to run downstream.
+
+In our case, we'll reproject our tracts,
+so that everything is in an unprojected CRS and plots with units of decimal degrees.
+
+
+## Reprojecting
+
+**Note**: If we were working with `sp` objects, we would use the `rgdal` package
+to carry out CRS transformations.
+
+However, `sf` provides a one stop shop for all sorts of common geospatial operations,
+so we can just stick with `sf` functions.
+
+
+## Reprojecting
+
+Using `sf`, we can **reproject**, or **transform** an `sf` object
+using the `st_transform` function.
+
+The only arguments we need are:
+
+* The object to be transformed
+
+* The target CRS to transform x to (which can be provided as just an integer of the EPSG code)
+
+Syntax...
+```{r,eval=F}
+new_sf_object = st_transform(original_sf_object, crs=target_crs_epsg_code)
+```
+
+
+## Challenge
+
+Transform the `tracts` object to the same CRS as the `sfhomes15_sf` object.
+Name the new object `tracts_lonlat` (to indicate that its CRS is unprojected
+longitude and latitude).
+
+
+## Challenge: Solution
+
+We can transform the tracts to the CRS of sfhomes15\_sf using:
+
+```{r}
+tracts_lonlat = st_transform(tracts, crs = 4326)
+```
+
+
+## Challenge: Solution
+
+However, note that if we want to be super explicit, to be certain things match up,
+we can index the EPSG code directly out of sfhomes15\_sf's CRS object, as follows:
+
+```{r}
+tracts_lonlat = st_transform(tracts, crs = st_crs(sfhomes15_sf)$epsg)
+```
+
+## Compare the CRSs, again
+
+Are they both defined? Are they the same?
+
+```{r}
+st_crs(sfhomes15_sf)
+st_crs(tracts_lonlat)
+st_crs(sfhomes15_sf) == st_crs(tracts_lonlat)
+```
+
+
+## `sf` objects: plotting
+
+And now we can try again to plot our data together.
+
+(Note that we can ues the `aes` function to do aesthetic mapping
+in an `geom_sf` call, just as we could with `geom_point` and other ggplot functions.)
+
+```{r, eval=F}
+ggplot() + geom_sf(data = tracts_lonlat) + 
+           geom_sf(data = sfhomes15_sf, aes(col = totvalue))
+```
+
+## `sf` objects: plotting
+
+Success!
+
+```{r, echo=F}
+ggplot() + geom_sf(data = tracts_lonlat) + 
+           geom_sf(data = sfhomes15_sf, aes(col = totvalue))
+```
+
+## Challenge
+
+Work through the following steps:
+
+1. Transform the landmarks `dataframe` to an `sf` object,
+   setting its CRS to EPSG: `3857`, which is the code for Web Mercator.
+
+2. Read in the 'sfboundary' and 'sfhighways' shapefiles, from the './data' subdirectory.
+
+3. Reproject any of those layers to the CRS of sfhomes15\_sf, as needed.
+
+4. Plot tracts, boundary, highways, homes, and landmarks together.
+   Make the border purple, and the highways and the landmarks red.
+   Color the homes by the 'totvalue' column.
+
+
+## Challenge: Solution
+
+1: Transform the landmarks `dataframe` to an `sf` object,
+   setting its CRS to EPSG: `3857`, which is the code for Web Mercator.
+
+```{r}
+landmarks_sf = st_as_sf(landmarks, coords = c('X', 'Y'), crs = 3857)
+```
+
+## Challenge: Solution
+
+2: Read in the 'sfboundary' shapefile, from the './data' subdirectory.
+
+```{r}
+sfboundary = st_read('./data', 'sfboundary')
+sfhighways = st_read('./data', 'sfhighways')
+```
+
+## Challenge: Solution
+
+3: Reproject any of those layers to the CRS of sfhomes15\_sf, as needed.
+
+`sfboundary` doesn't need to be transformed
+
+```{r}
+#check the CRS of sfboundary
+st_crs(sfboundary) == st_crs(sfhomes15_sf)
+```
+## Challenge: Solution
+
+3: Reproject any of those layers to the CRS of sfhomes15\_sf, as needed.
+
+`sfhighways` needs to be transformed
+
+```{r}
+#check th CRS of sfhighways
+st_crs(sfhighways) == st_crs(sfhomes15_sf)
+#it needs to be transformed
+sfhighways_lonlat = st_transform(sfhighways, st_crs(sfhomes15_sf))
+```
+## Challenge: Solution
+
+3: Reproject any of those layers to the CRS of sfhomes15\_sf, as needed.
+
+We know `landmarks` does, because we just assinged it EPSG 3857.
+
+```{r}
+landmarks_lonlat = st_transform(landmarks_sf, st_crs(sfhomes15_sf))
+```
+
+
+## Challenge: Solution
+
+4: Plot tracts, boundary, highways, homes, and landmarks together.
+   Make the border purple, and the highways and the landmarks red.
+   Color the homes by the 'totvalue' column.
+
+```{r}
+challenge_map = ggplot() +
+geom_sf(data = sfboundary, col = 'purple') +
+geom_sf(data = tracts_lonlat, alpha = 0.2) +  #alpha = 0.2 for transparency, so we can see sfboundary
+geom_sf(data= sfhighways_lonlat, col = 'red') +
+geom_sf(data = sfhomes15_sf, aes(col = totvalue)) +
+geom_sf(data = landmarks_sf, col = 'red')
+```
+
+## Challenge: Solution
+
+```{r}
+challenge_map
+```
+
+## Challenge: Solution
+
+Excellent! Everything lines up!
+
+
+
+# Plotting: `tmap` package
+
+## plotting: getting fancy
+
+How do we manipulate more of the aspects in our plots?
+
+How do we make our plots prettier?
+
+What other options do we have for plotting `sf` objects?
+
+For this, we'll turn to __`tmap`__.
+
+
+## `tmap`
+
+We've already mapped with base R's `plot`, `ggplot`, and `sf:plot`.
+
+We've seen how to control some plot aesthetics, to make our maps data-rich.
+
+We will continue to explore similar functionalities. But we'll do so using the `tmap` package.
+
+We won't spend a ton of time reviewing `tmap`, because you'll get more practice with
+it in Parts 2 and 3.
+
+
+## `tmap`
+
+As we will see, `tmap` offers some crucial additional options:
+
+- integration with spatial objects (i.e. `sf` and `sp` objects)
+- easy interactive maps
+
+## `tmap`
+
+`tmap` stands for thematic map
+
+It's a powerful toolkit for creating maps with `sf` and `sp` objects,
+with less code than the alternatives
+
+Syntax inspired by ggplot2 (but a bit simpler)
+
+
+## `tmap`
+
+First we'l load the library
+
+```{r}
+library(tmap)
+```
+
+*Note*: You may need to install /load dependencies
+- ggplot2, RColorbrewer, classInt, leaflet libraries
+
+```{r, echo=F, message=F}
+tmap_mode('plot')
+```
+
+## `tmap`: quick tmaps
+
+We can create **q**uick **tm**aps with the `qtm` function:
+
+```{r}
+qtm(sfhomes15_sf)
+```
+
+## `tmap`: modes
+
+`tmap` has 2 modes:
+
+* **plot**: makes static maps
+
+* **view**: makes interactive maps
+
+Use the command `tmap_mode` to toggle between them:
+
+* `tmap_mode("plot")`
+
+* `tmap_mode("view")`
+
+
+## `tmap`: modes
+
+We can create an interactive version of the previous map: 
+
+```{r, eval=F}
+tmap_mode("view") # set tmap to interactive view mode
+qtm(sfhomes15_sf) # Interactive - click on the points
+```
+
+
+## `tmap`: modes
+
+Notice that this is a live, interactive map!  Click to see Popups! Click on the Layer Selector!
+
+```{r, echo=F, message=F}
+tmap_mode("view")
+qtm(sfhomes15_sf)
+```
+
+## `tmap`: modes
+
+Conveniently, we can also toggle between the modes using the `ttm` function.
+
+```{r}
+ttm()
+ttm()
+ttm()
+ttm()
+```
+
+## `tmap`: building custom maps
+
+To customize our tmaps, we need to use `tmap`'s more complex, `ggplot`-type  syntax
+
+```{r, eval=F}
+tm_shape(tracts) + 
+  tm_polygons(col="beige", border.col="red", alpha=0.5)
+```
+
+`tm_shape(<sf_object>)`  specifies the sf object
+
+`+ tm_<element>(...)`  specifies the symbology
+
+plus other options for creating a publication ready map
+
+
+## `tmap`: mapping polygons
+
+We can add and customize polygons using `tm_polygons`.
+
+```{r, eval=FALSE}
+tm_shape(tracts) + 
+  tm_polygons(col="beige", border.col="red", alpha = 0.4)
+```
+
+## `tmap`: mapping polygons
+
+```{r }
+tm_shape(tracts) + 
+  tm_polygons(col="beige", border.col="red", alpha = 0.4)
+```
+
+## tmap: plot mode
+
+Switch back to 'plot' mode
+
+* Remember how?
+
+## `tmap`: mapping points
+
+We can also map and customize `point` data using `tm_dots`
+
+`tm_dots` are a type of `tm_symbols()`
+
+See `?tm_symbols` for other types of point symbols.
+
+```{r, eval=FALSE}
+
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="skyblue", border.col="red",size=.25)
+
+```
+
+## `tmap`: mapping points
+
+```{r}
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="skyblue", size=.25)
+```
+
+## tmap: other point symbols
+
+### CHALLENGE
+
+Alter the previous map to try some other point map styles including:
+
+- `tm_markers`, setting the mode to interactive
+
+- `tm_bubbles`, setting the border color to red
+
+See **?tm_symbols** for help if needed
+
+
+## `tmap`: mapping lines
+
+And we can add and customize lines using `tm_lines`.
+
+```{r, eval=FALSE}
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black")
+```
+
+## `tmap`: mapping lines
+
+```{r}
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black")
+```
+
+## `tmap`: mapping lines
+
+### CHALLENGE
+
+Take a look at the documentation for tm_lines and then recreate the last map increasing the width of the lines
+
+```{r, eval=F}
+?tm_lines
+```
+
+
+## `tmap`: data driven mapping
+
+Like `ggplot`, we can use data values to drive the symbology
+
+But two important differences:
+
+* we don't use an `aes` aesthetic-mapping function
+* we must `quote` our column names!
+
+```{r, eval=F}
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25) 
+```
+
+## `tmap`: data driven mapping
+
+```{r}
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25) 
+```
+
+## `tmap`: Color Mapping
+
+`tmap` uses the *classint* package to map colors to data values based on classification methods.
+
+Let's take a look at the *style* argument in the documentation.
+
+```{r, eval=F}
+?tm_symbols
+```
+
+## `tmap`: color mapping
+
+See how the choice of classification scheme, set by the *style* argument, alters the cartography.
+
+```{r}
+tmap_mode('plot')
+jenks_map <- tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25, style="jenks")
+
+quantile_map  <- tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25, style="quantile")
+```
+
+## `tmap`: color mapping
+
+Compare the two classification schemes...
+
+```{r}
+tmap_arrange(jenks_map, quantile_map)
+```
+
+## `tmap`: mapping multiple layers
+
+We can overlay multiple `sf` objects, or layers,
+by concatenating the `tmap` commands with plus signs
+(again, using `ggplot`-style syntax).
+
+```{r}
+# Map the SF Boundary first
+overlay_map = tm_shape(sfboundary) + 
+  tm_polygons(col="beige", border.col="black") +
+
+# Overlay the highway lines next
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black") +
+  
+# Then add the house points
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25) 
+
+```
+
+## `tmap`: mapping multiple layers
+
+```{r}
+overlay_map
+```
+
+
+## `tmap`: mapping multiple layers
+
+What if we then want to add our landmarks? Does this code work?
+
+```{r, eval=F}
+overlay_map +
+    tm_shape(landmarks_lonlat) +
+    tm_dots(col = 'skyblue', size = 2)
+```
+
+## `tmap`: mapping multiple layers
+
+Yup!
+
+```{r, echo=F}
+overlay_map +
+    tm_shape(landmarks_lonlat) +
+    tm_dots(col = 'skyblue', size = 2)
+```
+
+
+## `tmap`: CRS management
+
+Can we redo it using `landmarks_sf` instead of `landmarks_lonlat`?
+
+```{r, eval=F}
+overlay_map +
+    tm_shape(landmarks_sf) +
+    tm_dots(col = 'skyblue', size = 2)
+```
+
+## `tmap`: CRS management
+
+Yup!  What does that tell us about `tmap`?
+
+```{r, echo=F}
+overlay_map +
+    tm_shape(landmarks_sf) +
+    tm_dots(col = 'skyblue', size = 2)
+```
+
+
+## `tmap`: CRS management
+
+`tmap` reprojects for us on the fly!
+
+If the CRSs are defined, `tmap` will use that info - if not, `tmap` will assume `WGS84` -
+
+and dynamically reproject subsequent layers to match first one added to map.
+
+
+
+## `tmap`: advanced customization
+
+We can of course tweak all sorts of details in our maps.
+
+```{r, eval=F}
+tm_shape(sfboundary) +
+  tm_polygons(col="beige", border.col="black") +
+  
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black") +
+  
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25, 
+          title = "San Francisco Property Values (2015)") + 
+tm_layout(inner.margins=c(.05, .2, .15, .05)) 
+      # bottom, left, top, right
+```
+
+## `tmap`: advanced customization
+
+```{r, echo=F}
+tm_shape(sfboundary) +
+  tm_polygons(col="beige", border.col="black") +
+  
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black") +
+  
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25, 
+          title = "San Francisco Property Values (2015)") + 
+tm_layout(inner.margins=c(.05, .2, .15, .05)) 
+      # bottom, left, top, right
+```
+
+## `tmap`: advanced customization
+
+We can also customize the popups!
+
+Notice the changes relative to the previous code.
+
+```{r, eval=F}
+tmap_mode('view')
+tm_shape(sfboundary) + 
+  tm_polygons(col="beige", border.col="black") +
+  
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black") +
+
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.05, 
+          title = "San Francisco Property Values (2015)",
+          popup.vars=c("SalesYear","totvalue","NumBedrooms",
+                       "NumBathrooms","AreaSquareFeet")) + 
+  
+tm_layout(inner.margins=c(.05, .2, .15, .05)) # bottom, left, top, right
+```
+
+## `tmap`: advanced customization
+
+```{r, echo=F, message=F}
+tmap_mode('view')
+tm_shape(sfboundary) + 
+  tm_polygons(col="beige", border.col="black") +
+  
+tm_shape(sfhighways_lonlat) + 
+  tm_lines(col="black") +
+
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.05, 
+          title = "San Francisco Property Values (2015)",
+          popup.vars=c("SalesYear","totvalue","NumBedrooms",
+                       "NumBathrooms","AreaSquareFeet")) + 
+  
+tm_layout(inner.margins=c(.05, .2, .15, .05)) # bottom, left, top, right
+```
+
+## `tmap`: advanced customization
+And we can access a wide variety of basemaps. 
+
+Here's the list:
+<http://leaflet-extras.github.io/leaflet-providers/preview/>
+
+Let's try watercolor!
+
+```{r, eval=FALSE}
+tm_basemap("Stamen.Watercolor") +
+tm_shape(sfhomes15_sf) + 
+tm_dots(col="totvalue", size=.05, title = "San Francisco Property Values (2015)") +
+tm_tiles("Stamen.TonerLabels")
+```
+
+## `tmap`: advanced customization
+
+Let's try watercolor!
+
+```{r, echo=F, message=F}
+tmap_mode('view')
+tm_basemap("Stamen.Watercolor") +
+tm_shape(sfhomes15_sf) + 
+tm_dots(col="totvalue", size=.05, title = "San Francisco Property Values (2015)") +
+tm_tiles("Stamen.TonerLabels")
+```
+
+## `tmap`: advanced customization
+
+If time, try another basemap from the list
+<http://leaflet-extras.github.io/leaflet-providers/preview>
+
+```{r, eval=F}
+tmap_mode('view')
+#tm_basemap('<YOUR BASEMAP NAME HERE') + 
+tm_shape(sfhomes15_sf) + 
+tm_dots(col="totvalue", size=.05, title = "San Francisco Property Values (2015)") +
+
+```
+
+## `tmap`
+
+`tmap` provides support for so many different types of maps, check out the *tmap: get started* guide, `vignette("tmap-getstarted")`, linked in the documentation.
+
+```{r, eval=F}
+#Check out the tmap: get started! guide
+?tmap
+```
+
+# Any Questions?
+
+
+## `tmap`: saving and sharing maps
+
+We can use the `tmap_last` function to grab the last map we made.
+
+Here, we save it to a named variable ('map1'), then display it.
+
+```{r}
+fav_map <- tmap_last()
+```
+
+## `tmap`: saving and sharing maps
+
+Then we can display it.
+
+```{r}
+fav_map
+```
+
+## `tmap`: saving and sharing maps
+
+And then we can use `tmap_save` to save it.
+
+Let's save in a couple formats, then look at them.
+
+*Note*: We can specify the output format by just using the file extension!
+
+```{r, eval=F}
+tmap_save(fav_map, "./output/SF_properties.png", height=6) # Static image file with
+tmap_save(fav_map, "./output/SF_properties.html") # interactive web map
+```
+
+## `tmap`: saving and sharing maps
+
+There are many ways to publish your maps.
+
+You can share you map online by publishing it to [RPubs](https://rpubs.com).
+
+- You need to have an RPubs account to make that work.
+
+1. Enter the name of your tmap object (`map1`) or your  `tmap` code in the console
+
+2. In the `Viewer` window, click on the **Publish** icon.
+
+
+## `tmap`: saving and sharing maps
+[Here](http://rpubs.com/pfrontiera/358110)'s an RPubs Demo.
+
+
+## `tmap`: starting points
+
+?tmap
+
+?tmap\_shape
+
+?tmap\_element
+
+- ?tm\_polygons (tm\_fill, tm\_borders)
+- ?tm\_symbols (tm\_dots, etc...)
+
+- The [Geocomputation with R](https://geocompr.robinlovelace.net/) textbook (Lovelace, Nowosad, and Muenchow, 2019).
+
+
+
+## Challenge
+
+Using `tmap` instead of `ggplot`, recreate the map from our previous challenge.
+
+Here's the prompt again:
+
+ > Plot tracts, boundary, highways, homes, and landmarks together.
+ > Make the border purple, and the highways and the landmarks red.
+ > Color the homes by the 'totvalue' column.
+
+## Challenge
+
+And here's the map:
+```{r}
+challenge_map
+```
+
+
+## Challenge: Solution
+
+```{r}
+challenge_map_2 = tm_shape(sfboundary) +
+    tm_polygons(border.col = 'purple', alpha = 0) +
+tm_shape(tracts_lonlat) +
+    tm_polygons(col = 'lightgray', border.col = 'darkgray', alpha = 0.3) + 
+tm_shape(sfhighways_lonlat) +
+    tm_lines(col = 'red') +
+tm_shape(sfhomes15_sf) +
+    tm_dots(col = 'totvalue', size = 0.05, palette = '-Blues') +
+tm_shape(landmarks_sf) +
+    tm_dots(col = 'red', size = 0.1) 
+```
+
+
+## Challenge: Solution
+```{r}
+challenge_map_2 
+```
+## Recap
+
+- Geospatial Data in R
+- CSV > Data Frame > ggplot
+- `sf` library - spatial objects and methods in R
+- Convert data frame to `sf`
+- CRS definitions and transformations
+- Map overlays
+- `tmap`
+
+## Questions?
+
+That's the end of Part I!
+
+See you in Part II, where we'll cover spatial analysis!

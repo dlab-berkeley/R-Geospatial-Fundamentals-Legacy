@@ -1698,25 +1698,28 @@ tm_shape(tracts) +
 ```{r }
 tm_shape(tracts) + 
   tm_polygons(col="beige", border.col="red", alpha = 0.4)
-
-#then we'll switch back to 'plot' mode
-ttm()
 ```
 
+## tmap: plot mode
+
+Switch back to 'plot' mode
+
+* Remember how?
 
 ## `tmap`: mapping points
 
-We can also map and customize point data using `tm_dots`
+We can also map and customize `point` data using `tm_dots`
 
 `tm_dots` are a type of `tm_symbols()`
 
 See `?tm_symbols` for other types of point symbols.
 
 ```{r, eval=FALSE}
-tm_shape(sfhomes15_sf) + 
-  tm_dots(col="skyblue", size=.25)
-```
 
+tm_shape(sfhomes15_sf) + 
+  tm_dots(col="skyblue", border.col="red",size=.25)
+
+```
 
 ## `tmap`: mapping points
 
@@ -1724,6 +1727,18 @@ tm_shape(sfhomes15_sf) +
 tm_shape(sfhomes15_sf) + 
   tm_dots(col="skyblue", size=.25)
 ```
+
+## tmap: other point symbols
+
+### CHALLENGE
+
+Alter the previous map to try some other point map styles including:
+
+- `tm_markers`, setting the mode to interactive
+
+- `tm_bubbles`, setting the border color to red
+
+See **?tm_symbols** for help if needed
 
 
 ## `tmap`: mapping lines
@@ -1742,26 +1757,68 @@ tm_shape(sfhighways_lonlat) +
   tm_lines(col="black")
 ```
 
+## `tmap`: mapping lines
 
-## `tmap`: mapping aesthetics onto data values
+### CHALLENGE
 
-This works the same as with `ggplot`, except for two important things to note:
+Take a look at the documentation for tm_lines and then recreate the last map increasing the width of the lines
+
+```{r, eval=F}
+?tm_lines
+```
+
+
+## `tmap`: data driven mapping
+
+Like `ggplot`, we can use data values to drive the symbology
+
+But two important differences:
 
 * we don't use an `aes` aesthetic-mapping function
-* we must quote our column names!
+* we must `quote` our column names!
 
 ```{r, eval=F}
 tm_shape(sfhomes15_sf) + 
   tm_dots(col="totvalue", size=.25) 
 ```
 
-## `tmap`: mapping aesthetics onto data values
+## `tmap`: data driven mapping
 
 ```{r}
 tm_shape(sfhomes15_sf) + 
   tm_dots(col="totvalue", size=.25) 
 ```
 
+## `tmap`: Color Mapping
+
+`tmap` uses the *classint* package to map colors to data values based on classification methods.
+
+Let's take a look at the *style* argument in the documentation.
+
+```{r, eval=F}
+?tm_symbols
+```
+
+## `tmap`: color mapping
+
+See how the choice of classification scheme, set by the *style* argument, alters the cartography.
+
+```{r}
+tmap_mode('plot')
+jenks_map <- tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25, style="jenks")
+
+quantile_map  <- tm_shape(sfhomes15_sf) + 
+  tm_dots(col="totvalue", size=.25, style="quantile")
+```
+
+## `tmap`: color mapping
+
+Compare the two classification schemes...
+
+```{r}
+tmap_arrange(jenks_map, quantile_map)
+```
 
 ## `tmap`: mapping multiple layers
 
@@ -1922,7 +1979,8 @@ tm_layout(inner.margins=c(.05, .2, .15, .05)) # bottom, left, top, right
 ## `tmap`: advanced customization
 And we can access a wide variety of basemaps. 
 
-([Here](http://leaflet-extras.github.io/leaflet-providers/preview/)'s a list.)
+Here's the list:
+<http://leaflet-extras.github.io/leaflet-providers/preview/>
 
 Let's try watercolor!
 
@@ -1947,27 +2005,27 @@ tm_tiles("Stamen.TonerLabels")
 
 ## `tmap`: advanced customization
 
-And here's another type of basemap.
+If time, try another basemap from the list
+<http://leaflet-extras.github.io/leaflet-providers/preview>
 
 ```{r, eval=F}
 tmap_mode('view')
-tm_basemap('OpenStreetMap.HOT') + 
+#tm_basemap('<YOUR BASEMAP NAME HERE') + 
 tm_shape(sfhomes15_sf) + 
 tm_dots(col="totvalue", size=.05, title = "San Francisco Property Values (2015)") +
-tm_tiles("Stamen.TonerLabels")
+
 ```
 
-## `tmap`: advanced customization
+## `tmap`
 
-And here's another type of basemap.
+`tmap` provides support for so many different types of maps, check out the *tmap: get started* guide, `vignette("tmap-getstarted")`, linked in the documentation.
 
-```{r, echo=F, message=F}
-tmap_mode('view')
-tm_basemap('OpenStreetMap.HOT') + 
-tm_shape(sfhomes15_sf) + 
-tm_dots(col="totvalue", size=.05, title = "San Francisco Property Values (2015)") +
-tm_tiles("Stamen.TonerLabels")
+```{r, eval=F}
+#Check out the tmap: get started! guide
+?tmap
 ```
+
+# Any Questions?
 
 
 ## `tmap`: saving and sharing maps
