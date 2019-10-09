@@ -79,21 +79,21 @@ sftracts <- st_read("./data", "sftracts_wpop")
 
 ```{r}
 # Read in from CSV file
-sfhomes <- read.csv('./data/sf_properties.csv', 
+SFhomes <- read.csv('./data/sf_properties.csv', 
                     stringsAsFactors = FALSE)
 # subset the data
-sfhomes15 <- subset(sfhomes, as.numeric(SalesYear) == 2015)
+SFhomes15 <- subset(SFhomes, as.numeric(SalesYear) == 2015)
 
 # coerce to an `sf` object
-sfhomes15_sf <- st_as_sf(sfhomes15, coords = c('lon', 'lat'),
+SFhomes15_sf <- st_as_sf(SFhomes15, coords = c('lon', 'lat'),
                                                   crs = 4326)
 #Reproject to the sftracts projection
-#NOTE: We're overwriting the previous sfhomes15_sf object here! This is
+#NOTE: We're overwriting the previous SFhomes15_sf object here! This is
 #fine to do if we want, but we should always beware.
-sfhomes15_sf = st_transform(sfhomes15_sf, st_crs(sftracts))
+SFhomes15_sf = st_transform(SFhomes15_sf, st_crs(sftracts))
 
 #check projection equality
-st_crs(sfhomes15_sf) == st_crs(sftracts)
+st_crs(SFhomes15_sf) == st_crs(sftracts)
 ```
 
 # Section 1: Raster Data in R
@@ -434,13 +434,13 @@ Luckily, this is easy!
 
 To convert __from `sf` to `sp`__, `sf` provides the `as_Spatial` function.
 
-Let's convert `sfhomes15_sf`, then look at its string representation.
+Let's convert `SFhomes15_sf`, then look at its string representation.
 
 Note that it looks very similar to the metadata of a `raster` object.
 
 ```{r}
-sfhomes15_sp = as_Spatial(sfhomes15_sf)
-sfhomes15_sp
+SFhomes15_sp = as_Spatial(SFhomes15_sf)
+SFhomes15_sp
 ```
 
 ## `sp` package
@@ -448,7 +448,7 @@ sfhomes15_sp
 And look at its structure, which is also similar.
 
 ```{r, eval=F}
-str(sfhomes15_sp)
+str(SFhomes15_sp)
 ```
 
 ## `sp` package
@@ -488,7 +488,7 @@ using a variety of packages that may not be compatible (yet?) with `sf`.
 Here's a plot:
 
 ```{r}
-plot(sfhomes15_sp)
+plot(SFhomes15_sp)
 ```
 
 ## `sp` package
@@ -497,8 +497,8 @@ And if you need to convert __from `sp` to `sf`__,
 there's a function for that too (which we already saw in Part 1!).
 
 ```{r}
-sfhomes15_sfagain = st_as_sf(sfhomes15_sp)
-plot(sfhomes15_sfagain['totvalue'])
+SFhomes15_sfagain = st_as_sf(SFhomes15_sp)
+plot(SFhomes15_sfagain['totvalue'])
 ```
 
 ## `sp` package
@@ -934,7 +934,7 @@ Pulling code from the end of Part II of this workshop, let's aggregate our homes
 
 ```{r}
 #aggregate totvalue to sftracts
-sftracts_w_mean_val = aggregate(x = sfhomes15_sf['totvalue'],
+sftracts_w_mean_val = aggregate(x = SFhomes15_sf['totvalue'],
                                 by = sftracts,
                                 FUN = mean)
 #and add the totvalue column to our sftracts dataframe
@@ -970,7 +970,7 @@ Parts I to III of the workshop!
 
 ```{r}
 #Take a random subset of our 2015 homes, to save on computer time
-sfhomes15_sample = sfhomes15_sf[sample(seq(nrow(sfhomes15_sf)),
+SFhomes15_sample = SFhomes15_sf[sample(seq(nrow(SFhomes15_sf)),
                                 replace = FALSE, size = 2000), ]
 ```
 
@@ -981,17 +981,17 @@ than decimal degrees.
 
 ```{r}
 #reproject
-sfhomes15_utm <- st_transform(sfhomes15_sample, 26910)
+SFhomes15_utm <- st_transform(SFhomes15_sample, 26910)
 DEM_utm = projectRaster(DEM,
                         projectExtent(DEM,
-                                      crs(st_crs(sfhomes15_utm)$proj4string)))
+                                      crs(st_crs(SFhomes15_utm)$proj4string)))
 nlcd_green_utm = projectRaster(nlcd_green,
                                projectExtent(nlcd_green,
-                                             crs(st_crs(sfhomes15_utm)$proj4string)))
+                                             crs(st_crs(SFhomes15_utm)$proj4string)))
 
 #check projections
-st_crs(sfhomes15_utm) == st_crs(DEM_utm)
-st_crs(sfhomes15_utm) == st_crs(nlcd_green_utm)
+st_crs(SFhomes15_utm) == st_crs(DEM_utm)
+st_crs(SFhomes15_utm) == st_crs(nlcd_green_utm)
 ```
 
 ## Predicting home values
@@ -1001,14 +1001,14 @@ those buffers.
 
 ```{r}
 #create buffer
-sfhomes15_utm_buff = st_buffer(sfhomes15_utm, dist = 100)
+SFhomes15_utm_buff = st_buffer(SFhomes15_utm, dist = 100)
 
 #sum the greenspace within the buffers 
 #NOTE: This will take a couple minutes to run...
-greenspace_homes = extract(nlcd_green_utm, sfhomes15_utm_buff, fun = mean, na.rm = T)
+greenspace_homes = extract(nlcd_green_utm, SFhomes15_utm_buff, fun = mean, na.rm = T)
 
-#add that as a column in our sfhomes15_utm dataframe
-sfhomes15_utm$greenspace = greenspace_homes
+#add that as a column in our SFhomes15_utm dataframe
+SFhomes15_utm$greenspace = greenspace_homes
 ```
 
 ## Predicting home values
@@ -1019,10 +1019,10 @@ And now let's extract the elevation at each home.
 #extract the elevation to the homes
 #NOTE: no need for fun or na.rm arguments here, because the homes
 #and points, not polygons, so only a single cell will extract to each
-elev_homes = extract(DEM_utm, sfhomes15_utm)
+elev_homes = extract(DEM_utm, SFhomes15_utm)
 
-#add that as a column in our sfhomes15_utm dataframe too
-sfhomes15_utm$elev = elev_homes
+#add that as a column in our SFhomes15_utm dataframe too
+SFhomes15_utm$elev = elev_homes
 
 ```
 

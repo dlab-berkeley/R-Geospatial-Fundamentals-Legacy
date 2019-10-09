@@ -84,13 +84,13 @@ setwd("~/Documents/Dlab/workshops/2018/rgeo/r-geospatial-workshop/r-geospatial-w
 
 ## `sf` objects used in Part I
 
-- sfhomes15_sf
+- SFhomes15_sf
 - bart_sf
 - tracts
 - tracts_lonlat
-- sfhighways
-- sfhighways_lonlat
-- sfboundary
+- SFhighways
+- SFhighways_lonlat
+- SFboundary
 - landmarks_sf
 - landmarks_lonlat
 
@@ -101,13 +101,13 @@ and convert to an `sf` object.
 
 ```{r}
 # Read in from CSV file
-sfhomes <- read.csv('data/sf_properties_25ksample.csv', 
+SFhomes <- read.csv('data/sf_properties_25ksample.csv', 
                     stringsAsFactors = FALSE)
 # subset the data
-sfhomes15 <- subset(sfhomes, as.numeric(SalesYear) == 2015)
+SFhomes15 <- subset(SFhomes, as.numeric(SalesYear) == 2015)
 
 # convert to an `sf` object with a defined CRS (WGS84)
-sfhomes15_sf <- st_as_sf(sfhomes15, coords = c('lon', 'lat'),
+SFhomes15_sf <- st_as_sf(SFhomes15, coords = c('lon', 'lat'),
                          crs = 4326)
 
 ```
@@ -151,7 +151,7 @@ landmarks_sf = st_as_sf(landmarks, coords = c('X', 'Y'), crs = 3857)
 
 landmarks_lonlat = st_transform(landmarks_sf, st_crs(4326))
 #or
-#landmarks_lonlat = st_transform(landmarks_sf, st_crs(sfhomes15_sf))
+#landmarks_lonlat = st_transform(landmarks_sf, st_crs(SFhomes15_sf))
 ```
 
 
@@ -161,7 +161,7 @@ Read in the `sf_boundary.shp` **shapefile** with `st_read`.
 
 * What is it's CRS?  EPSG Code?
 ```{r}
-sfboundary <- st_read('./data', 'sfboundary')
+SFboundary <- st_read('./data', 'SFboundary')
 
 ```
 
@@ -170,20 +170,20 @@ sfboundary <- st_read('./data', 'sfboundary')
 Read in the `sf_highways.shp` shapefile with `st_read`.
 
 ```{r}
-sfhighways = st_read('./data', 'sfhighways')
+SFhighways = st_read('./data', 'SFhighways')
 ```
 
 
 ## CRS Operations
 
-Check the CRS of the `sfhighways` data
+Check the CRS of the `SFhighways` data
 ```{r}
-st_crs(sfhighways)
+st_crs(SFhighways)
 ```
 
-Transform sfhighways CRS to WGS84 (lon/lat) 
+Transform SFhighways CRS to WGS84 (lon/lat) 
 ```{r}
-sfhighways_lonlat = st_transform(sfhighways, st_crs(sfhomes15_sf))
+SFhighways_lonlat = st_transform(SFhighways, st_crs(SFhomes15_sf))
 ```
 
 
@@ -265,9 +265,9 @@ If my goal is to do spatial analysis, I will convert to a projected CRS.
 
 ## Transform all layers to UTM 10N, NAD83
 
-Use `st_transform` to transform `sfhomes15_sp` and `bart` to `UTM 10N, NAD83`
+Use `st_transform` to transform `SFhomes15_sp` and `bart` to `UTM 10N, NAD83`
 
-- `sfhighways` and `sfboundary` already have this CRS
+- `SFhighways` and `SFboundary` already have this CRS
 
 Recall, this transformation is called `projecting` or `reprojecting`
 
@@ -275,7 +275,7 @@ The `EPSG` code is **26910**, units are meters.
 
 ## Transform all layers to UTM 10, NAD83
 
-First, transform `sfhomes15_sp`
+First, transform `SFhomes15_sp`
 
 (*Remember, this is also called `reprojecting`.*)
 
@@ -283,26 +283,26 @@ Note the two methods for doing same thing:
 
 ```{r}
 #highways are already in 26910!
-st_crs(sfhighways)
+st_crs(SFhighways)
 
 #so we can use them as the target CRS
-sfhomes15_utm <- st_transform(sfhomes15_sf, st_crs(sfhighways))
+SFhomes15_utm <- st_transform(SFhomes15_sf, st_crs(SFhighways))
 
 #OR we could just use the EPSG code directly
-#sfhomes15_utm <- st_transform(sfhomes15_sf, 26910)
+#SFhomes15_utm <- st_transform(SFhomes15_sf, 26910)
 ```
 
 ## Transform the boundary?
 
 ```{r}
 # Check the CRS
-st_crs(sfboundary) == st_crs(sfhomes15_utm)
+st_crs(SFboundary) == st_crs(SFhomes15_utm)
 
 # Transform
-sfboundary_utm <- st_transform(sfboundary, st_crs(sfhomes15_utm))
+SFboundary_utm <- st_transform(SFboundary, st_crs(SFhomes15_utm))
 
 # Check again
-st_crs(sfboundary_utm) == st_crs(sfhomes15_utm)
+st_crs(SFboundary_utm) == st_crs(SFhomes15_utm)
 ```
 
 ## BART data - Challenge
@@ -316,7 +316,7 @@ Name the new object `bart_utm`
 ```{r}
 
 # Transform Bart to UTM
-bart_utm <- st_transform(bart_sf, st_crs(sfhomes15_utm))
+bart_utm <- st_transform(bart_sf, st_crs(SFhomes15_utm))
 ```
 
 
@@ -326,9 +326,9 @@ Do the CRSs all match?
 
 ```{r}
 st_crs(bart_utm)$epsg
-st_crs(sfboundary_utm)$epsg
-st_crs(sfhighways)$epsg
-st_crs(sfhomes15_utm)$epsg
+st_crs(SFboundary_utm)$epsg
+st_crs(SFhighways)$epsg
+st_crs(SFhomes15_utm)$epsg
 ```
 
 ## Map all layers
@@ -336,9 +336,9 @@ st_crs(sfhomes15_utm)$epsg
 Visual check
 
 ```{r, error=T}
-plot(sfboundary_utm)
-lines(sfhighways, col='purple', lwd=4)
-points(sfhomes15_utm)
+plot(SFboundary_utm)
+lines(SFhighways, col='purple', lwd=4)
+points(SFhomes15_utm)
 plot(bart_utm, col="red", pch=15, add=T)
 ```
 
@@ -357,9 +357,9 @@ Two things:
 However, we can get what we want easily, with the help of the `st_geometry` function:
 
 ```{r}
-plot(st_geometry(sfboundary_utm))
-plot(st_geometry(sfhighways), col='purple', lwd=4, add = T)
-plot(st_geometry(sfhomes15_utm), add = T, pch = 19, cex = 0.5)
+plot(st_geometry(SFboundary_utm))
+plot(st_geometry(SFhighways), col='purple', lwd=4, add = T)
+plot(st_geometry(SFhomes15_utm), add = T, pch = 19, cex = 0.5)
 plot(st_geometry(bart_utm), col="skyblue", pch=19, cex = 1, add=T)
 ```
 
@@ -372,11 +372,11 @@ Create the same plot, as closely as possible, using `tmap`.
 ## Challenge: Solution
 
 ```{r}
-challenge_map = tm_shape(sfboundary) +
+challenge_map = tm_shape(SFboundary) +
   tm_polygons() +
-tm_shape(sfhighways) +
+tm_shape(SFhighways) +
   tm_lines(col = 'purple', lwd = 4) +
-tm_shape(sfhomes15_sf) +
+tm_shape(SFhomes15_sf) +
   tm_dots(col = 'black', size = 0.5) + 
 tm_shape(bart_utm) +
   tm_dots(col = 'skyblue', size = 1)
@@ -424,7 +424,7 @@ What data would we use to answer that question?
 - Check results against Wikipedia for [SF](https://en.wikipedia.org/wiki/San_Francisco)
 
 ```{r}
-sf_area = st_area(sfboundary_utm)
+sf_area = st_area(SFboundary_utm)
 sf_area
 ```
 
@@ -453,9 +453,7 @@ sf_area / (1000 * 1000) # Convert to square KM
 That number is right, but now we've got an annoying little problem: Our value in square
 kilometers is labeled as square meters!
 
-The `units` package provides a better way.
-
-(This is a dependency of `sf`, so you should be able to load it in and use it.)
+The `units` package, an `sf` dependency, provides a better way.
 
 ```{r}
 library(units)
@@ -491,13 +489,13 @@ head(valid_udunits(), 2)
 What if we gave `st_area` the SF boundary in an unprojected CRS?
 
 ```{r, eval=FALSE}
-st_area(sfboundary)
+st_area(SFboundary)
 ```
 
 ## Area of San Francisco
 
 ```{r}
-st_area(sfboundary)
+st_area(SFboundary)
 ```
 
 `st_area` still gives us the measurement in a reasonable unit
@@ -508,7 +506,7 @@ st_area(sfboundary)
 (Also notice the slight difference in our answers. This is not an equal-area projection!)
 
 ```{r}
-st_area(sfboundary_utm)
+st_area(SFboundary_utm)
 ```
 
 ## Discussion
@@ -547,7 +545,7 @@ tracts_lonlat$area_m2 <- st_area(tracts_lonlat)
 
 Use the function `st_length` to compute length of linear geometries.
 ```{r}
-st_length(sfhighways)
+st_length(SFhighways)
 ```
 
 ## Length of highways
@@ -564,10 +562,18 @@ Calculate the total length of SF highways in our dataset, in km.
 ## Challenge: solution
 
 ```{r}
-tot_length = set_units(sum(st_length(sfhighways)), km)
+tot_length = set_units(sum(st_length(SFhighways)), km)
 tot_length
 ```
 
+## Perimeter
+
+We can also calculate the perimeter of polygons, should we need it (though this is implemented in the `lwgeom` package, an `sf` dependency, rather than in `sf` itself.)
+
+```{r}
+perim = lwgeom::st_perimeter(tracts)
+head(perim, 10)
+```
 
 ## Distance
 
@@ -603,12 +609,12 @@ That means we can easily calculate the distance between all SF properties and Em
 
 ```{r}
 dist2emb <- st_distance(bart_utm[bart_utm$STATION == 'EMBARCADERO',],
-                     sfhomes15_utm)
+                     SFhomes15_utm)
 dist2emb <- set_units(dist2emb, km)
 
 # check output
 length(dist2emb)
-nrow(sfhomes15_utm)
+nrow(SFhomes15_utm)
 head(dist2emb, 10)
 ```
 
@@ -620,7 +626,7 @@ __You could just nest your calls, if you'd like.__
 
 ```{r}
 dist2emb <- set_units(st_distance(bart_utm[bart_utm$STATION == 'EMBARCADERO',],
-sfhomes15_utm), km)
+SFhomes15_utm), km)
 
 # check output
 head(dist2emb, 10)
@@ -633,7 +639,7 @@ __You could also use the 'tidy' syntax, if you're into that!__
 
 ```{r}
 dist2emb <- st_distance(bart_utm[bart_utm$STATION == 'EMBARCADERO',],
-                     sfhomes15_utm) %>% set_units(km)
+                     SFhomes15_utm) %>% set_units(km)
 # check output
 head(dist2emb, 10)
 ```
@@ -678,7 +684,7 @@ We already know the answer, but let's see how it's done.
 What does it return by default?
 
 ```{r}
-bart_stations_in_sf <-st_within(bart_utm, sfboundary_utm) 
+bart_stations_in_sf <-st_within(bart_utm, SFboundary_utm) 
 
 head(bart_stations_in_sf)
 ```
@@ -690,7 +696,7 @@ object by default.
 This is more efficient, but more complicated to work with. For our purposes, let's disable this behavior:
 
 ```{r}
-bart_stations_in_sf <-st_within(bart_utm, sfboundary_utm, sparse=F)
+bart_stations_in_sf <-st_within(bart_utm, SFboundary_utm, sparse=F)
 
 head(bart_stations_in_sf)
 ```
@@ -739,7 +745,7 @@ And of course, there are multiple ways to do a thing!
 We could also use the `st_intersection` function to get similar results.
 
 ```{r}
-sfbart_utm = st_intersection(bart_utm, sfboundary_utm)
+sfbart_utm = st_intersection(bart_utm, SFboundary_utm)
 sfbart_utm
 ```
 
@@ -749,7 +755,7 @@ sfbart_utm
 ```{r, eval=F}
 tmap_mode("view")
 
-tm_shape(sfboundary_utm) + 
+tm_shape(SFboundary_utm) + 
   tm_polygons(col="beige", border.col="black") +
 tm_shape(sfbart_utm) + 
   tm_dots(col="red")
@@ -760,7 +766,7 @@ tm_shape(sfbart_utm) +
 ```{r, message=F, echo=F}
 tmap_mode("view")
 
-tm_shape(sfboundary_utm) + 
+tm_shape(SFboundary_utm) + 
   tm_polygons(col="beige", border.col="black") +
 tm_shape(sfbart_utm) + 
   tm_dots(col="red")
@@ -796,7 +802,7 @@ tmap_mode("plot")
 
 ## SF Census Tracts
 
-Let's consider the `sfhomes15_utm` data along with the *SF census tract* data 
+Let's consider the `SFhomes15_utm` data along with the *SF census tract* data 
 that we saw on day 1.
 
 However, we are going to work with another version of the tract data, one that includes the population for each tract.
@@ -824,7 +830,7 @@ sftracts <- st_read("./data", "sftracts_wpop")
 plot(sftracts['pop14'])
 ```
 
-# Spatial Join
+# Joins and Aggregation
 
 ## Spatial join
 
@@ -847,7 +853,7 @@ We could use any of a family of spatial relationships that all return matrices o
 
 ## In what census tract is each property located?
 
-We need to **spatially join** the `sftracts` and `sfhomes15_utm` to answer this.
+We need to **spatially join** the `sftracts` and `SFhomes15_utm` to answer this.
 
 What spatial object are we joining data from? to?
 
@@ -865,7 +871,7 @@ We want to associate with each home the name of the census tract within which it
 *In what census tract is each SF property located?* 
 
 ```{r, eval=F}
-homes_with_tracts <- st_within(sfhomes15_utm, sftracts)
+homes_with_tracts <- st_within(SFhomes15_utm, sftracts)
 ```
 
 ## Did it work?
@@ -880,7 +886,7 @@ The `st_within` function, like almost all spatial analysis functions, requires t
 ```{r, eval=F}
 
 # What is the CRS of the property data?
-st_crs(sfhomes15_utm)
+st_crs(SFhomes15_utm)
 
 # What is the CRS of the census tracts?
 st_crs(sftracts)
@@ -891,10 +897,10 @@ st_crs(sftracts)
 
 ```{r}
 #transform to UTM
-sftracts_utm = st_transform(sftracts, st_crs(sfhomes15_utm))
+sftracts_utm = st_transform(sftracts, st_crs(SFhomes15_utm))
 
 # make sure the CRSs are the same
-st_crs(sftracts_utm) == st_crs(sfhomes15_utm) 
+st_crs(sftracts_utm) == st_crs(SFhomes15_utm) 
 ```
 
 Now let's try that overlay operation again
@@ -904,7 +910,7 @@ Now let's try that overlay operation again
 *In what tract is each SF property is located?*
 
 ```{r}
-homes_with_tracts <- st_within(sfhomes15_utm, sftracts_utm)
+homes_with_tracts <- st_within(SFhomes15_utm, sftracts_utm)
 ```
 
 
@@ -915,23 +921,23 @@ What is our output? Does it answer our question?
 What type of data object did the over function return?
 
 ```{r, eval=F}
-homes_with_tracts <- st_within(sfhomes15_utm, sftracts_utm)
+homes_with_tracts <- st_within(SFhomes15_utm, sftracts_utm)
 
 class(homes_with_tracts)
 length(homes_with_tracts)
 nrow(sftracts_utm)
-nrow(sfhomes15_utm)
+nrow(SFhomes15_utm)
 ```
 
 ## Review the `st_within` output
 
 What do we have here?
 ```{r}
-homes_with_tracts <- st_within(sfhomes15_utm, sftracts_utm)
+homes_with_tracts <- st_within(SFhomes15_utm, sftracts_utm)
 class(homes_with_tracts)
 length(homes_with_tracts)
 nrow(sftracts_utm)
-nrow(sfhomes15_utm)
+nrow(SFhomes15_utm)
 
 ```
 
@@ -956,7 +962,7 @@ head(homes_with_tracts)
 
 ## Review the `st_within` output
 
-We have a `list`, where each item's _index_ is a `sfhomes15_utm` property's index,
+We have a `list`, where each item's _index_ is a `SFhomes15_utm` property's index,
 and each _value_ is the index of the `sftracts_utm` census tract within which it is found.
 
 We're halfway there!
@@ -969,7 +975,7 @@ We can now finish the operation by:
 the `sftracts_utm` `data.frame`;
 
 2. grabbing the desired columns from that subsetted `data.frame` and adding
-   them to our `sfhomes15_utm` `data.frame`.
+   them to our `SFhomes15_utm` `data.frame`.
 
 In our case, the desired column will just be the `GEOID` column (a standardized ID
 that we can then use to link up to non-spatial census data).
@@ -978,14 +984,14 @@ that we can then use to link up to non-spatial census data).
 
 *CAUTION: this only works because the data are in the right order!*
 ```{r}
-sfhomes15_utm$home_geoid <- sftracts_utm[unlist(homes_with_tracts),]$GEOID
+SFhomes15_utm$home_geoid <- sftracts_utm[unlist(homes_with_tracts),]$GEOID
 
 ```
 
 ## Check the result
 
 ```{r}
-head(sfhomes15_utm, 2)
+head(SFhomes15_utm, 2)
 ```
 
 ## Check the result
@@ -993,7 +999,7 @@ head(sfhomes15_utm, 2)
 ```{r}
 join_map = tm_shape(sftracts_utm) +
   tm_polygons() +
-tm_shape(sfhomes15_utm) +
+tm_shape(SFhomes15_utm) +
   tm_dots(col = 'home_geoid', size = 0.25)
 ```
 
@@ -1009,11 +1015,11 @@ join_map
 
 Data linkage via space!
 
-The `st_within` operation gave us the census tract data info for each point in `sfhomes15_utm`
+The `st_within` operation gave us the census tract data info for each point in `SFhomes15_utm`
 
-We added the `GEOID` for each point to the `sfhomes15_utm` sf object.
+We added the `GEOID` for each point to the `SFhomes15_utm` sf object.
 
-We can now join `sfhomes15_utm` points by `GEOID` to any census variable, eg median household income, and then do an analysis of the relationship between, for example, property value and that variable.
+We can now join `SFhomes15_utm` points by `GEOID` to any census variable, eg median household income, and then do an analysis of the relationship between, for example, property value and that variable.
 
 **How would we do that?**
 
@@ -1042,7 +1048,7 @@ head(med_hh_inc)
 
 ## Joining a regular `data.frame` to an `sf` `data.frame`
 
-We can use `merge` to join the `med_hh_inc` DF to the `sfhomes15_utm` `sf` object.
+We can use `merge` to join the `med_hh_inc` DF to the `SFhomes15_utm` `sf` object.
 
 We should make sure that they share a column of common values - GEOID / home_geoid
 
@@ -1058,14 +1064,14 @@ just like regular old `data.frame` in this way.)
 ```{r}
 #make sure we're using `base` `merge` (because multiple other packages
 #that you might have read in also have a `merge` function)
-sfhomes15_utm <- base::merge(sfhomes15_utm, 
+SFhomes15_utm <- base::merge(SFhomes15_utm, 
                        med_hh_inc, by.x="home_geoid", by.y="GEOID")
 ```
 
 ## Take a look at output
 
 ```{r}
-head(sfhomes15_utm, 2) # Look for the col medhhinc
+head(SFhomes15_utm, 2) # Look for the col medhhinc
 ```
 
 
@@ -1073,7 +1079,7 @@ head(sfhomes15_utm, 2) # Look for the col medhhinc
 
 ```{r, message=F}
 tmap_mode("view")
-tm_shape(sfhomes15_utm) + tm_dots(col="medhhinc")
+tm_shape(SFhomes15_utm) + tm_dots(col="medhhinc")
 ```
 
 ## The Census Tract Perspective
@@ -1115,7 +1121,7 @@ We see that we can provide arguments:
 
 ## What is the mean home value in each census tract?
 ```{r}
-tracts_with_mean_val <- aggregate(x = sfhomes15_utm["totvalue"], 
+tracts_with_mean_val <- aggregate(x = SFhomes15_utm["totvalue"], 
                                   by = sftracts_utm,
                                   FUN = mean)
 ```
@@ -1173,20 +1179,15 @@ choropleth
 
 ## Why no values for some tracts?
 ```{r}
-choropleth + tm_shape(sfhomes15_utm) + tm_dots(size = 0.01)
+choropleth + tm_shape(SFhomes15_utm) + tm_dots(size = 0.01)
 ```
 
-# Distance queries
 
-## Distance queries
-
-Many methods of spatial analysis are based on distance queries.
-
-For example, point pattern analysis considers the distance between features to determine whether or not they are clustered.
-
-We can also use distance as a way to select features spatially.
+# Composite operations
 
 ## Selecting by Distance
+
+Many methods of spatial analysis use distance to select features. For example...
 
 *What properties are within walking distance of BART?*
 
@@ -1237,10 +1238,10 @@ Once again, we can use `st_intersects` or `st_intersection`
 ## What properties are within 1km of a bart station?
 
 ```{r}
-sfhomes_near_bart <-st_intersection(sfhomes15_utm, bart_1km_buffer)
+SFhomes_near_bart <-st_intersection(SFhomes15_utm, bart_1km_buffer)
 
 # Take a look
-head(sfhomes_near_bart)
+head(SFhomes_near_bart)
 ```
 
 ## Plot it
@@ -1248,7 +1249,7 @@ head(sfhomes_near_bart)
 tmap_mode('view')
 tm_shape(bart_1km_buffer) + tm_borders(col="red") +
 tm_shape(sfbart_utm) + tm_dots() +
-tm_shape(sfhomes_near_bart) +
+tm_shape(SFhomes_near_bart) +
 tm_dots(col = 'green', size = 0.03)
 ```
 
