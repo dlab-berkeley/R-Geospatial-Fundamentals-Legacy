@@ -80,135 +80,22 @@ setwd("~/Documents/Dlab/workshops/2018/rgeo/r-geospatial-workshop/r-geospatial-w
 ```
 
 
-# Section I: Load files from Part I
+## Reload Part I data
 
-## `sf` objects used in Part I
+You may want to reload the data that we had in our workspace at the end of Part I.
 
-- SFhomes15_sf
-- bart_sf
-- tracts
-- tracts_lonlat
-- SFhighways
-- SFhighways_lonlat
-- SFboundary
-- landmarks_sf
-- landmarks_lonlat
+We've provided a little script for doing that, which you can run using the following line of code:
 
-## SF Properties 2015
-
-Read in the SF properties data from a CSV,
-and convert to an `sf` object.
-
-```{r}
-# Read in from CSV file
-SFhomes <- read.csv('data/sf_properties_25ksample.csv', 
-                    stringsAsFactors = FALSE)
-# subset the data
-SFhomes15 <- subset(SFhomes, as.numeric(SalesYear) == 2015)
-
-# convert to an `sf` object with a defined CRS (WGS84)
-SFhomes15_sf <- st_as_sf(SFhomes15, coords = c('lon', 'lat'),
-                         crs = 4326)
-
+```{r, eval=F}
+source('./docs/reload_part_01_data.R')
 ```
 
-## BART Stations
-
-Read in the BART data from a CSV.
-
-```{r}
-# Read in the Bart data from CSV file
-bart <- read.csv("./data/bart.csv", stringsAsFactors = F)
-
-```
-
-## BART Stations
-
-### CHALLENGE
-
-Convert the `bart` datafame to an `sf` object named `bart_sf` with a defined CRS (WGS84)
-
-## BART Stations
-
-### SOLUTION
-
-```{r}
-bart_sf <- st_as_sf(bart, coords = c('X', 'Y'), crs = 4326)
-```
-
-## Landmarks Challenge
-
-- Read in the `landmarks` data from CSV file (landmarks.csv)
-- Promote the landmarks dataframe to an `sf` object named `landmarks_sf` with a CRS of web mercator (3857)
-- Transform the landmarks data to an sf object called `landmarks_lonlat` with the CRS for WGS84 (4326)
-
-## Landmarks Solution
-
-```{r}
-landmarks <- read.csv("./data/landmarks.csv") 
-
-landmarks_sf = st_as_sf(landmarks, coords = c('X', 'Y'), crs = 3857)
-
-landmarks_lonlat = st_transform(landmarks_sf, st_crs(4326))
-#or
-#landmarks_lonlat = st_transform(landmarks_sf, st_crs(SFhomes15_sf))
+```{r, echo=F}
+source('./docs/reload_part_01_data.R')
 ```
 
 
-## SF Boundary
-
-Read in the `sf_boundary.shp` **shapefile** with `st_read`.
-
-* What is it's CRS?  EPSG Code?
-```{r}
-SFboundary <- st_read('./data', 'SFboundary')
-
-```
-
-## SF Highways
-
-Read in the `sf_highways.shp` shapefile with `st_read`.
-
-```{r}
-SFhighways = st_read('./data', 'SFhighways')
-```
-
-
-## CRS Operations
-
-Check the CRS of the `SFhighways` data
-```{r}
-st_crs(SFhighways)
-```
-
-Transform SFhighways CRS to WGS84 (lon/lat) 
-```{r}
-SFhighways_lonlat = st_transform(SFhighways, st_crs(SFhomes15_sf))
-```
-
-
-## Challenge
-
-Read in the `sftracts.shp` shapefile into an `sf` object named `tracts`
-
-* What is it's CRS? EPSG Code?
-
-Transform `tracts` to a new sf object named `tracts_lonlat` with the CRS 4326 
-
-## Tracts Solution
-```{r}
-tracts = st_read(dsn = './data', layer = 'sftracts')
-tracts_lonlat = st_transform(tracts, crs = 4326)
-```
-
-# Any Questions?
-
-## Catch up
-
-*Complete Part I of workshop if needed.*
-
-
-# Section II: Spatial Analysis
+# Spatial Analysis
 
 ## The Spatial Analysis Workflow
 
@@ -460,22 +347,10 @@ library(units)
 set_units(sf_area, km^2)
 ```
 
-## Area in sq km
-
-Neat!
-
-It isn't necessary to do it this way, but it's certainly neater.
-And we'll get informative error messages if we mess up our conversions:
-
-```{r, error=T}
-set_units(sf_area, km^3)
-set_units(sf_area, km*2)
-set_units(sf_area, sqkm)
-```
 
 ## Area in sq km
 
-That last error gave us a very helpful suggestion: Let's see a table of the valid units.
+The function `valid_udunits` will give us a table of the valid units we could convert to:
 
 (Note that the 'ud' comes from the `udunits` package, a dependency of the `units` package.)
 
@@ -508,38 +383,6 @@ st_area(SFboundary)
 ```{r}
 st_area(SFboundary_utm)
 ```
-
-## Discussion
-
-What is `st_area` doing when the CRS is geographic (lonlat) vs. projected (eg UTM)?
-
-```{r, eval=F}
-?st_area
-```
-
-## CHALLENGE
-
-Compute the area in km^2 of all tracts in the `tracts`
-Compute the area in km^2 of all tracts in the `tracts_lonlat`
-
-Compute the area in m^2 of each tract in `tracts` and add it as a column named `area_m2`
-Compute the area in m^2 of each tract in `tracts_lonlat` and add it as a column `area_m2`
-
-## SOLUTION
-
-View the two dataframes.
-
-- Is Web Mercator a good CRS for area calculations?
-
-```{r}
-sum(set_units(st_area(tracts), km^2))
-sum(set_units(st_area(tracts_lonlat), km^2))
-
-tracts_lonlat$area_m2 <- st_area(tracts_lonlat)
-tracts_lonlat$area_m2 <- st_area(tracts_lonlat)
-
-```
-
 
 ## Length of highways
 
@@ -830,7 +673,17 @@ sftracts <- st_read("./data", "sftracts_wpop")
 plot(sftracts['pop14'])
 ```
 
-# Joins and Aggregation
+
+# Composite operations
+
+## Composite operations
+
+The remaining material will work through some common spatial anlysis tasks.
+
+Each workflow will feature some combination spatial measurement operations, spatial relationship operations,
+and other non-spatial operations.
+
+## Joins and Aggregation
 
 ## Spatial join
 
@@ -1183,9 +1036,8 @@ choropleth + tm_shape(SFhomes15_utm) + tm_dots(size = 0.01)
 ```
 
 
-# Composite operations
 
-## Selecting by Distance
+## Proximity Analysis
 
 Many methods of spatial analysis use distance to select features. For example...
 

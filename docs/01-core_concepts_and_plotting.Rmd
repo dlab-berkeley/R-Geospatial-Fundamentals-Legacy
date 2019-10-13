@@ -474,18 +474,6 @@ ggplot() +
   coord_map()
 ```
 
-## Challenge
-
-Map the SFhomes data in decreasing order by `totvalue`.
-
-
-## Decreasing order by `totvalue`
-
-```{r}
-SFhomes_high2low <- SFhomes[order(SFhomes$totvalue, decreasing = T),]
-ggplot() + geom_point(data=SFhomes_high2low, aes(lon,lat, col=totvalue)) + 
-  coord_map()
-```
 
 ## More `ggplot` Goodness
 
@@ -536,7 +524,7 @@ For the maps from here on out, to deal with a smaller example dataset, we're goi
 for only those rows that pertain to year 2015.
 
 ```{r}
-SFhomes15 <- subset(SFhomes_high2low, as.numeric(SalesYear) == 2015)
+SFhomes15 <- subset(SFhomes_low2high, as.numeric(SalesYear) == 2015)
 ```
 
 
@@ -1660,16 +1648,6 @@ tm_shape(SFhighways_lonlat) +
   tm_lines(col="black")
 ```
 
-## `tmap`: mapping lines
-
-### CHALLENGE
-
-Take a look at the documentation for tm_lines and then recreate the last map increasing the width of the lines
-
-```{r, eval=F}
-?tm_lines
-```
-
 
 ## `tmap`: data driven mapping
 
@@ -1692,36 +1670,6 @@ tm_shape(SFhomes15_sf) +
   tm_dots(col="totvalue", size=.25) 
 ```
 
-## `tmap`: Color Mapping
-
-`tmap` uses the *classint* package to map colors to data values based on classification methods.
-
-Let's take a look at the *style* argument in the documentation.
-
-```{r, eval=F}
-?tm_symbols
-```
-
-## `tmap`: color mapping
-
-See how the choice of classification scheme, set by the *style* argument, alters the cartography.
-
-```{r}
-tmap_mode('plot')
-jenks_map <- tm_shape(SFhomes15_sf) + 
-  tm_dots(col="totvalue", size=.25, style="jenks")
-
-quantile_map  <- tm_shape(SFhomes15_sf) + 
-  tm_dots(col="totvalue", size=.25, style="quantile")
-```
-
-## `tmap`: color mapping
-
-Compare the two classification schemes...
-
-```{r}
-tmap_arrange(jenks_map, quantile_map)
-```
 
 ## `tmap`: mapping multiple layers
 
