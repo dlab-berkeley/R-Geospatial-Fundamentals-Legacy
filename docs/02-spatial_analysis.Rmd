@@ -86,14 +86,9 @@ You may want to reload the data that we had in our workspace at the end of Part 
 
 We've provided a little script for doing that, which you can run using the following line of code:
 
-```{r, eval=F}
+```{r, results='hide'}
 source('./docs/reload_part_01_data.R')
 ```
-
-```{r, echo=F}
-source('./docs/reload_part_01_data.R')
-```
-
 
 # Spatial Analysis
 
