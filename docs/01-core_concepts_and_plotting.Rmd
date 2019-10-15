@@ -600,7 +600,7 @@ sfmap_bart_landmarks <- ggplot() +
 sfmap_bart_landmarks
 ```
 
-# GGPlot is a powerful tool for creating maps!
+# ggplot is a powerful tool for creating maps!
 
 
 ## BUT!
@@ -1130,9 +1130,7 @@ In order to do this, we're going to need to do 3 things:
 
 First, we need to coerce our homes data to an `sf` object.
 
-We saw a crude example of constructing an `sf` object, above.
-
-But we can actually do this in a single line of code, using the `st_as_sf` function!
+But we can do this in a single line of code, using the `st_as_sf` function!
 
 
 ## Creating `sf` objects
