@@ -2,12 +2,13 @@
 title: "Geospatial Fundamentals in R with sf, Part 2"
 author: "Patty Frontiera and Drew Hart, UC Berkeley D-Lab"
 date: "August 2019"
-output:
+output: #pdf_document
   ioslides_presentation:
     widescreen: true
     smaller: true
 editor_options: 
   chunk_output_type: console
+always_allow_html: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -76,7 +77,8 @@ Use `setwd` to set your working directory to the location of the tutorial files.
 For example:
 
 ```{r, eval=FALSE}
-setwd("~/Documents/Dlab/workshops/2018/rgeo/r-geospatial-workshop/r-geospatial-workshop")
+path = "/path/to/your/working_directory"
+setwd(path)
 ```
 
 

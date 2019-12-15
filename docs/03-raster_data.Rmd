@@ -2,12 +2,13 @@
 title: "Geospatial Fundamentals in R with sf, Part 3"
 author: "Patty Frontiera and Drew Hart, UC Berkeley D-Lab"
 date: "May 2019"
-output: 
+output: #pdf_document
   ioslides_presentation:
     widescreen: true
     smaller: true
 editor_options: 
   chunk_output_type: console
+always_allow_html: yes
 ---
 
 
@@ -29,9 +30,12 @@ knitr::opts_knit$set(root.dir = normalizePath('../'))
 4. Install the required libraries in RStudio, if you do not have them already
 
 ```{r, eval=F}
-install.packages(
-  c("ggplot2", "ggmap", "sf", "units", "tmap", "nngeo", "raster"),
-  dependencies=TRUE)
+our_packages<- c("ggplot2", "sf", "units", "tmap", "raster")
+for (i in our_packages) {
+  if ( i %in% rownames(installed.packages()) == FALSE) {
+    install.packages(i)
+  }
+}
 ```
 5. Open the slides, **./docs/03-raster_data.html**, in your browser (or click the "Part 3 Slides" link the repo).
 
@@ -72,7 +76,7 @@ setwd(path)
 
 ```{r}
 # Read in the 'sftracts_wpop' shapefile
-sftracts <- st_read("./data", "sftracts_wpop")
+SFtracts <- st_read("./data", "sftracts_wpop")
 ```
 
 ## SF Properties 2015
@@ -87,13 +91,13 @@ SFhomes15 <- subset(SFhomes, as.numeric(SalesYear) == 2015)
 # coerce to an `sf` object
 SFhomes15_sf <- st_as_sf(SFhomes15, coords = c('lon', 'lat'),
                                                   crs = 4326)
-#Reproject to the sftracts projection
+#Reproject to the SFtracts projection
 #NOTE: We're overwriting the previous SFhomes15_sf object here! This is
 #fine to do if we want, but we should always beware.
-SFhomes15_sf = st_transform(SFhomes15_sf, st_crs(sftracts))
+SFhomes15_sf = st_transform(SFhomes15_sf, st_crs(SFtracts))
 
 #check projection equality
-st_crs(SFhomes15_sf) == st_crs(sftracts)
+st_crs(SFhomes15_sf) == st_crs(SFtracts)
 ```
 
 # Section 1: Raster Data in R
@@ -319,7 +323,7 @@ Transform (or reproject) the Tracts vector data to match it.
 proj4string(DEM)
 
 #reproject tracts to our DEM projection
-sftracts_NAD = st_transform(sftracts, st_crs(DEM))
+SFtracts_NAD = st_transform(SFtracts, st_crs(DEM))
 ```
 
 ## CRS Transformations
@@ -329,7 +333,7 @@ You can reproject the DEM with `raster::projectRaster`
 Note how the syntax is similar to `sp::spTransform`
 
 ```{r, error=T}
-DEM_WGS = projectRaster(DEM, projectExtent(DEM, st_crs(sftracts)))
+DEM_WGS = projectRaster(DEM, projectExtent(DEM, st_crs(SFtracts)))
 ```
 
 ## CRS Transformations
@@ -352,7 +356,7 @@ of the 'CRS' class.
 Is it?
 
 ```{r}
-class(st_crs(sftracts))
+class(st_crs(SFtracts))
 ```
 
 ## CRS Transformations
@@ -363,7 +367,7 @@ We need to be careful when working between the `raster` and `sf` packages, becau
 This object is of the `crs` class. But check out the class of _this_ object!
 
 ```{r}
-class(crs(st_crs(sftracts)$proj4string))
+class(crs(st_crs(SFtracts)$proj4string))
 ```
 
 ## CRS Transformations
@@ -372,13 +376,13 @@ __What did we do there?__
 
 That has multiple nested steps. From the inside, out:
 
-1. call `sf::st_crs` to get the CRS of sftracts;
+1. call `sf::st_crs` to get the CRS of SFtracts;
 2. index out its `proj4string` using `$` notation;
 3. feed that into the `raster::crs` function, to create a CRS object of the
    correct class
 
 ```{r, eval=F}
-class(crs(st_crs(sftracts)$proj4string))
+class(crs(st_crs(SFtracts)$proj4string))
 ```
 
 ## CRS Transformations
@@ -399,22 +403,41 @@ So, clearly, a solution would be to replace the broken bit of code
 with the expression we used that _did_ give us a `CRS` object.
 
 ```{r}
-DEM_WGS = projectRaster(DEM, projectExtent(DEM, crs(st_crs(sftracts)$proj4string)))
+DEM_WGS = projectRaster(DEM, projectExtent(DEM, crs(st_crs(SFtracts)$proj4string)))
 ```
 
 ## CRS Transformations
 Then  we can check equivalence.
 ```{r}
-st_crs(sftracts_NAD) == st_crs(DEM)
-st_crs(DEM_WGS) == st_crs(sftracts)
+st_crs(SFtracts_NAD) == st_crs(DEM)
+st_crs(DEM_WGS) == st_crs(SFtracts)
 ```
 
+## CRS Transformations
+What happened now?
 
+It appears that `sp` and `sf` are using the same EPSG codes
+but building slightly different proj4string representations, 
+perhaps because of differences in the projection databases used by the two.
+
+```{r}
+st_crs(DEM_WGS)
+st_crs(SFtracts)
+```
+
+## CRS Transformations
+That should be alright though, as long as we know that our
+EPSG codes are identical, because each code identifies a
+materially distinct CRS.
+
+```{r}
+st_crs(DEM_WGS)$epsg == st_crs(SFtracts)$epsg
+```
 
 
 #################################
 
-## `sp` package
+## About the `sp` package
 
 As we mentiond in Part I, `sp` was for a long time the primary geospatial package in R.
 
@@ -503,7 +526,7 @@ plot(SFhomes15_sfagain['totvalue'])
 
 ## `sp` package
 
-We will not go into any greater detail on `sp` in this workshop.
+We will not go into any further detail on `sp` in this workshop.
 
 However, if you find you need to learn more then please visit our
 [former R geospatial workshop](https://github.com/dlab-geo/r-geospatial-workshop),
@@ -519,11 +542,11 @@ Since the raster data covers a larger area than our vector data / area of intere
 we can clip it using the `raster::crop` function.
 
 ```{r}
-# clip the WGS CRS version of the rasters to sftracts 
-DEM_WGS_crop = crop(DEM_WGS, sftracts)
+# clip the WGS CRS version of the rasters to SFtracts 
+DEM_WGS_crop = crop(DEM_WGS, SFtracts)
 
 # Clip the NAD CRS version
-DEM_crop = crop(DEM, sftracts_NAD)
+DEM_crop = crop(DEM, SFtracts_NAD)
 ```
 
 ## Plot Clipped Raster data
@@ -542,7 +565,7 @@ Here we plot the NAD CRS version.
 ```{r, warning=F}
 #plot together
 plot(DEM_WGS_crop)
-plot(sftracts, add = T, col = NA)
+plot(st_geometry(SFtracts), add = T, col = NA)
 ```
 
 ## Masking Raster Data
@@ -562,7 +585,7 @@ values as well.
 We can do this with an operation called **masking**.
 
 ```{r}
-DEM_WGS_crop_masked = mask(DEM_WGS_crop, sftracts)
+DEM_WGS_crop_masked = mask(DEM_WGS_crop, SFtracts)
 ```
 
 ## Masking Raster Data
@@ -587,7 +610,7 @@ What masking did was to set the cells that lie outside our dataset to NAs.
 
 ```{r}
 plot(DEM_WGS_crop_masked)
-plot(sftracts, add = T, col = NA)
+plot(st_geometry(SFtracts), add = T, col = NA)
 ```
 
 ## Plotting rasters in `tmap`
@@ -597,7 +620,7 @@ We can make an interactive plot using `tmap`
 ```{r, message=F}
 my_map <- tm_shape(DEM_WGS_crop_masked) +
   tm_raster() +
-tm_shape(sftracts) + 
+tm_shape(SFtracts) + 
   tm_borders() +
 
 # Set mode to interactive
@@ -635,7 +658,7 @@ We can use the raster::extract function to get the elevation values for each tra
 
 ```{r}
 # get the elevation for every cell in each of the census tracts
-elev = extract(DEM_WGS_crop, sftracts)
+elev = extract(DEM_WGS_crop, SFtracts)
 
 #what did that give us?
 head(elev)
@@ -648,7 +671,7 @@ head(elev)
 Check out the data in the `elev` object
 ```{r}
 length(elev)
-nrow(sftracts)
+nrow(SFtracts)
 ```
 It's a vector of the elevations for all the cells within each census tract!
 
@@ -663,19 +686,19 @@ head(mean_elev)
 
 ## Add elevation to Vector object
 
-Let's add this to the sftracts_NAD `data.frame`.
+Let's add this to the SFtracts_NAD `data.frame`.
 
 __Note__: the order remains the same, so we can just add this right in!
 
 ```{r}
-sftracts$mean_elev = unlist(mean_elev)
+SFtracts$mean_elev = unlist(mean_elev)
 ```
 
 
 ## Map it
 ```{r}
 #what did we get?
-elev_map <- tm_shape(sftracts) + 
+elev_map <- tm_shape(SFtracts) + 
   tm_polygons(col = 'mean_elev') +
   tm_layout("The pain of biking in SF, by census tract", 
             inner.margins=c(0,0,.1,0), title.size=4.8)
@@ -691,7 +714,7 @@ elev_map
 
 We can also pass a function argument to `raster::extract`
 ```{r}
-elev = extract(DEM_WGS_crop, sftracts, fun=mean)
+elev = extract(DEM_WGS_crop, SFtracts, fun=mean)
 
 #what did that give us?
 head(elev)
@@ -755,24 +778,24 @@ or that is provided at the website where you downloaded it.
 
 ## Challenge 2: Reproject and crop our NLCD data
 
-Now that we've read in our NCLD data, check if we need to reproject it (we want it to be in the same projection as our `sftracts` object), and project it if need be.
+Now that we've read in our NCLD data, check if we need to reproject it (we want it to be in the same projection as our `SFtracts` object), and project it if need be.
 
-Then crop it to the extent of our `sftracts` object.
+Then crop it to the extent of our `SFtracts` object.
 
 ## Solution
 
 ```{r}
 #check projection equality
-st_crs(nlcd) == st_crs(sftracts)
+st_crs(nlcd) == st_crs(SFtracts)
 
 #reproject
-nlcd_WGS = projectRaster(nlcd, projectExtent(nlcd, crs(st_crs(sftracts)$proj4string)))
+nlcd_WGS = projectRaster(nlcd, projectExtent(nlcd, crs(st_crs(SFtracts)$proj4string)))
 
 #check projection equality again
-st_crs(nlcd_WGS) == st_crs(sftracts)
+st_crs(nlcd_WGS)$epsg == st_crs(SFtracts)$epsg
 
 #crop
-nlcd_WGS_crop = crop(nlcd_WGS, sftracts)
+nlcd_WGS_crop = crop(nlcd_WGS, SFtracts)
 
 ```
 
@@ -877,7 +900,7 @@ What did we get?
 plot(nlcd_green)
 ```
 
-## Challenge 4: Extract our NLCD data to our tract polygons
+## Challenge 4: Extract reclassed NLCD data to our tract polygons
 
 Just like we did earlier with our elevation data, let's extract our reclassed
 NLCD data to our census-tract polygons.
@@ -887,7 +910,7 @@ NLCD data to our census-tract polygons.
 ```{r}
 
 #extract the mean nlcd_simple values to tract polygons
-greenspace = extract(nlcd_green, sftracts, fun=mean)
+greenspace = extract(nlcd_green, SFtracts, fun=mean)
 
 ```
 
@@ -922,10 +945,10 @@ argument across a variety of R operations.
 ```{r}
 #extract the mean nlcd_simple values to tract polygons,
 #this time setting na.rm to TRUE
-greenspace = extract(nlcd_green, sftracts, fun=mean, na.rm = T)
+greenspace = extract(nlcd_green, SFtracts, fun=mean, na.rm = T)
 
-#and add to our sftracts dataframe (which we can do because order is preserved)
-sftracts$prop_greenspace = greenspace
+#and add to our SFtracts dataframe (which we can do because order is preserved)
+SFtracts$prop_greenspace = greenspace
 
 ```
 ## Get the mean home values in each tract
@@ -933,18 +956,18 @@ sftracts$prop_greenspace = greenspace
 Pulling code from the end of Part II of this workshop, let's aggregate our homes data to the tract level too.
 
 ```{r}
-#aggregate totvalue to sftracts
-sftracts_w_mean_val = aggregate(x = SFhomes15_sf['totvalue'],
-                                by = sftracts,
+#aggregate totvalue to SFtracts
+SFtracts_w_mean_val = aggregate(x = SFhomes15_sf['totvalue'],
+                                by = SFtracts,
                                 FUN = mean)
-#and add the totvalue column to our sftracts dataframe
-sftracts$mean_totvalue = sftracts_w_mean_val$totvalue
+#and add the totvalue column to our SFtracts dataframe
+SFtracts$mean_totvalue = SFtracts_w_mean_val$totvalue
 ```
 
 ## Get the mean home values in each tract
 
 ```{r}
-qtm(sftracts_w_mean_val, fill = 'totvalue')
+qtm(SFtracts_w_mean_val, fill = 'totvalue')
 
 ```
 
@@ -955,7 +978,7 @@ Do mean elevation and proportion greenspace predict mean home values?
 (__Note__: This is not a statistically valid model! Just a stand-in for downstream analysis.)
 
 ```{r}
-mod = lm(mean_totvalue ~ mean_elev + prop_greenspace, data = sftracts)
+mod = lm(mean_totvalue ~ mean_elev + prop_greenspace, data = SFtracts)
 summary(mod)
 ```
 
@@ -1031,12 +1054,12 @@ SFhomes15_utm$elev = elev_homes
 **Now**, how about that regression model?
 
 ```{r}
-mod = lm(totvalue ~ elev + greenspace, data = sfhomes15_utm)
+mod = lm(totvalue ~ elev + greenspace, data = SFhomes15_utm)
 ```
 
 ## Predicting home values
 
-Mehhh... Some signal for elevation, but a very low $R^2$.
+Mehhh... Some signal for elevation, but a very low $R^{2}$.
 
 But again, this is just a stand-in for downstream analysis.
 
@@ -1098,10 +1121,10 @@ st_crs(karl)
 
 Let's reproject this
 ```{r}
-karl_WGS = projectRaster(karl, projectExtent(karl, crs(st_crs(sftracts)$proj4string)))
+karl_WGS = projectRaster(karl, projectExtent(karl, crs(st_crs(SFtracts)$proj4string)))
 
 # check resultant CRS
-st_crs(karl_WGS) == st_crs(sftracts)
+st_crs(karl_WGS)$epsg == st_crs(SFtracts)$epsg
 
 ```
 
@@ -1129,8 +1152,8 @@ A RasterBrick. What does that mean?
 
 Crop it to the extent of our area of interest - SF
 ```{r}
-# Crop it to sftracts
-karl_WGS_crop = crop(karl_WGS, sftracts)
+# Crop it to SFtracts
+karl_WGS_crop = crop(karl_WGS, SFtracts)
 
 #Note that R vectorized that operation across our entire RasterBrick, the same way that it vectorizes many operations, e.g. 3<4 vs 3< seq(4)
 ```
@@ -1142,9 +1165,9 @@ karl_WGS_crop = crop(karl_WGS, sftracts)
 # now let's make our same plot again
 par(mfrow = c(1,2))
 plot(karl_WGS[[7]])
-plot(sftracts, add = T, reset=F, key.pos = NULL, col = NA)
+plot(st_geometry(SFtracts), add = T, reset=F, key.pos = NULL, col = NA)
 plot(karl_WGS_crop[[7]])
-plot(sftracts, add = T, reset = F, key.pos = NULL, col = NA)
+plot(st_geometry(SFtracts), add = T, reset = F, key.pos = NULL, col = NA)
 
 ```
 
@@ -1171,7 +1194,7 @@ When we computed the mean of a RasterBrick we got back a RasterLayer object! Tha
 
 ```{r}
 plot(mean_karl_WGS_crop)
-plot(sftracts, add = T, col = NA)
+plot(st_geometry(SFtracts), add = T, col = NA)
 ```
 
 
@@ -1193,10 +1216,10 @@ sd_karl_WGS_crop = calc(karl_WGS_crop, sd)
 ```{r}
 #plot that too
 par(mfrow = c(1,2))
-plot(mean_karl_WGS_crop)
-plot(sftracts, add = T, reset=F, key.pos=NULL, col = NA)
-plot(sd_karl_WGS_crop)
-plot(sftracts, add = T, reset=F, key.pos=NULL, col = NA)
+plot(mean_karl_WGS_crop, main="mean summer fog hours")
+plot(st_geometry(SFtracts), add = T, reset=F, key.pos=NULL, col = NA)
+plot(sd_karl_WGS_crop, main="sd summer fog hours")
+plot(st_geometry(SFtracts), add = T, reset=F, key.pos=NULL, col = NA)
 ```
 
 ## Thoughts...
@@ -1209,7 +1232,7 @@ but some less foggy neighborhoods on the east side of the city
 
 Extract fog values to our tracts
 ```{r}
-sftracts$mean_karl = extract(mean_karl_WGS_crop, sftracts, mean)
+SFtracts$mean_karl = extract(mean_karl_WGS_crop, SFtracts, mean)
 ```
 
 
@@ -1219,7 +1242,7 @@ Maybe fogginess is a function of elevation? That would make sense, right?
 
 ```{r}
 # Linear regression model
-mod = lm(mean_karl ~ mean_elev, data = sftracts)
+mod = lm(mean_karl ~ mean_elev, data = SFtracts)
 ```
 
 ## View results
