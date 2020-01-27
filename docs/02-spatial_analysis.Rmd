@@ -929,6 +929,7 @@ head(SFhomes15_utm, 2) # Look for the col medhhinc
 
 ```{r, message=F}
 tmap_mode("view")
+tm_shape(sftracts_utm) + tm_polygons() +
 tm_shape(SFhomes15_utm) + tm_dots(col="medhhinc")
 ```
 
