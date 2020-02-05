@@ -351,7 +351,7 @@ Let's read the docs!
 ## CRS Transformations
 
 Looks like projectRaster expects the `crs` argument needs to be an object
-of the 'CRS' class.
+of the (uppercase) 'CRS' class.
 
 Is it?
 
@@ -364,46 +364,21 @@ class(st_crs(SFtracts))
 We need to be careful when working between the `raster` and `sf` packages, because
 `raster` is older and still depends on `sp`.
 
-This object is of the `crs` class. But check out the class of _this_ object!
+This object is of the (lowercase) `crs` class, which is a class defined by the `sf` package!
+
+However, we can actually just extract the proj4string from our `crs`-class object
+and use that as our argument instead!
 
 ```{r}
-class(crs(st_crs(SFtracts)$proj4string))
+st_crs(SFtracts)$proj4string
 ```
 
 ## CRS Transformations
 
-__What did we do there?__
-
-That has multiple nested steps. From the inside, out:
-
-1. call `sf::st_crs` to get the CRS of SFtracts;
-2. index out its `proj4string` using `$` notation;
-3. feed that into the `raster::crs` function, to create a CRS object of the
-   correct class
-
-```{r, eval=F}
-class(crs(st_crs(SFtracts)$proj4string))
-```
-
-## CRS Transformations
-
-That's an object of the `CRS` class,
-which is even indicated as belonging to the `sp` package!
-
-Now we can see that `raster` is still expecting spatial objects to be
-expressed in classes defined by the `sp` package.
-
-(Maybe this will change in the future, if `raster` integrates `sf` support.
-But for the time being, we'll need to be aware of and manage this mismatch.)
-
-
-## CRS Transformations
-
-So, clearly, a solution would be to replace the broken bit of code
-with the expression we used that _did_ give us a `CRS` object.
+So let's try that again, giving the proj4string as our argument:
 
 ```{r}
-DEM_WGS = projectRaster(DEM, projectExtent(DEM, crs(st_crs(SFtracts)$proj4string)))
+DEM_WGS = projectRaster(DEM, projectExtent(DEM, st_crs(SFtracts)$proj4string))
 ```
 
 ## CRS Transformations
@@ -789,7 +764,7 @@ Then crop it to the extent of our `SFtracts` object.
 st_crs(nlcd) == st_crs(SFtracts)
 
 #reproject
-nlcd_WGS = projectRaster(nlcd, projectExtent(nlcd, crs(st_crs(SFtracts)$proj4string)))
+nlcd_WGS = projectRaster(nlcd, projectExtent(nlcd, st_crs(SFtracts)$proj4string))
 
 #check projection equality again
 st_crs(nlcd_WGS)$epsg == st_crs(SFtracts)$epsg
@@ -1007,10 +982,10 @@ than decimal degrees.
 SFhomes15_utm <- st_transform(SFhomes15_sample, 26910)
 DEM_utm = projectRaster(DEM,
                         projectExtent(DEM,
-                                      crs(st_crs(SFhomes15_utm)$proj4string)))
+                                      st_crs(SFhomes15_utm)$proj4string))
 nlcd_green_utm = projectRaster(nlcd_green,
                                projectExtent(nlcd_green,
-                                             crs(st_crs(SFhomes15_utm)$proj4string)))
+                                             st_crs(SFhomes15_utm)$proj4string))
 
 #check projections
 st_crs(SFhomes15_utm) == st_crs(DEM_utm)
@@ -1121,7 +1096,7 @@ st_crs(karl)
 
 Let's reproject this
 ```{r}
-karl_WGS = projectRaster(karl, projectExtent(karl, crs(st_crs(SFtracts)$proj4string)))
+karl_WGS = projectRaster(karl, projectExtent(karl, st_crs(SFtracts)$proj4string))
 
 # check resultant CRS
 st_crs(karl_WGS)$epsg == st_crs(SFtracts)$epsg
