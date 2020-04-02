@@ -66,7 +66,7 @@ Please bring a laptop with the following:
 * [R version](https://cloud.r-project.org/) 3.5 or greater
 * [RStudio integrated development environment (IDE)](https://www.rstudio.com/products/rstudio/download/#download) is
 highly recommended but not required.
-* The R packages `ggplot2`, `ggmap`, `sf`, `units`, `tmap`, and `raster` installed, minimally
+* The R packages `ggplot2`, `sf`, `units`, `tmap`, and `raster` installed, minimally
 
 ## Resources
 
