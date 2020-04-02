@@ -53,8 +53,10 @@ We assume that participants have working familiarity with the R language,
 including the topics covered in our [R-Fundamentals workshop](https://github.com/dlab-berkeley/R-Fundamentals) materials 
 (though participants without this have still reported useful
 learning about geospatial concepts). 
-If you would like a refresher on R, you could review the materials provided
-at that workshop's link, or look to other online resources such as the
+
+
+If you would like a refresher on R, you could review that workshop's materials,
+or look to other online resources such as the
 [Base R Cheat Sheet](https://rstudio.com/wp-content/uploads/2016/10/r-cheat-sheet-3.pdf) or the [Quick R website](https://www.statmethods.net/index.html).
 
 ## Technology requirements
