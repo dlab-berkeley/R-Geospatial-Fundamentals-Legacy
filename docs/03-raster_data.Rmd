@@ -30,7 +30,7 @@ knitr::opts_knit$set(root.dir = normalizePath('../'))
 4. Install the required libraries in RStudio, if you do not have them already
 
 ```{r, eval=F}
-our_packages<- c("ggplot2", "sf", "units", "tmap", "raster")
+our_packages<- c("ggplot2", "sf", "tmap", "raster")
 for (i in our_packages) {
   if ( i %in% rownames(installed.packages()) == FALSE) {
     install.packages(i)
