@@ -247,6 +247,17 @@ plot(st_geometry(SFhomes15_utm), add = T, pch = 19, cex = 0.5)
 plot(st_geometry(bart_utm), col="skyblue", pch=19, cex = 1, add=T)
 ```
 
+## Map all layers
+
+And note that `st_geometry(sf_obj)` does the same thing as `sf_obj$geometry`.
+
+```{r}
+plot(SFboundary_utm$geometry)
+plot(SFhighways$geometry, col='purple', lwd=4, add = T)
+plot(SFhomes15_utm$geometry, add = T, pch = 19, cex = 0.5)
+plot(bart_utm$geometry, col="skyblue", pch=19, cex = 1, add=T)
+```
+
 
 ## Challenge (Optional / time permitting)
 
@@ -351,8 +362,8 @@ The function `valid_udunits` will give us a table of the valid units we could co
 
 (Note that the 'ud' comes from the `udunits` package, a dependency of the `units` package.)
 
-```{r}
-head(valid_udunits(), 2)
+```{r, eval=F}
+View(valid_udunits())
 ```
 
 
@@ -375,7 +386,7 @@ st_area(SFboundary)
 
 (However, this isn't a reason not to choose a reasonable, projected CRS for our data! Still best practice.
 
-(Also notice the slight difference in our answers. This is not an equal-area projection!)
+(Also notice the slight difference in our answers: Our UTM is not an equal-area projection. And for an unprojected CRS `sf` gives us *geodetic area* -- i.e. area on the ellipsoid.)
 
 ```{r}
 st_area(SFboundary_utm)
@@ -458,33 +469,6 @@ nrow(SFhomes15_utm)
 head(dist2emb, 10)
 ```
 
-## Challenge: solution
-
-Different syntax, equivalent result:
-
-__You could just nest your calls, if you'd like.__
-
-```{r}
-dist2emb <- set_units(st_distance(bart_utm[bart_utm$STATION == 'EMBARCADERO',],
-SFhomes15_utm), km)
-
-# check output
-head(dist2emb, 10)
-```
-## Challenge: solution
-
-Different syntax, equivalent result:
-
-__You could also use the 'tidy' syntax, if you're into that!__
-
-```{r}
-dist2emb <- st_distance(bart_utm[bart_utm$STATION == 'EMBARCADERO',],
-                     SFhomes15_utm) %>% set_units(km)
-# check output
-head(dist2emb, 10)
-```
-
-
 
 # Spatial Relationship Queries
 
@@ -501,7 +485,7 @@ Some example relationships:
 
 There are many, often similar, functions to perform spatial relationship queries (can be confusing!).
 
-These operations may return logical values, lists, matrices, dataframes, geometries or spatial objects
+These operations may return logical values, lists, matrices, dataframes, geometries, or spatial objects
 
 - you need to check what type of object is returned 
 
@@ -509,17 +493,17 @@ These operations may return logical values, lists, matrices, dataframes, geometr
 
 
 
-## BART stations in SF?
+## BART stations in SF
 
-This is a very common type of spatial query called a `point-in-polygon` query.
+This leads to a very common type of spatial query called a `point-in-polygon` query.
 
 We can use the `st_within` function to answer this.
 
-We'll start with the simplest question: __Are there BART stations in SF?__
+We'll start with the simplest question: __*Are* there BART stations in SF?__
 
 We already know the answer, but let's see how it's done.
 
-## Are there any BART stations in SF?
+## *Are* there BART stations in SF?
 
 What does it return by default?
 
@@ -529,7 +513,7 @@ bart_stations_in_sf <-st_within(bart_utm, SFboundary_utm)
 head(bart_stations_in_sf)
 ```
 
-## BART stations in SF?
+## *Are* there BART stations in SF?
 
 The docs for the function (`?st_within`) explain that it returns a sparse-matrix
 object by default.
@@ -541,7 +525,7 @@ bart_stations_in_sf <-st_within(bart_utm, SFboundary_utm, sparse=F)
 head(bart_stations_in_sf)
 ```
 
-## BART stations in SF?
+## *Are* there BART stations in SF?
 
 That's a bit more obvious! Looks like we got a logical value for each BART station.
 
@@ -552,7 +536,7 @@ dim(bart_stations_in_sf)
 dim(bart_utm)
 ```
 
-## BART stations in SF?
+## *Are* there BART stations in SF?
 
 So, to answer the simple question, we just need to know if there's at least one `TRUE`
 in that list.
@@ -561,7 +545,7 @@ in that list.
 T %in% bart_stations_in_sf
 ```
 
-## Which Bart stations are in SF?
+## *Which* Bart stations are in SF?
 
 What about this question?
 
@@ -578,7 +562,7 @@ bart_utm[bart_stations_in_sf, ]$STATION
 ```
 
 
-## Which Bart stations are in SF?
+## *Which* Bart stations are in SF?
 
 And of course, there are multiple ways to do a thing!
 
@@ -620,9 +604,9 @@ tm_shape(sfbart_utm) +
 tmap_mode("plot")
 ```
 
-## st_within vs st_intersects vs st_intersection
+## `st_within` vs `st_intersects` vs `st_intersection`
  
-### Devil in the details...
+### Devil's in the details...
 
 `st_within` returns TRUE/FALSE, testing if one geometry is *completely* within another.
 
@@ -682,13 +666,11 @@ and other non-spatial operations.
 
 ## Joins and Aggregation
 
-## Spatial join
+## Spatial Join
 
-A spatial join associates rows of data in one object with rows in another object based on the spatial relationship between the two objects.
+A **spatial join** (a.k.a. **spatial merge**) associates rows of data in one object with rows in another object based on the spatial relationship between the objects' geometries (in the same CRS).
 
-A spatial join is based on the comparison of two sets of geometries in the same coordinate space. 
-
- - This is also called a **spatial overlay**.
+<img src="./images/spatial_join.png" width="450px"></img>
 
 ## Spatial join
 
@@ -771,8 +753,6 @@ What is our output? Does it answer our question?
 What type of data object did the over function return?
 
 ```{r, eval=F}
-homes_with_tracts <- st_within(SFhomes15_utm, sftracts_utm)
-
 class(homes_with_tracts)
 length(homes_with_tracts)
 nrow(sftracts_utm)
@@ -783,12 +763,10 @@ nrow(SFhomes15_utm)
 
 What do we have here?
 ```{r}
-homes_with_tracts <- st_within(SFhomes15_utm, sftracts_utm)
 class(homes_with_tracts)
 length(homes_with_tracts)
 nrow(sftracts_utm)
 nrow(SFhomes15_utm)
-
 ```
 
 ## Review the `st_within` output
@@ -821,8 +799,7 @@ We're halfway there!
 
 We can now finish the operation by:
 
-1. using that `st_within` output object to subset
-the `sftracts_utm` `data.frame`;
+1. using that output object to subset the `sftracts_utm` `data.frame`;
 
 2. grabbing the desired columns from that subsetted `data.frame` and adding
    them to our `SFhomes15_utm` `data.frame`.
@@ -873,17 +850,15 @@ We can now join `SFhomes15_utm` points by `GEOID` to any census variable, eg med
 
 **How would we do that?**
 
-# Attribute Joins
+## Attribute Join
 
-## Attribute Joins
+A standard attribute **join** (a.k.a. **merge**) associates rows of data with
+rows in another object based on shared values in a column. 
 
-`Attribute joins` merge data in two tables based on matching data values contained in a column in each table.
-
-For example we could join a table of student grades with a table of student names and addresses if both tables contain a column with student id.
+<img src="./images/join.png" width="450px"></img>
 
 
-## Read in the census data
-
+## Read in the data
 Let's read in a CSV file of median househould income for SF tracts.
 
 The `sf_med_hh_income2015.csv` file only has two columns: `GEOID` and `medhhinc`.
@@ -895,6 +870,7 @@ med_hh_inc <- read.csv("data/sf_med_hh_income2015.csv", stringsAsFactors = F,
 
 head(med_hh_inc)
 ```
+
 
 ## Joining a regular `data.frame` to an `sf` `data.frame`
 
@@ -933,23 +909,23 @@ tm_shape(sftracts_utm) + tm_polygons() +
 tm_shape(SFhomes15_utm) + tm_dots(col="medhhinc")
 ```
 
+
 ## The Census Tract Perspective
 
-We now know the census tract for each property.
+We've pulled information from the census tracts 'down' to the homes.
 
-Now let's think about this question from the tract perspective. 
+Now let's pull information in the opposite direction, thinking about this question from the tract perspective. 
 
-Let's ask the question
+Let's ask the question:
 
-- What is the average propety value per tract?
+- *What is the average propety value per tract?*
 
 
+## Aggregation
 
-## Non-Spatial Aggregation
+Since we joined GEOID to each property we can use the **non-spatial `aggregate`** function to compute the mean of totvalues for each GEOID.
 
-Since we joined GEOID to each property we can use the non-spatial `aggregate` function to compute the mean of totvalues for each GEOID.
-
-But we'll use `sf`'s spatial implementation of aggregate.
+But we'll use `sf`'s **spatial aggregate** functionality instead.
 
 We'll start by...
 
@@ -965,7 +941,7 @@ We see that we can provide arguments:
 
 - __`x`__: `sf` object to be aggregated
 
-- __`by`__: can be another `sf` object whose geometries will generate the groupings
+- __`by`__: can be another `sf` object whose geometries will generate the groupings (among other possibilities)
 
 - __`FUN`__: function to be used to summarize the grouped values
 
@@ -1016,7 +992,7 @@ Map the results to make sure they seem reasonable.
 (__NOTE__: This is called a 'choropleth' map.)
 
 ```{r}
-choropleth = 
+mean_totvalue_choropleth = 
 tm_shape(sftracts_utm) +
   tm_polygons(col="mean_totvalue", border.col=NA)
 ```
@@ -1024,32 +1000,39 @@ tm_shape(sftracts_utm) +
 ## Map it 
 
 ```{r}
-choropleth
+mean_totvalue_choropleth
 ```
 
 
 ## Why no values for some tracts?
 ```{r}
-choropleth + tm_shape(SFhomes15_utm) + tm_dots(size = 0.01)
+mean_totvalue_choropleth + tm_shape(SFhomes15_utm) + tm_dots(size = 0.01)
 ```
 
 
 
 ## Proximity Analysis
 
+Now let's see an example of an analysis combining measurement-based and
+relationship-based queries.
+
 Many methods of spatial analysis use distance to select features. For example...
 
 *What properties are within walking distance of BART?*
 
-In order to select properties with 1KM of BART, we can:
+## Properties within Walking Distance of BART
 
-1. create a 1km-radius buffer polygon around each BART point
+In order to select properties within walking distance of BART, we can:
 
-2. do a point-in-polygon operation to either count the number of properties within the buffer or compute mean values.
+1. Define a 'walking distance' (say, 1 km);
+
+1. Create a 1 km-radius buffer polygon around each BART point;
+
+2. Do a point-in-polygon operation to either find the properties within that distance.
 
 ## Create the buffers 
 
-For this, we'll use---surprise, suprise---`st_buffer`.
+To create the buffers we'll use---surprise, suprise---`st_buffer`.
 
 But first, we'll...
 
@@ -1095,8 +1078,14 @@ head(SFhomes_near_bart)
 ```
 
 ## Plot it
-```{r}
+
+Important thought: **What happens to properties within 1 km of Daly City BART?**
+
+```{r, echo=F, message=F}
 tmap_mode('view')
+```
+
+```{r}
 tm_shape(bart_1km_buffer) + tm_borders(col="red") +
 tm_shape(sfbart_utm) + tm_dots() +
 tm_shape(SFhomes_near_bart) +
