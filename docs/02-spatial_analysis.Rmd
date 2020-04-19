@@ -319,8 +319,8 @@ What data would we use to answer that question?
 - Check results against Wikipedia for [SF](https://en.wikipedia.org/wiki/San_Francisco)
 
 ```{r}
-sf_area = st_area(SFboundary_utm)
-sf_area
+SF_area = st_area(SFboundary_utm)
+SF_area
 ```
 
 ## Area of San Francisco
@@ -330,8 +330,8 @@ How did it manage to give us the units?
 That comes from the [`units` package](https://cran.r-project.org/web/packages/units/index.html), which `sf` imports and uses!
 
 ```{r}
-class(sf_area)
-typeof(sf_area)
+class(SF_area)
+typeof(SF_area)
 ```
 
 ## Area in sq km
@@ -339,7 +339,7 @@ typeof(sf_area)
 Compare to the Wikipedia page's area for [SF](https://en.wikipedia.org/wiki/San_Francisco)
  
 ```{r}
-sf_area / (1000 * 1000) # Convert to square KM
+SF_area / (1000 * 1000) # Convert to square KM
 
 ```
 
@@ -352,7 +352,7 @@ The `units` package, an `sf` dependency, provides a better way.
 
 ```{r}
 library(units)
-set_units(sf_area, km^2)
+set_units(SF_area, km^2)
 ```
 
 
@@ -508,9 +508,9 @@ We already know the answer, but let's see how it's done.
 What does it return by default?
 
 ```{r}
-bart_stations_in_sf <-st_within(bart_utm, SFboundary_utm) 
+bart_stations_in_SF <-st_within(bart_utm, SFboundary_utm) 
 
-head(bart_stations_in_sf)
+head(bart_stations_in_SF)
 ```
 
 ## *Are* there BART stations in SF?
@@ -520,9 +520,9 @@ object by default.
 This is more efficient, but more complicated to work with. For our purposes, let's disable this behavior:
 
 ```{r}
-bart_stations_in_sf <-st_within(bart_utm, SFboundary_utm, sparse=F)
+bart_stations_in_SF <-st_within(bart_utm, SFboundary_utm, sparse=F)
 
-head(bart_stations_in_sf)
+head(bart_stations_in_SF)
 ```
 
 ## *Are* there BART stations in SF?

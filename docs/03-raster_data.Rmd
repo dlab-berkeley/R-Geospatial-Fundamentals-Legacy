@@ -319,7 +319,10 @@ Check the CRS (aka projection) of the DEM raster data.
 Transform (or reproject) the Tracts vector data to match it.
 
 ```{r}
-#check out its projection
+#check out its CRS
+st_crs(DEM)
+
+#or just its proj4string
 proj4string(DEM)
 
 #reproject tracts to our DEM projection
@@ -511,10 +514,10 @@ which is based on `sp`.
 so it should be easy to follow and should highlight all the differences between `sf` and `sp`.)
 
 
-## Clipping Rasters
+## Cropping Rasters
 
 Since the raster data covers a larger area than our vector data / area of interest,
-we can clip it using the `raster::crop` function.
+we can **clip**, or **crop**, it using the `raster::crop` function.
 
 ```{r}
 # clip the WGS CRS version of the rasters to SFtracts 
@@ -524,7 +527,7 @@ DEM_WGS_crop = crop(DEM_WGS, SFtracts)
 DEM_crop = crop(DEM, SFtracts_NAD)
 ```
 
-## Plot Clipped Raster data
+## Plot Cropped Raster data
 
 You can plot raster and vector
 ```{r}
@@ -701,6 +704,10 @@ Do you see the difference between those two approaches?
 
 1. Mapping a vector layer on top of a raster layer (i.e. `my_map`)
 2. Summarizing raster values by vector polygons, then mapping the polygons (`elev_map`)
+
+```{r, echo=F}
+my_map + elev_map
+```
 
 
 ## Challenge 1: Read in and check out new data
@@ -1036,7 +1043,7 @@ mod = lm(totvalue ~ elev + greenspace, data = SFhomes15_utm)
 
 Mehhh... Some signal for elevation, but a very low $R^{2}$.
 
-But again, this is just a stand-in for downstream analysis.
+But again, this is **just a stand-in analysis** (and lacks various considerations and adjustments for statistical validity).
 
 ```{r}
 summary(mod)
@@ -1080,7 +1087,7 @@ karl
 
 ```{r}
 #plot a few
-plot(karl[[7:9]])
+plot(karl)
 ```
 
 ## CRS
@@ -1234,7 +1241,7 @@ mean fogginess (with each meter increase in elevation causing on average
 a .011 hour, or about 39-second increase in time spent in fog on an average
 summer day.
 
-Though this barely explains about 4% of the variance in our data!
+Though this barely explains about 3.5% of the variance in our data!
 
 Of course, again, these are __not statistically valid models!__ Just analytical stand-ins.
 
