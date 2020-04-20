@@ -333,7 +333,7 @@ SFtracts_NAD = st_transform(SFtracts, st_crs(DEM))
 
 You can reproject the DEM with `raster::projectRaster`
 
-Note how the syntax is similar to `sp::spTransform`
+Note how the syntax is similar to `sf::st_transform`
 
 ```{r, error=T}
 DEM_WGS = projectRaster(DEM, projectExtent(DEM, st_crs(SFtracts)))
