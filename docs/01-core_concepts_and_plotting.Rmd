@@ -731,8 +731,7 @@ plot(tracts['NAME'])
 Some of you may have gotten this plot instead:
 
 ```{r}
-plot(tracts$NAME)
-```
+plot(tracts$NAME)```
 
 ## Challenge: Solution
 
@@ -891,10 +890,10 @@ tracts
 
 So what about our homes data? Let's plot them with the tracts data!
 
-**NOTE**: With the base `plot` function, we need to use `sf::st_geometry` to pull out just the sf object's geometric features, for plotting.
+**NOTE**: With the base `plot` function, we need to use `st_geometry` to pull out just the sf object's geometric features, for plotting.
 
 ```{r}
-plot(sf::st_geometry(tracts))
+plot(st_geometry(tracts))
 points(SFhomes15$lon, SFhomes15$lat)
        
 ```
@@ -1183,7 +1182,7 @@ for each, as long as we pass it the `add=TRUE` argument.)
 
 ```{r, eval=F}
 plot(st_geometry(tracts_lonlat))
-plot(st_geometry(SFhomes15_sf), add=TRUE, col='blue')
+plot(st_geometry(SFhomes15_sf), add=T, col='blue')
 ```
 
 ## `sf` objects: plotting
