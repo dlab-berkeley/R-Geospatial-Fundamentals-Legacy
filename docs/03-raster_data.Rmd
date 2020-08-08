@@ -825,6 +825,65 @@ nlcd_WGS_crop@legend = nlcd@legend
 plot(nlcd_WGS_crop)
 ```
 
+
+## Aaalllmoost...
+
+Looking good!
+
+But what are all those funky-colored speckles?
+
+Turns out that raster reprojection requires interpolation of values, in order
+to bring one grid's values to another, unaligned grid's values.
+
+By default, `raster` uses bilinear interpolation to do this. But this doesn't
+make sense for categorical variables, because it returns non-sensical fractional
+categorical values!
+
+We can change this behavior by telling `raster::extract` to use nearest-neighbor
+interpolation instead. (As the documentation mentions, this is better suited
+to categorical data.)
+
+So let's do that:
+
+```{r, eval=FALSE}
+#reproject again, this time using nearest-neighbor interpolation
+nlcd_WGS = projectRaster(nlcd, projectExtent(nlcd, st_crs(SFtracts)$proj4string),
+                         method='ngb')
+#check projection equality again
+st_crs(nlcd_WGS)$epsg == st_crs(SFtracts)$epsg
+#crop again
+nlcd_WGS_crop = crop(nlcd_WGS, SFtracts)
+#grab our legend again
+nlcd_WGS_crop@legend = nlcd@legend
+#plot to check again
+plot(nlcd_WGS_crop)
+```
+
+
+## Aaalllmoost...
+
+Much better!
+
+```{r, message=FALSE}
+#reproject again, this time using nearest-neighbor interpolation
+nlcd_WGS = projectRaster(nlcd, projectExtent(nlcd, st_crs(SFtracts)$proj4string),
+                         method='ngb')
+
+#check projection equality again
+st_crs(nlcd_WGS)$epsg == st_crs(SFtracts)$epsg
+
+#crop
+nlcd_WGS_crop = crop(nlcd_WGS, SFtracts)
+
+#grab our legend again
+nlcd_WGS_crop@legend = nlcd@legend
+
+#double-check by plotting
+plot(nlcd_WGS_crop)
+
+```
+
+
 ## Reclassifying rasters
 
 When we're working with a categorical raster, we'll often want to reclass our data. We may want to do this because:
