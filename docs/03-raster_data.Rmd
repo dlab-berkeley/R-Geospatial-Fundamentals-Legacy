@@ -839,7 +839,7 @@ By default, `raster` uses bilinear interpolation to do this. But this doesn't
 make sense for categorical variables, because it returns non-sensical fractional
 categorical values!
 
-We can change this behavior by telling `raster::extract` to use nearest-neighbor
+We can change this behavior by telling `raster::projectRaster` to use nearest-neighbor
 interpolation instead. (As the documentation mentions, this is better suited
 to categorical data.)
 
