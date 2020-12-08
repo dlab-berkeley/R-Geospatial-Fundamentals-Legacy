@@ -1050,7 +1050,7 @@ should you need to:
 
 ## Creating `sf` objects
 
-Now that we know our homes have are in unprojected coordinates with a WGS84 datum
+Now that we know our homes are in unprojected coordinates with a WGS84 datum
 (i.e. EPSG code: 4326), we can call `st_as_sf` as follows:
 
 ```{r}
@@ -1701,9 +1701,8 @@ tm_shape(SFhomes15_sf) +
   tm_dots(col="totvalue", size=.05, 
           title = "San Francisco Property Values (2015)",
           popup.vars=c("SalesYear","totvalue","NumBedrooms",
-                       "NumBathrooms","AreaSquareFeet")) + 
+                       "NumBathrooms","AreaSquareFeet"))
   
-tm_layout(inner.margins=c(.05, .2, .15, .05)) # bottom, left, top, right
 ```
 
 ## `tmap`: advanced customization
@@ -1722,9 +1721,8 @@ tm_shape(SFhomes15_sf) +
   tm_dots(col="totvalue", size=.05, 
           title = "San Francisco Property Values (2015)",
           popup.vars=c("SalesYear","totvalue","NumBedrooms",
-                       "NumBathrooms","AreaSquareFeet")) + 
+                       "NumBathrooms","AreaSquareFeet"))
   
-tm_layout(inner.margins=c(.05, .2, .15, .05)) # bottom, left, top, right
 ```
 
 
