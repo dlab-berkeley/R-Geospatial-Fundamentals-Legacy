@@ -338,7 +338,7 @@ To see the solution, double-click the Markdown cell below.
 # SOLUTION
 
 # 1. Read in the California places data 
-california_places = st_read('zip://notebook_data/census/Places/cb_2018_06_place_500k.zip')
+california_places = st_read('./notebook_data/census/Places/cb_2018_06_place_500k.shp')
 head(california_places)
 
 # 2. Subset the data to Berkeley
