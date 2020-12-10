@@ -8,16 +8,10 @@
    c. leaving notes wherever we will need to change, remove, or add material
 5. when done, save and exit
 6. launch an R terminal/R studio process
-7. load the packages `rmarkdown` and `xfun`
+7. load the `rmarkdown` package
 8. for a given ipynb file named <FILE.ipynb>, run the following lines:
         # convert to Rmd
-        rmd = rmarkdown:::convert_ipynb('<FILE.ipynb>')
-        # open an Rmd file to save the converted text into
-        file_connection = file('<FILE.Rmd')
-        # write the Rmd text into the new file
-        writeLines(xfun::file_string(rmd), file_connection)
-        # close the file connection
-        close(file_connection)
+        rmarkdown:::convert_ipynb(<FILE.ipynb>)
 9. if wanting to generate HTML from the Rmd file, then run:
         # render as HTML
         rmarkdown::render('<FILE.Rmd')

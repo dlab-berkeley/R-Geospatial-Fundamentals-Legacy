@@ -6,7 +6,7 @@
 - DONE
 
 # 04
-- DO IT
+- DONE
 
 # 05
 - Why RdYlGn palette not fully used?
@@ -29,5 +29,5 @@
 - translate exercises
 
 # 08
-- DO IT
+- DONE
 
