@@ -3,7 +3,7 @@
 - in exercise at end, figure out if/how to read zipped file using sf (or else unzip and get rid of that)
 
 # 03
-- DO IT
+- DONE
 
 # 04
 - DO IT
