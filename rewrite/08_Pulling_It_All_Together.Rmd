@@ -82,19 +82,19 @@ We first need to prepare our data by loading both our tracts/acs and grocery dat
 - take a peek
 
 
-```{r}
+```{r,eval=FALSE}
 # read in tracts acs data
 
 tracts_acs_ac = st_read(..)
 ```
 
-```{r}
+```{r,eval=FALSE}
 # read our grocery-data CSV into a plain data.frame
 
 grocery_pts_df = read.csv(...)
 ```
 
-```{r}
+```{r,eval=FALSE}
 # coerce it to an `sf` data.frame, and define its CRS as 4326
 
 grocery_pts_sf = st_as_sf(grocery_pts_df, 
@@ -102,13 +102,13 @@ grocery_pts_sf = st_as_sf(grocery_pts_df,
                           crs = ...)
 ```
 
-```{r}
+```{r,eval=FALSE}
 # transform it to match the CRS of tracts_acs_ac
 
 grocery_pts_sf = st_transform(..., ...)
 ```
 
-```{r}
+```{r,eval=FALSE}
 # take a peek
 
 head(grocery_pts_sf)
@@ -146,19 +146,19 @@ Now that we have our data and they're in the same projection, we're going to *ag
 - aggregate the groceries to the tracts and calculate the total sales volume
 - don't forget to check the dimensions, contents, and any other relevant aspects of your results
 
-```{r}
+```{r,eval=FALSE}
 # join the two datasets in such a way that you can then...
 
 tracts_joingrocery = st_join(..., ..., left = ..., join = ...)
 ```
 
-```{r}
+```{r,eval=FALSE}
 # aggregate groceries by tract and calculate the total sales volume
 
 tracts_totsalesvol = sf:::aggregate.sf(x = ..., by = ..., FUN = ...)
 ```
 
-```{r}
+```{r,eval=FALSE}
 # don't forget to check the dimensions, contents, and any other relevant aspects of your results
 
 # check the dimensions
@@ -168,7 +168,7 @@ print('Dimesions of census tracts:')
 print(...)
 ```
 
-```{r}
+```{r,eval=FALSE}
 # check the result
 head(tracts_totsalesvol)
 ```
@@ -206,7 +206,7 @@ With any time of geospatial analysis you do, it's always nice to plot and visual
 - Plot the grocery stores on top
 - Bonus points for devising a nice visualization scheme that helps you heuristically check your results!
 
-```{r}
+```{r,eval=FALSE}
 # plot the tracts, coloring by total SALESVOL
 final_map = tm_shape(tracts_totsalesvol) + 
   tm_...(col=..., style='quantile',
@@ -214,13 +214,13 @@ final_map = tm_shape(tracts_totsalesvol) +
          border.col='darkgrey')
 ```
 
-```{r}
+```{r,eval=FALSE}
 # subset the stores for only those within our tracts, to keep map within region of interest
 
 grocery_pts_sf_ac = st_intersection(..., ...)
 ```
 
-```{r}
+```{r,eval=FALSE}
 # add the grocery stores, coloring by SALESVOL, for a visual check
 final_map + 
   tm_shape(grocery_pts_sf_ac) + 
