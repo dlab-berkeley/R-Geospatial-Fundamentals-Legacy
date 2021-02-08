@@ -2,11 +2,13 @@
 
 This is the repository for D-Lab's __Geospatial Fundamentals in R with `sf`__ workshop.
 
+<!--
+CAN ADD SLIDES AGAIN LATER
 __View the Slides__:
 - [Part 1 slides](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/01-core_concepts_and_plotting.html#1) 
 - [Part 2 slides](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/02-spatial_analysis.html#1)
 - [Part 3 slides](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/03-raster_data.html#1)
-
+--->
 <!---
 __View the Slides or RStudio Binders__:
 HERE IS CODE FOR IF/WHEN WE IMPLEMENT BINDER
