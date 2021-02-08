@@ -13,8 +13,9 @@
 
 If you are __prompted by the question__, "Do you want to install from sources the package which needs compilation? (Yes/no/cancel)", type "**no**" in your console and press Enter. (***Note**: This is most common for Mac users.*)
 
-  
+<!-- 
+TO DO add confirmation code that their packages are installed correctly
 4. After installation is complete, open the ['01-core_concepts_and_plotting.html'](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/01-core_concepts_and_plotting.html#1) file in the 'docs' folder, to launch Pthe slides for Part I.
-
+-->
 
 ### Contact us with any questions!
