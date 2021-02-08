@@ -25,17 +25,17 @@ HERE IS CODE FOR IF/WHEN WE IMPLEMENT BINDER
   - __Part I: Core concepts, vector data, and plotting__
       - Basic geospatial concepts
       - Basic vector data
-      - Basic plotting (`base::plot` and the `ggplot3` package)
-      - Basemaps and geocoding with the `ggmap` package (a glimpse)
       - Geospatial data structures (the `sf` package)
+      - Basic plotting (`base::plot` and the `ggplot3` package)
       - Managing coordinate reference systems (CRS)
       - Advanced plotting (the `tmap` package)
+      - Map overlays
   - __Part II: Spatial analysis__
-      - Review of Part I material
       - Spatial measurement queries
       - Spatial relationship queries
+      - Buffer analysis
       - Spatial and non-spatial joins
-      - Distance queries
+      - Aggregation
       - Continued mapping practice
   - __Part III: Raster data__
       - Raster concepts
