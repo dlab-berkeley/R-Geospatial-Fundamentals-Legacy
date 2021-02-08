@@ -1,0 +1,284 @@
+---
+title: An R Markdown document converted from "./08_Pulling_It_All_Together.ipynb"
+output: html_document
+---
+
+# 08. Pulling it all Together
+
+For this last lesson, we'll practice going through a full workflow!! We'll answer the question:
+## What is the total grocery-store sales volume of each census tract?
+
+
+### WORKFLOW:
+
+<br>
+Here's a set of steps that we will implement in the labeled cells below:
+
+<u> 8.1 Read in and Prep Data</u>
+- read in tracts ACS joined data
+- read our grocery-data CSV into a plain data.frame (it lives at `'notebook_data/other/ca_grocery_stores_2019_wgs84.csv`)
+- coerce it to an `sf` data.frame
+- define its CRS (EPSG:4326)
+- transform it to match the CRS of the tracts
+- take a peek
+
+<u>8.2 Aggregation</u>
+- aggregate the grocery points by tract and calculate the total grocery-store sales volume of each tract
+- don't forget to check the dimensions, contents, and any other relevant aspects of your results
+
+<u>8.3 Plot and Review</u>
+- plot the tracts, coloring them by total grocery-store sales volume
+- plot the grocery stores on top
+- bonus points for devising a nice visualization scheme that helps you heuristically check your results!
+
+
+
+### INSTRUCTIONS:
+**We've written out some of the code for you, but you'll need to replace the ellipses with the correct
+content.**
+
+*You can check your answers by double-clicking on the Markdown cells where indicated.*
+
+
+<br>
+<font color='grey'>
+    <b>Instructor Notes</b>
+
+- Datasets used
+    - 'outdata/tracts_acs_gdf_ac.json'
+    - 'notebook_data/other/ca_grocery_stores_2019_wgs84.csv'
+
+- Expected time to complete
+    - Lecture + Questions: N/A
+    - Exercises: 30 minutes
+</font>
+
+
+
+-----------------
+
+
+---------------------------------------
+
+
+### Load Packages
+
+```{r}
+library(sf)
+library(tmap)
+```
+
+------------------
+
+## 8.1 Read in the Prep Data
+
+We first need to prepare our data by loading both our tracts/acs and grocery data, and conduct our usual steps to make there they have the same CRS.
+
+- read in our tracts acs joined data 
+- read our grocery-data CSV into a plain data.frame (it lives at `'notebook_data/other/ca_grocery_stores_2019_wgs84.csv`)
+- coerce it to an `sf` data.frame
+- define its CRS (EPSG:4326)
+- transform it to match the CRS of the tracts
+- take a peek
+
+
+```{r,eval=FALSE}
+# read in tracts acs data
+
+tracts_acs_ac = st_read(..)
+```
+
+```{r,eval=FALSE}
+# read our grocery-data CSV into a plain data.frame
+
+grocery_pts_df = read.csv(...)
+```
+
+```{r,eval=FALSE}
+# coerce it to an `sf` data.frame, and define its CRS as 4326
+
+grocery_pts_sf = st_as_sf(grocery_pts_df, 
+                          coords = c(...),
+                          crs = ...)
+```
+
+```{r,eval=FALSE}
+# transform it to match the CRS of tracts_acs_ac
+
+grocery_pts_sf = st_transform(..., ...)
+```
+
+```{r,eval=FALSE}
+# take a peek
+
+head(grocery_pts_sf)
+```
+
+## Double-click here to see solution!
+
+<!--
+
+# SOLUTION:
+
+########################
+# read in and prep data:
+#-----------------------
+# read in tracts acs data
+tracts_acs_ac = st_read('outdata/tracts_acs_gdf_ac.json')
+# read in the grocery-store data
+grocery_pts_df = read.csv('notebook_data/other/ca_grocery_stores_2019_wgs84.csv')
+# coerce to an `sf` data.frame, and define the CRS
+grocery_pts_sf = st_as_sf(grocery_pts_df, 
+                          coords=c('X', 'Y'),
+                          crs = 4326)
+# transform to our census-tract CRS
+grocery_pts_sf = st_transform(grocery_pts_sf, st_crs(tracts_acs_ac))
+head(grocery_pts_sf)
+
+-->
+
+-----------------------
+
+## 8.2 Aggregation
+
+Now that we have our data and they're in the same projection, we're going to *aggregate* our data to calculate the total sales volume of each tract.
+
+- aggregate the groceries to the tracts and calculate the total sales volume
+- don't forget to check the dimensions, contents, and any other relevant aspects of your results
+
+```{r,eval=FALSE}
+# join the two datasets in such a way that you can then...
+
+tracts_joingrocery = st_join(..., ..., left = ..., join = ...)
+```
+
+```{r,eval=FALSE}
+# aggregate groceries by tract and calculate the total sales volume
+
+tracts_totsalesvol = sf:::aggregate.sf(x = ..., by = ..., FUN = ...)
+```
+
+```{r,eval=FALSE}
+# don't forget to check the dimensions, contents, and any other relevant aspects of your results
+
+# check the dimensions
+print('Dimensions of result:')
+print(...)
+print('Dimesions of census tracts:')
+print(...)
+```
+
+```{r,eval=FALSE}
+# check the result
+head(tracts_totsalesvol)
+```
+
+## Double-click here to see solution!
+
+<!--
+
+# SOLUTION:
+
+############################
+# spatial join and dissolve:
+#---------------------------
+# aggregate groceries by tract and calculate the total sales volume
+tracts_totsalesvol = sf:::aggregate.sf(x = grocery_pts_sf['SALESVOL'], by = tracts_acs_ac, FUN = sum)
+
+# check the dimensions
+print('Dimensions of result:')
+print(dim(tracts_totsalesvol))
+print('Dimesions of census tracts:')
+print(dim(tracts_acs_ac))
+
+# check the result
+head(tracts_totsalesvol)
+
+-->
+
+----------------------
+
+## 8.3 Plot and Review
+
+With any time of geospatial analysis you do, it's always nice to plot and visualize your results to check your work and start to understand the full story of your analysis.
+
+- Plot the tracts, coloring them by total grocery-store sales volume
+- Plot the grocery stores on top
+- Bonus points for devising a nice visualization scheme that helps you heuristically check your results!
+
+```{r,eval=FALSE}
+# plot the tracts, coloring by total SALESVOL
+final_map = tm_shape(tracts_totsalesvol) + 
+  tm_...(col=..., style='quantile',
+         palette='RdYlGn',
+         border.col='darkgrey')
+```
+
+```{r,eval=FALSE}
+# subset the stores for only those within our tracts, to keep map within region of interest
+
+grocery_pts_sf_ac = st_intersection(..., ...)
+```
+
+```{r,eval=FALSE}
+# add the grocery stores, coloring by SALESVOL, for a visual check
+final_map + 
+  tm_shape(grocery_pts_sf_ac) + 
+  tm_...(col = ... , palette = ...,
+         size= ...)
+```
+
+## Double-click here to see solution!
+
+<!--
+
+# SOLUTION:
+
+##################
+# plot and review:
+#-----------------
+
+final_map = tm_shape(tracts_totsalesvol) + 
+  tm_polygons(col = 'SALESVOL', style='quantile',
+         palette='RdYlGn',
+         border.col='darkgrey')
+
+grocery_pts_sf_ac = st_intersection(grocery_pts_sf, tracts_totsalesvol)
+
+final_map + 
+  tm_shape(grocery_pts_sf_ac) + 
+  tm_dots(col = 'SALESVOL' , palette = 'RdYlGn',
+         size= 0.15)
+
+-->
+
+-------------------
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+***
+
+# Congrats!! Thanks for Joining Us for Geospatial Fundamentals!!
+
+<img src="https://statmodeling.stat.columbia.edu/wp-content/uploads/2016/07/cat-globe.png">
+
+---
+<div style="display:inline-block;vertical-align:middle;">
+<a href="https://dlab.berkeley.edu/" target="_blank"><img src ="assets/images/dlab_logo.png" width="75" align="left">
+</a>
+</div>
+
+<div style="display:inline-block;vertical-align:middle;">
+    <div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
+    <div>&nbsp;Team Geo<div>
+</div>
+        
+
+
+
+

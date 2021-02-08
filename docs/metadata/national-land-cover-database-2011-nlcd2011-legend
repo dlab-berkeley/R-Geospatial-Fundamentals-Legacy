@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html  lang="en" dir="ltr" prefix="content: http://purl.org/rss/1.0/modules/content/  dc: http://purl.org/dc/terms/  foaf: http://xmlns.com/foaf/0.1/  og: http://ogp.me/ns#  rdfs: http://www.w3.org/2000/01/rdf-schema#  schema: http://schema.org/  sioc: http://rdfs.org/sioc/ns#  sioct: http://rdfs.org/sioc/types#  skos: http://www.w3.org/2004/02/skos/core#  xsd: http://www.w3.org/2001/XMLSchema# ">
+  <head>
+	  <!-- Client Side Frame Busting Code to prevent XFS and Clickjacking -->
+		<style id="antiClickjack">body{display:none !important;}</style>
+		<script type="text/javascript">
+		   if (self === top) {
+			   var antiClickjack = document.getElementById("antiClickjack");
+			   antiClickjack.parentNode.removeChild(antiClickjack);
+		   } else {
+			   top.location = self.location;
+		   }
+		</script>
+		<!-- ******************************************************************* -->
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127886240-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-127886240-1');
+  </script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+<meta name="Generator" content="Drupal 8 (https://www.drupal.org)" />
+<meta name="MobileOptimized" content="width" />
+<meta name="HandheldFriendly" content="true" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="https://www.mrlc.gov/themes/eros_mrlc/images/favicon.ico" type="image/vnd.microsoft.icon" />
+<link rel="canonical" href="national-land-cover-database-2011-nlcd2011-legend" />
+<link rel="shortlink" href="https://www.mrlc.gov/node/181" />
+<link rel="revision" href="national-land-cover-database-2011-nlcd2011-legend" />
+
+    <title>National Land Cover Database 2011 (NLCD2011) Legend | Multi-Resolution Land Characteristics (MRLC) Consortium</title>
+    
+	
+	<link rel="apple-touch-icon" sizes="57x57" href="https://www.mrlc.gov/themes/eros_mrlc/images/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="https://www.mrlc.gov/themes/eros_mrlc/images/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="https://www.mrlc.gov/themes/eros_mrlc/images/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="https://www.mrlc.gov/themes/eros_mrlc/images/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="https://www.mrlc.gov/themes/eros_mrlc/images/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="https://www.mrlc.gov/themes/eros_mrlc/images/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="https://www.mrlc.gov/themes/eros_mrlc/images/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="https://www.mrlc.gov/themes/eros_mrlc/images/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="https://www.mrlc.gov/themes/eros_mrlc/images/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192"  href="https://www.mrlc.gov/themes/eros_mrlc/images/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="https://www.mrlc.gov/themes/eros_mrlc/images/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="https://www.mrlc.gov/themes/eros_mrlc/images/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="https://www.mrlc.gov/themes/eros_mrlc/images/favicon-16x16.png">
+	<link rel="manifest" href="https://www.mrlc.gov/themes/eros_mrlc/images/manifest.json">
+	<meta name="msapplication-TileColor" content="#ffffff">
+	<meta name="msapplication-TileImage" content="/themes/eros_mrlc/images/ms-icon-144x144.png">
+	<meta name="theme-color" content="#ffffff">
+	
+	
+	<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/align.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/fieldgroup.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/container-inline.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/clearfix.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/details.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/hidden.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/item-list.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/js.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/nowrap.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/position-container.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/progress.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/reset-appearance.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/resize.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/sticky-header.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/system-status-counter.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/system-status-report-counters.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/system-status-report-general-info.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/tablesort.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/system/css/components/tree-child.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/core/modules/views/css/views.module.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.0/dist/css/bootstrap.css" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/themes/contrib/bootstrap/css/3.4.0/overrides.min.css?pq63yd" media="all" />
+<link rel="stylesheet" href="https://www.mrlc.gov/themes/eros_mrlc/css/styles.css?pq63yd" media="all" />
+
+  
+<!--[if lte IE 8]>
+<script src="/core/assets/vendor/html5shiv/html5shiv.min.js?v=3.7.3"></script>
+<![endif]-->
+
+  
+  <!-- Matomo -->
+  <script type="text/javascript">
+    var _paq = _paq || [];
+    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    _paq.push(["setCookieDomain", "*.www.mrlc.gov"]);
+    _paq.push(["setDomains", ["*.www.mrlc.gov","*.mrlc.gov"]]);
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+      var u="//piwik.cr.usgs.gov/";
+      _paq.push(['setTrackerUrl', u+'piwik.php']);
+      _paq.push(['setSiteId', '8']);
+      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+    })();
+  </script>
+  <noscript><p><img src="https://piwik.cr.usgs.gov/piwik.php?idsite=8&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+  <!-- End Matomo Code -->
+  
+  </head>
+  <body  class="path-node page-node-type-dataset-legend-page has-glyphicons">
+    <a href="national-land-cover-database-2011-nlcd2011-legend#main-content" class="visually-hidden focusable skip-link">
+      Skip to main content
+    </a>
+    
+      <div class="dialog-off-canvas-main-canvas" data-off-canvas-main-canvas>
+      									<header  class="navbar navbar-default navbar-fixed-top no-carousel container" id="navbar" role="banner">
+		    		    <div class="container">
+		  
+			  <div class="navbar-header">
+				  <div class="region region-navigation">
+          <a class="logo navbar-btn pull-left" href="https://www.mrlc.gov/" title="Home" rel="home">
+		<div class="pull-left nav-div">
+			<div class="second-div"><img class="nav-logo" src="https://www.mrlc.gov/themes/eros_mrlc/images/MRLC-t-sm.png" alt="Home" alt="MRLC logo" /></div>
+		</div>
+		<span>Celebrating 20+ years of Partnership<br><b>Multi-Resolution Land Characteristics<br>Consortium</b></span>
+    </a>
+      
+  </div>
+
+												  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+							  </div>
+
+			  			  				<div id="navbar-collapse" class="navbar-collapse collapse">
+				    <div class="region region-navigation-collapsible">
+    <nav role="navigation" aria-labelledby="block-eros-mrlc-main-menu-menu" id="block-eros-mrlc-main-menu">
+            <h2 class="sr-only" id="block-eros-mrlc-main-menu-menu">Main navigation</h2>
+
+      
+      <ul class="menu menu--main nav navbar-nav">
+                      <li class="first">
+                                        <a href="https://www.mrlc.gov/about" data-drupal-link-system-path="node/115">About</a>
+              </li>
+                      <li class="expanded dropdown">
+                                                                    <a href="national-land-cover-database-2011-nlcd2011-legend" class="dropdown-toggle" data-toggle="dropdown" data-drupal-link-system-path="&lt;front&gt;">Data <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                      <li class="first">
+                                        <a href="https://www.mrlc.gov/data" data-drupal-link-system-path="data">Downloads</a>
+              </li>
+                      <li class="last">
+                                        <a href="https://www.mrlc.gov/data-services-page" data-drupal-link-system-path="node/321">Services</a>
+              </li>
+        </ul>
+  
+              </li>
+                      <li>
+                                        <a href="https://www.mrlc.gov/partners" data-drupal-link-system-path="node/144">Partners</a>
+              </li>
+                      <li>
+                                        <a href="https://www.mrlc.gov/tools" data-drupal-link-system-path="node/199">Tools</a>
+              </li>
+                      <li>
+                                        <a href="https://www.mrlc.gov/publications" data-drupal-link-system-path="node/305">Publications</a>
+              </li>
+                      <li class="last">
+                                        <a href="https://www.mrlc.gov/contact-us" data-drupal-link-system-path="node/120">Contact Us</a>
+              </li>
+        </ul>
+  
+
+  </nav>
+
+  </div>
+
+				</div>
+			  			  			</div>  
+		</header>
+
+  
+    		<div class="pushdown"></div>
+    
+	
+  <div role="main" class="main-container container js-quickedit-main-content">
+    <div class="row">
+
+                              <div class="col-sm-12" role="heading">
+              <div class="region region-header">
+    
+    <ol class="breadcrumb">
+	<a href="https://www.mrlc.gov/"><span class="glyphicon glyphicon-home"></span></a>
+          <li >
+                  <a href="https://www.mrlc.gov/">Home</a>
+              </li>
+          <li >
+                  <a href="https://www.mrlc.gov/data">Data</a>
+              </li>
+          <li  class="active">
+                  National Land Cover Database 2011 (NLCD2011) Legend
+              </li>
+      </ol>
+
+    <h1 class="page-header"><span>National Land Cover Database 2011 (NLCD2011) Legend</span>
+</h1>
+
+
+  </div>
+
+			          </div>
+              
+                  <section class="col-sm-9">
+
+                
+                                      
+                  
+                          <a id="main-content"></a>
+            <div class="region region-content">
+      <article data-history-node-id="181" role="article" about="/data/legends/national-land-cover-database-2011-nlcd2011-legend" class="dataset-legend-page is-promoted full clearfix">
+
+  
+    
+
+  
+  <div class="content">
+    
+            <div class="field field--name-body field--type-text-with-summary field--label-hidden field--item"><div style="padding-left:10px;margin-left:10px;">
+<p>The classification system used by NLCD2011 is modified from the <a href="http://landcover.usgs.gov/pdf/anderson.pdf">Anderson Land Cover Classification System</a>*. <br />
+<br />
+<a download="" href="https://www.mrlc.gov/sites/default/files/NLCD_Colour_Classification_Update.jpg" target="_blank">Download</a> the NLCD2001 land cover classification legend.<br />
+<a download="" href="https://www.mrlc.gov/sites/default/files/NLCD_imperv_legend_2013.jpg" target="_blank">Download</a> the per pixel estimates of percent imperviousness legend.<br />
+<a download="" href="https://www.mrlc.gov/sites/default/files/NLCD_canopy_legend_2013.jpg" target="_blank">Download</a> the per pixel estimates of percent tree canopy legend.</p>
+
+<table role="presentation" style="border:solid .5px #000000;width:75%">
+	<tbody>
+		<tr>
+			<td style="background-color:#ffffff;font-weight:bold">Class\ Value</td>
+			<td style="background-color:#ffffff;font-weight:bold">Classification Description</td>
+		</tr>
+		<tr>
+			<td class="white" valign="top"><strong>Water</strong></td>
+			<td class="white" valign="top"> </td>
+		</tr>
+		<tr>
+			<td align="right" class="water" valign="top">11</td>
+			<td class="water" valign="top"><strong>Open Water</strong>- areas of open water, generally with less than 25% cover of vegetation or soil.</td>
+		</tr>
+		<tr>
+			<td align="right" class="white" valign="top">12</td>
+			<td class="white" valign="top"><strong>Perennial Ice/Snow</strong>- areas characterized by a perennial cover of ice and/or snow, generally greater than 25% of total cover.</td>
+		</tr>
+		<tr>
+			<td class="white" valign="top"><strong>Developed</strong></td>
+			<td class="white" valign="top"> </td>
+		</tr>
+		<tr>
+			<td align="right" class="lowintensity" valign="top">21</td>
+			<td class="lowintensity" valign="top"><strong>Developed, Open Space</strong>- areas with a mixture of some constructed materials, but mostly vegetation in the form of lawn grasses. Impervious surfaces account for less than 20% of total cover. These areas most commonly include large-lot single-family housing units, parks, golf courses, and vegetation planted in developed settings for recreation, erosion control, or aesthetic purposes.</td>
+		</tr>
+		<tr>
+			<td align="right" class="highintensity" valign="top">22</td>
+			<td class="highintensity" valign="top"><strong>Developed, Low Intensity</strong>- areas with a mixture of constructed materials and vegetation. Impervious surfaces account for 20% to 49% percent of total cover. These areas most commonly include single-family housing units.</td>
+		</tr>
+		<tr>
+			<td align="right" class="developed" valign="top">23</td>
+			<td class="developed" valign="top"><strong>Developed, Medium Intensity </strong>-areas with a mixture of constructed materials and vegetation. Impervious surfaces account for 50% to 79% of the total cover. These areas most commonly include single-family housing units.</td>
+		</tr>
+		<tr>
+			<td align="right" class="devhighintensity" valign="top">24</td>
+			<td class="devhighintensity" valign="top"><strong>Developed High Intensity</strong>-highly developed areas where people reside or work in high numbers. Examples include apartment complexes, row houses and commercial/industrial. Impervious surfaces account for 80% to 100% of the total cover.</td>
+		</tr>
+		<tr>
+			<td class="white" valign="top"><strong>Barren</strong></td>
+			<td class="white" valign="top"> </td>
+		</tr>
+		<tr>
+			<td align="right" class="barerock" valign="top">31</td>
+			<td class="barerock" valign="top"><strong>Barren Land (Rock/Sand/Clay) </strong>- areas of bedrock, desert pavement, scarps, talus, slides, volcanic material, glacial debris, sand dunes, strip mines, gravel pits and other accumulations of earthen material. Generally, vegetation accounts for less than 15% of total cover.</td>
+		</tr>
+		<tr>
+			<td class="white" valign="top"><strong>Forest</strong></td>
+			<td class="white" valign="top"> </td>
+		</tr>
+		<tr>
+			<td align="right" class="deciduous" valign="top">41</td>
+			<td class="deciduous" valign="top"><strong>Deciduous Forest</strong>- areas dominated by trees generally greater than 5 meters tall, and greater than 20% of total vegetation cover. More than 75% of the tree species shed foliage simultaneously in response to seasonal change.</td>
+		</tr>
+		<tr>
+			<td align="right" class="evergreen" valign="top">42</td>
+			<td class="evergreen" valign="top"><strong>Evergreen Forest</strong>- areas dominated by trees generally greater than 5 meters tall, and greater than 20% of total vegetation cover. More than 75% of the tree species maintain their leaves all year. Canopy is never without green foliage.</td>
+		</tr>
+		<tr>
+			<td align="right" class="mixed" valign="top">43</td>
+			<td class="mixed" valign="top"><strong>Mixed Forest</strong>- areas dominated by trees generally greater than 5 meters tall, and greater than 20% of total vegetation cover. Neither deciduous nor evergreen species are greater than 75% of total tree cover.</td>
+		</tr>
+		<tr>
+			<td class="white" valign="top"><strong>Shrubland</strong></td>
+			<td class="white" valign="top"> </td>
+		</tr>
+		<tr>
+			<td align="right" class="dwarf" valign="top">51</td>
+			<td class="dwarf" valign="top"><strong>Dwarf Scrub</strong>- Alaska only areas dominated by shrubs less than 20 centimeters tall with shrub canopy typically greater than 20% of total vegetation. This type is often co-associated with grasses, sedges, herbs, and non-vascular vegetation.</td>
+		</tr>
+		<tr>
+			<td align="right" class="shrubland" valign="top">52</td>
+			<td class="shrubland" valign="top"><strong>Shrub/Scrub</strong>- areas dominated by shrubs; less than 5 meters tall with shrub canopy typically greater than 20% of total vegetation. This class includes true shrubs, young trees in an early successional stage or trees stunted from environmental conditions.</td>
+		</tr>
+		<tr>
+			<td class="white" valign="top"><strong>Herbaceous</strong></td>
+			<td class="white" valign="top"> </td>
+		</tr>
+		<tr>
+			<td align="right" class="grasslands" valign="top">71</td>
+			<td class="grasslands" valign="top"><strong>Grassland/Herbaceous</strong>- areas dominated by gramanoid or herbaceous vegetation, generally greater than 80% of total vegetation. These areas are not subject to intensive management such as tilling, but can be utilized for grazing.</td>
+		</tr>
+		<tr>
+			<td align="right" class="sedge" valign="top">72</td>
+			<td class="sedge" valign="top"><strong>Sedge/Herbaceous</strong>- Alaska only areas dominated by sedges and forbs, generally greater than 80% of total vegetation. This type can occur with significant other grasses or other grass like plants, and includes sedge tundra, and sedge tussock tundra.</td>
+		</tr>
+		<tr>
+			<td align="right" class="lichens" valign="top">73</td>
+			<td class="lichens" valign="top"><strong>Lichens</strong>- Alaska only areas dominated by fruticose or foliose lichens generally greater than 80% of total vegetation.</td>
+		</tr>
+		<tr>
+			<td align="right" class="moss" valign="top">74</td>
+			<td class="moss" valign="top"><strong>Moss</strong>- Alaska only areas dominated by mosses, generally greater than 80% of total vegetation.</td>
+		</tr>
+		<tr>
+			<td class="white" valign="top"><strong>Planted/Cultivated</strong></td>
+			<td class="white" valign="top"> </td>
+		</tr>
+		<tr>
+			<td align="right" class="pasture" valign="top">81</td>
+			<td class="pasture" valign="top"><strong>Pasture/Hay</strong>-areas of grasses, legumes, or grass-legume mixtures planted for livestock grazing or the production of seed or hay crops, typically on a perennial cycle. Pasture/hay vegetation accounts for greater than 20% of total vegetation.</td>
+		</tr>
+		<tr>
+			<td align="right" class="rowcrops" valign="top">82</td>
+			<td class="rowcrops" valign="top"><strong>Cultivated Crops </strong>-areas used for the production of annual crops, such as corn, soybeans, vegetables, tobacco, and cotton, and also perennial woody crops such as orchards and vineyards. Crop vegetation accounts for greater than 20% of total vegetation. This class also includes all land being actively tilled.</td>
+		</tr>
+		<tr>
+			<td class="white" valign="top"><strong>Wetlands</strong></td>
+			<td class="white" valign="top"> </td>
+		</tr>
+		<tr>
+			<td align="right" class="woodywetlands" valign="top">90</td>
+			<td class="woodywetlands" valign="top"><strong>Woody Wetlands</strong>- areas where forest or shrubland vegetation accounts for greater than 20% of vegetative cover and the soil or substrate is periodically saturated with or covered with water.</td>
+		</tr>
+		<tr>
+			<td align="right" class="emergentwetlands" valign="top">95</td>
+			<td class="emergentwetlands" valign="top"><strong>Emergent Herbaceous Wetlands</strong>- Areas where perennial herbaceous vegetation accounts for greater than 80% of vegetative cover and the soil or substrate is periodically saturated with or covered with water.</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>*To view and print the PDF you must obtain and install the <a href="http://get2.adobe.com/reader/" style="text-decoration:underline;" target="_blank">Acrobat® Reader</a>, available at no charge from Adobe Systems.</p>
+</div>
+</div>
+      
+  </div>
+
+</article>
+
+<section class="views-element-container block block-views block-views-blockdatasets-info-block-1 clearfix" id="block-views-block-datasets-info-block-1">
+  
+    
+
+      <div class="form-group"><div class="view view-datasets-info view-id-datasets_info view-display-id-block_1 js-view-dom-id-6e842ff2a7a540c07d8dc2d5efd9ee116a45ef578aa0dd7c4b9d0bdccf74672e">
+  
+    
+      
+  
+          </div>
+</div>
+
+  </section>
+
+
+  </div>
+
+              </section>
+
+                              <aside class="col-sm-3" role="complementary">
+              <div class="region region-sidebar-second">
+    <div class="search-block-form block block-search block-search-form-block" data-drupal-selector="search-block-form" id="block-eros-mrlc-search" role="search">
+  
+      <h2 class="visually-hidden">Search</h2>
+    
+      <form action="https://www.mrlc.gov/search/node" method="get" id="search-block-form" accept-charset="UTF-8">
+  <div class="form-item js-form-item form-type-search js-form-type-search form-item-keys js-form-item-keys form-no-label form-group">
+      <label for="edit-keys" class="control-label sr-only">Search</label>
+  
+  
+  <div class="input-group"><input title="Enter the terms you wish to search for." data-drupal-selector="edit-keys" class="form-search form-control" placeholder="Search" type="search" id="edit-keys" name="keys" value="" size="15" maxlength="128" data-toggle="tooltip" /><span class="input-group-btn"><button type="submit" value="Search" class="button js-form-submit form-submit btn-primary btn icon-only" name=""><span class="sr-only">Search</span><span class="icon glyphicon glyphicon-search" aria-hidden="true"></span></button></span></div>
+
+  
+  
+  </div>
+<div class="form-actions form-group js-form-wrapper form-wrapper" data-drupal-selector="edit-actions" id="edit-actions"></div>
+
+</form>
+
+  </div>
+<section id="block-factsheets" class="block block-block-content block-block-content27447867-0798-44f9-9072-c8e6f5f0c0de clearfix">
+  
+    
+
+      
+            <div class="field field--name-body field--type-text-with-summary field--label-hidden field--item"><style type="text/css">
+<!--/*--><![CDATA[/* ><!--*/
+
+<!--/*--><![CDATA[/* ><!--*/
+.fact-sheet{
+  clear:both;
+  margin-bottom:20px;
+}
+
+.fact-sheet > a > img{
+  width:100%;
+}
+
+/*--><!]]]]><![CDATA[>*/
+
+/*--><!]]>*/
+</style>
+<div class="panel panel-default">
+<div class="panel-heading">
+<h3 class="panel-title">Fact Sheets</h3>
+</div>
+
+<div class="panel-body">
+<div class="fact-sheet"><a href="https://www.mrlc.gov/sites/default/files/remotesensing-06-07424.pdf" target="_blank"><img alt="Remote Sensing Paper Thumbnail" data-entity-type="file" data-entity-uuid="ee8a815a-ea14-4ce1-87dd-4142a97dd53a" src="https://www.mrlc.gov/sites/default/files/inline-images/RemSensPpr.jpg" /></a></div>
+
+<div class="fact-sheet"><a href="https://pubs.usgs.gov/fs/2012/3020/" target="_blank"><img alt="Screenshot of NLCD Fact Sheet Document" data-entity-type="file" data-entity-uuid="5d6cc4d6-e587-4318-9201-f5a27c468f38" src="https://www.mrlc.gov/sites/default/files/inline-images/fact-sheet-nlcd.jpg" /></a></div>
+
+<div class="fact-sheet"><a href="https://pubs.er.usgs.gov/publication/fs20173084" target="_blank"><img alt="Screenshot of Shrubland Fact Sheet Document" data-entity-type="file" data-entity-uuid="b2acd970-0832-4fb7-8356-819f1a18aefe" src="https://www.mrlc.gov/sites/default/files/inline-images/fact-sheet-shrub.jpg" /></a></div>
+</div>
+</div>
+</div>
+      
+  </section>
+
+
+  </div>
+
+          </aside>
+                  </div>
+  </div>
+
+
+			<div class="newsregion container-fluid">
+			<div class="container">
+				  <div class="region region-newsregion">
+    <section class="views-element-container block block-views block-views-blocknews-card-block-1 clearfix" id="block-views-block-news-card-block-1">
+  
+    
+
+      <div class="form-group"><div class="view view-news-card view-id-news_card view-display-id-block_1 js-view-dom-id-181ade997d0368c9353ea0d519f57bd1a9937f9b9f089988305ce62e2ebfe3fd">
+  
+    
+      
+      <div class="view-content">
+          <div class="views-row"><div class="col-md-4">
+  <div class="thumbnail">
+      <img src="https://www.mrlc.gov/sites/default/files/styles/news_card_image/public/2018-11/mapping-tool.png?itok=s0wtp2uH" width="400" height="250" alt="United States Land Cover Thumbnail" typeof="foaf:Image" class="img-responsive" />
+
+
+
+    <div class="caption">
+		<h3>The NLCD Mapping tool is updated!</h3>	
+		The current version of the mapping tool now contains support for Erdas 2016 through 2018 as well as previous versions 8.7 through 2011. <br><br>
+		<div class="btn btn-default" role="button">
+			<a href="https://www.mrlc.gov/tools">Read More</a>
+		</div>
+    </div>
+  </div>
+</div>
+</div>
+    <div class="views-row"><div class="col-md-4">
+  <div class="thumbnail">
+      <img src="https://www.mrlc.gov/sites/default/files/styles/news_card_image/public/2018-12/mrlc2016implementation.png?itok=B4Eta8Fv" width="400" height="250" alt="MRLC Implementation paper thumbnail" typeof="foaf:Image" class="img-responsive" />
+
+
+
+    <div class="caption">
+		<h3>NLCD 2016 Design and Methodology Paper recently published and now available</h3>	
+		The U.S. Geological Survey (USGS), in partnership with several federal agencies, has developed and released four National Land Cover Database (NLCD) products over the past two decades: NLCD 1992, 2001, 2006, and 2011. These products provide spatially explicit and reliable information on the Nation’s land cover and land cover change. <br><br>
+		<div class="btn btn-default" role="button">
+			<a href="https://www.sciencedirect.com/science/article/pii/S092427161830251X">Read More</a>
+		</div>
+    </div>
+  </div>
+</div>
+</div>
+    <div class="views-row"><div class="col-md-4">
+  <div class="thumbnail">
+      <img src="https://www.mrlc.gov/sites/default/files/styles/news_card_image/public/2018-04/shrub_avail3.jpg?itok=eCHRf1Ow" width="400" height="250" alt="shrub_avail3.jpg" typeof="foaf:Image" class="img-responsive" />
+
+
+
+    <div class="caption">
+		<h3>NLCD Shrubland products now available!</h3>	
+		The USGS in collaboration with the Bureau of Land Management and other MRLC partners is producing additional NLCD products for Western U.S. shrubland areas. This suite of products is produced as nine components, with component values representing the proportion (fractional vegetation) of each 30 m pixel. <br><br>
+		<div class="btn btn-default" role="button">
+			<a href="https://www.mrlc.gov/data?f%5B0%5D=category%3Ashrubland&amp;f%5B1%5D=category%3Ashrubland">Read More</a>
+		</div>
+    </div>
+  </div>
+</div>
+</div>
+
+    </div>
+  
+          </div>
+</div>
+
+  </section>
+
+
+  </div>
+
+			</div>
+			<div class="push"></div>
+		</div>
+	
+
+
+      <footer class="footer container" role="contentinfo">
+	  <div class="logos col-md-3">
+        <img alt="MRLC Logo" src="https://www.mrlc.gov/themes/eros_mrlc/images/MRLC-t-sm.png"/>
+      </div>
+        <div class="region region-footer">
+    <div class="col-md-3">
+  <h4>Download Data</h4>
+  
+      <ul class="menu menu--download-data nav">
+                      <li class="first">
+                                        <a href="https://www.mrlc.gov/data?f%5B0%5D=category%3Aland%20cover" data-drupal-link-query="{&quot;f&quot;:[&quot;category:land cover&quot;]}" data-drupal-link-system-path="data">Land Cover</a>
+              </li>
+                      <li>
+                                        <a href="https://www.mrlc.gov/data?f%5B0%5D=category%3Aurban%20imperviousness" data-drupal-link-query="{&quot;f&quot;:[&quot;category:urban imperviousness&quot;]}" data-drupal-link-system-path="data">Urban Imperviousness</a>
+              </li>
+                      <li>
+                                        <a href="https://www.mrlc.gov/data?f%5B0%5D=category%3Acanopy" data-drupal-link-query="{&quot;f&quot;:[&quot;category:canopy&quot;]}" data-drupal-link-system-path="data">Canopy</a>
+              </li>
+                      <li class="last">
+                                        <a href="https://www.mrlc.gov/data?f%5B0%5D=category%3Ashrubland" data-drupal-link-query="{&quot;f&quot;:[&quot;category:shrubland&quot;]}" data-drupal-link-system-path="data">Shrubland</a>
+              </li>
+        </ul>
+  
+
+</div><div class="col-md-3">
+  <h4>Analyze Data</h4>
+  
+      <ul class="menu menu--analyze-data nav">
+                      <li class="first">
+                                        <a href="https://www.mrlc.gov/publications" data-drupal-link-system-path="node/305">Publications</a>
+              </li>
+                      <li>
+                                        <a href="https://www.mrlc.gov/tools" data-drupal-link-system-path="node/199">Tools</a>
+              </li>
+                      <li class="last">
+                                        <a href="https://www.mrlc.gov/data-services-page" data-drupal-link-system-path="node/321">Services</a>
+              </li>
+        </ul>
+  
+
+</div><div class="col-md-3">
+  <h4>Resources</h4>
+  
+      <ul class="menu menu--resources nav">
+                      <li class="first">
+                                        <a href="https://www.mrlc.gov/about" data-drupal-link-system-path="node/115">About MRLC</a>
+              </li>
+                      <li>
+                                        <a href="https://www.mrlc.gov/contact-us" data-drupal-link-system-path="node/120">Contact Us</a>
+              </li>
+                      <li>
+                                        <a href="https://www.mrlc.gov/news" data-drupal-link-system-path="news">MRLC News</a>
+              </li>
+                      <li class="last">
+                                        <a href="https://www.mrlc.gov/frequently-asked-questions" data-drupal-link-system-path="node/306">FAQs</a>
+              </li>
+        </ul>
+  
+
+</div>
+  </div>
+
+    </footer>
+  
+  </div>
+
+    
+    <script type="application/json" data-drupal-selector="drupal-settings-json">{"path":{"baseUrl":"\/","scriptPath":null,"pathPrefix":"","currentPath":"node\/181","currentPathIsAdmin":false,"isFront":false,"currentLanguage":"en"},"pluralDelimiter":"\u0003","bootstrap":{"forms_has_error_value_toggle":1,"modal_animation":1,"modal_backdrop":"true","modal_focus_input":1,"modal_keyboard":1,"modal_select_text":1,"modal_show":1,"modal_size":"","popover_enabled":1,"popover_animation":1,"popover_auto_close":1,"popover_container":"body","popover_content":"","popover_delay":"0","popover_html":0,"popover_placement":"right","popover_selector":"","popover_title":"","popover_trigger":"click","popover_trigger_autoclose":1,"tooltip_enabled":1,"tooltip_animation":1,"tooltip_container":"body","tooltip_delay":"0","tooltip_html":0,"tooltip_placement":"auto left","tooltip_selector":"","tooltip_trigger":"hover"},"ajaxTrustedUrl":{"\/search\/node":true},"user":{"uid":0,"permissionsHash":"d4dd4e324d94dc0796ee6251182ff16c7329f7d4d9f89d2315c2b90e60c9b37f"}}</script>
+<script src="https://www.mrlc.gov/core/assets/vendor/domready/ready.min.js?v=1.0.8"></script>
+<script src="https://www.mrlc.gov/core/assets/vendor/jquery/jquery.min.js?v=3.2.1"></script>
+<script src="https://www.mrlc.gov/core/assets/vendor/underscore/underscore-min.js?v=1.8.3"></script>
+<script src="https://www.mrlc.gov/core/assets/vendor/jquery/jquery-extend-3.4.0.js?v=3.2.1"></script>
+<script src="https://www.mrlc.gov/core/misc/drupalSettingsLoader.js?v=8.6.15"></script>
+<script src="https://www.mrlc.gov/core/misc/drupal.js?v=8.6.15"></script>
+<script src="https://www.mrlc.gov/core/misc/drupal.init.js?v=8.6.15"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.0/dist/js/bootstrap.js"></script>
+<script src="https://www.mrlc.gov/themes/contrib/bootstrap/js/drupal.bootstrap.js?pq63yd"></script>
+<script src="https://www.mrlc.gov/themes/contrib/bootstrap/js/attributes.js?pq63yd"></script>
+<script src="https://www.mrlc.gov/themes/contrib/bootstrap/js/theme.js?pq63yd"></script>
+<script src="https://www.mrlc.gov/themes/eros_mrlc/js/jquery-3.3.1.min.js?pq63yd"></script>
+<script src="https://www.mrlc.gov/themes/eros_mrlc/js/scripts.js?pq63yd"></script>
+<script src="https://www.mrlc.gov/themes/contrib/bootstrap/js/popover.js?pq63yd"></script>
+<script src="https://www.mrlc.gov/themes/contrib/bootstrap/js/tooltip.js?pq63yd"></script>
+
+  </body>
+</html>
