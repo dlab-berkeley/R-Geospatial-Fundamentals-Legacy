@@ -1,0 +1,362 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>flcc_monthly_grids</title>
+  <link rel="schema.dc" href="http://purl.org/metadata/dublin_core"/>
+  <meta name="dc.title" content="flcc_monthly_grids "/>
+  <meta name="dc.creator" content="Alicia Torregrosa Cindy Combs Jeff Peters "/>
+  <meta name="dc.subject" content="atmosphere climatology year day Meteorology environment night summer Earth Cover imagery "/>
+  <meta name="dc.description" content="The raster grids in the monthly dataset contain the calculated hours per day of fog and low cloud cover (FLCC) as monthly averages for Northern and Central Coastal California.  The calculations are based on a decade of summertime cloud maps derived from satellite-based measurements. The filename of each individual raster grid specifies the temporal period (month and year) for the grid. The northernmost spatial extent of the dataset is the Oregon border and the southernmost extent is Point Arguello. The digital values for each 4 km grid cell were calculated from the archive of 26,000 hourly cloud maps derived from hourly geostationary operational environmental satellite (GOES) images from 1999-2009 for June, July, August, and September. Daytime cloud maps were generated using one visible channel and two thermal channels whereas nighttime cloud maps were generated using two thermal channels. "/>
+  <meta name="dc.publisher" content="U.S. Geological Survey, PACIFIC REGION"/>
+  <meta name="dc.contributor" content="USGS Land Change Science, Cooperative Institute for Research on the Atmosphere, California Landscape Conservation Cooperative, TBC3 -Pepperwood Preserve, and Gordon and Betty Moore Foundation. "/>
+  <meta name="dc.date" content="20160204"/>
+  <meta name="dc.type" content="data.Raster Digital Data Set"/>
+  <meta name="dc.format" content="Raster Digital Data Set"/>
+  <meta name="dc.identifier" content="http://climate.calcommons.org/datasets/summertime-fog"/>
+  <meta name="dc.lang" content="en"/>
+  <meta name="dc.relation" content="Part of GOES-derived fog and low cloud indices for coastal north and central California"/>
+  <meta name="dc.coverage.x.min" scheme="DD" content="-128.028432"/>
+  <meta name="dc.coverage.x.max" scheme="DD" content="-120.157757"/>
+  <meta name="dc.coverage.y.min" scheme="DD" content="33.964177"/>
+  <meta name="dc.coverage.y.max" scheme="DD" content="42.023748"/>
+  <meta name="dc.coverage.placeName" content="Northern California Coastal"/>
+  <meta name="dc.coverage.placeName" content="Central California Coastal"/>
+  <meta name="dc.coverage.t.min" content="19990601"/>
+  <meta name="dc.coverage.t.max" content="20090930"/>
+  <meta name="dc.rights" content="Access constraints: None; Use constraints: Please use the following citation when using this dataset: Torregrosa, A., C. Combs, and J. Peters (2016), GOES-derived fog and low cloud indices for coastal north and central California ecological analyses, Earth and Space Science, 3, doi:10.1002/2015EA000119."/>
+  <meta name="generated-from" content="flcc_monthly_metadata.xml"/>
+<style tyle="text/css">
+.enttypl {font-family: monospace; font-size: large; font-weight: bold; margin: 4px; padding: 2px 4px; background-color: #ddeeff;}
+.attrlabl {font-family: monospace; font-weight: bold; margin: 4px; padding: 2px 4px; background-color: #ddffee;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<h1>flcc_monthly_grids</h1>
+Metadata also available as - [<a href="flcc_monthly_metadata.html" title="This metadata record in an alternative format">Outline</a>] - [<a href="flcc_monthly_metadata.txt" title="This metadata record in an alternative format">Parseable text</a>] - [<a href="flcc_monthly_metadata.xml" title="This metadata record in an alternative format">XML</a>]<p>
+<h4>Frequently anticipated questions:</h4>
+<ul>
+  <li><a href="#what">What does this data set describe?</a>
+    <ol>
+      <li><a href="#what.1">How might this data set be cited?</a></li>
+      <li><a href="#what.2">What geographic area does the data set cover?</a></li>
+      <li><a href="#what.3">What does it look like?</a></li>
+      <li><a href="#what.4">Does the data set describe conditions during a particular time period?</a></li>
+      <li><a href="#what.5">What is the general form of this data set?</a></li>
+      <li><a href="#what.6">How does the data set represent geographic features?</a></li>
+      <li><a href="#what.7">How does the data set describe geographic features?</a></li>
+    </ol>
+  </li>
+  <li><a href="#who">Who produced the data set?</a>
+    <ol>
+      <li><a href="#who.1">Who are the originators of the data set?</a></li>
+      <li><a href="#who.2">Who also contributed to the data set?</a></li>
+      <li><a href="#who.3">To whom should users address questions about the data?</a></li>
+    </ol>
+  </li>
+  <li><a href="#why">Why was the data set created?</a></li>
+  <li><a href="#how">How was the data set created?</a>
+    <ol>
+      <li><a href="#how.1">From what previous works were the data drawn?</a></li>
+      <li><a href="#how.2">How were the data generated, processed, and modified?</a></li>
+      <li><a href="#how.3">What similar or related data should the user be aware of?</a></li>
+    </ol>
+  </li>
+  <li><a href="#quality">How reliable are the data; what problems remain in the data set?</a>
+    <ol>
+      <li><a href="#quality.1">How well have the observations been checked?</a></li>
+      <li><a href="#quality.2">How accurate are the geographic locations?</a></li>
+      <li><a href="#quality.3">How accurate are the heights or depths?</a></li>
+      <li><a href="#quality.4">Where are the gaps in the data?  What is missing?</a></li>
+      <li><a href="#quality.5">How consistent are the relationships among the data, including topology?</a></li>
+    </ol>
+  </li>
+  <li><a href="#getacopy">How can someone get a copy of the data set?</a>
+    <ol>
+      <li><a href="#getacopy.0">Are there legal restrictions on access or use of the data?</a></li>
+      <li><a href="#getacopy.1">Who distributes the data?</a></li>
+      <li><a href="#getacopy.2">What's the catalog number I need to order this data set?</a></li>
+      <li><a href="#getacopy.3">What legal disclaimers am I supposed to read?</a></li>
+      <li><a href="#getacopy.4">How can I download or order the data?</a></li>
+    </ol>
+  </li>
+  <li><a href="#metaref">Who wrote the metadata?</a></li>
+</ul>
+<hr/>
+<h3><a name="what">What does this data set describe?</a></h3>
+<div style="margin-left: 2em">
+<dl>
+<dt><em>Title:</em>  flcc_monthly_grids</dt>
+<dt><em>Abstract:</em>  
+<dd>
+
+The raster grids in the monthly dataset contain the calculated hours per day of fog and low cloud cover (FLCC) as monthly averages for Northern and Central Coastal California.  The calculations are based on a decade of summertime cloud maps derived from satellite-based measurements. The filename of each individual raster grid specifies the temporal period (month and year) for the grid. The northernmost spatial extent of the dataset is the Oregon border and the southernmost extent is Point Arguello. The digital values for each 4 km grid cell were calculated from the archive of 26,000 hourly cloud maps derived from hourly geostationary operational environmental satellite (GOES) images from 1999-2009 for June, July, August, and September. Daytime cloud maps were generated using one visible channel and two thermal channels whereas nighttime cloud maps were generated using two thermal channels.
+
+</dd>
+</dl>
+</div>
+<ol>
+<li style="margin-bottom: 1em;"><a name="what.1"><b>How might this data set be cited?</b></a>
+<div style="margin-left: 1em;">
+Torregrosa, Alicia, Combs, Cindy, and Peters, Jeff, 20160204, flcc_monthly_grids:.<p>
+Online Links:
+<ul>
+<li><a href="http://climate.calcommons.org/datasets/summertime-fog">http://climate.calcommons.org/datasets/summertime-fog</a>
+<li><a href="http://geography.wr.usgs.gov/fog">http://geography.wr.usgs.gov/fog</a>
+</ul>
+<p>
+</div>
+This is part of the following larger work.<p>
+<div style="margin-left: 1em;">
+Torregrosa, Alicia, Combs, Cindy, and Peters, Jeff, 20160204, GOES-derived fog and low cloud indices for coastal north and central California: Earth and Space Science volume 3 issue 2.<p>
+Online Links:
+<ul>
+<li><a href="http://onlinelibrary.wiley.com/doi/10.1002/2015EA000119/full">http://onlinelibrary.wiley.com/doi/10.1002/2015EA000119/full</a>
+</ul>
+<p>
+</div>
+</li>
+<li style="margin-bottom: 1em;"><a name="what.2"><b>What geographic area does the data set cover?</b></a>
+<dl>
+<dt><em>West_Bounding_Coordinate:</em>  -128.028432</dt>
+<dt><em>East_Bounding_Coordinate:</em>  -120.157757</dt>
+<dt><em>North_Bounding_Coordinate:</em>  42.023748</dt>
+<dt><em>South_Bounding_Coordinate:</em>  33.964177</dt>
+</dl>
+</li>
+<li style="margin-bottom: 1em;"><a name="what.3"><b>What does it look like?</b></a>
+</li>
+<li style="margin-bottom: 1em;"><a name="what.4"><b>Does the data set describe conditions during a particular time period?</b></a>
+<dl>
+<dt>Beginning_Date: 01-Jun-1999<dt>Ending_Date: 30-Sep-2009<dt><em>Currentness_Reference:</em>  observed</dt>
+</dl>
+</li>
+<li style="margin-bottom: 1em;"><a name="what.5"><b>What is the general form of this data set?</b></a>
+<dl>
+<dt><em>Geospatial_Data_Presentation_Form:</em>  Raster Digital Data Set</dt>
+</dl>
+</li>
+<li><a name="what.6"><b>How does the data set represent geographic features?</b></a>
+<ol type="a">
+<li style="margin-bottom: 1em;"><a name="what.6.a"><b>How are geographic features stored in the data set?</b></a><br/>
+This is a Raster data set.
+It contains the following raster data types:
+<ul>
+<li> Dimensions 256 x 250 x 1, type Grid Cell
+</ul>
+</li>
+<li style="margin-bottom: 1em;"><a name="what.6.b"><b>What coordinate system is used to represent geographic features?</b></a><br/>
+Horizontal positions are specified in geographic coordinates, that is, latitude and longitude.
+Latitudes are given to the nearest 8.9831528411952133e-009.
+Longitudes are given to the nearest 8.9831528411952133e-009.
+Latitude and longitude values are specified in Decimal Degrees.
+The horizontal datum used is D North American 1983.<br/>
+The ellipsoid used is GRS 1980.<br/>
+The semi-major axis of the ellipsoid used is 6378137.0.<br/>
+The flattening of the ellipsoid used is 1/298.257222101.<br/>
+</li>
+</ol>
+</li>
+<li style="margin-bottom: 1em;"><a name="what.7"><b>How does the data set describe geographic features?</b></a>
+<dl>
+<dt style="margin: 4px;"><span class="enttypl">Attribute Table</span></dt><dd>Table containing attribute information associated with the data set.
+  (Source: Producer defined)
+<dl>
+<dt style="margin: 4px;"><span class="attrlabl">Value</span></dt><dd>Average decadal fog and low cloud cover calculated in hours per day.
+  (Source: Producer defined)<em>Frequency of measurement:</em> 011
+<table border="1" cellpadding="4" cellspacing="0">
+<tr><th colspan="2">Range of values</th></tr>
+<tr><th>Minimum:</th><td>1.85</td></tr>
+<tr><th>Maximum:</th><td>14.65</td></tr>
+<tr><th>Units:</th><td>hours per day</td></tr>
+</table>
+</dl>
+<dt><em>Entity_and_Attribute_Overview:</em>  
+<dd>
+
+The entity and attribute information provided here describes the tabular data associated with the data set. Please review the detailed descriptions that are provided (the individual attribute descriptions) for information on the values that appear as fields/table entries of the data set.
+
+</dd>
+<dt><em>Entity_and_Attribute_Detail_Citation:</em>  
+<dd>
+
+The entity and attribute information was generated by the individual and/or agency identified as the originator of the data set. Please review the rest of the metadata record for additional details and information.
+
+</dd>
+</dl>
+</li>
+</ol>
+<hr/>
+<h3><a name="who">Who produced the data set?</a></h3>
+<ol>
+<li style="margin-bottom: 1em;"><a name="who.1"><b>Who are the originators of the data set?</b></a> (may include formal authors, digital compilers, and editors)
+<ul>
+<li>Alicia Torregrosa
+<li>Cindy Combs
+<li>Jeff Peters
+</ul>
+</li>
+<li style="margin-bottom: 1em;"><a name="who.2"><b>Who also contributed to the data set?</b></a>
+<blockquote>
+USGS Land Change Science, Cooperative Institute for Research on the Atmosphere, California Landscape Conservation Cooperative, TBC3 -Pepperwood Preserve, and Gordon and Betty Moore Foundation.
+</blockquote>
+</li>
+<li style="margin-bottom: 1em;"><a name="who.3"><b>To whom should users address questions about the data?</b></a>
+<div style="margin-left: 2em">
+<div title="Contact_Organization_Primary">U.S. Geological Survey, PACIFIC REGION</div>
+<div>Attn: <span title="Contact_Person">Alicia Torregrosa</span></div>
+<div title="Contact_Position">Physical Scientist</div>
+<div title="Address">Mail Stop 531, 345 Middlefield Road</div>
+<span title="City">Menlo Park</span>, <span title="State_or_Province">CA</span> <span title="Postal_Code"94025</span><br/>
+<p>
+<div title="Contact_Voice_Telephone">650-329-4091 (voice)</div>
+<div title="Contact_Facsimile_Telephone">650-329-4429 (FAX)</div>
+<div title="Contact_Electronic_Mail_Address">atorregrosa@usgs.gov</div>
+</div>
+</li>
+</ol>
+<hr/>
+<h3><a name="why">Why was the data set created?</a></h3>
+<blockquote>
+Fog and low cloud cover (FLCC) is very important for coastal California. During the seasonally arid summer months of the northern hemisphere Mediterranean climate zones (June to September), the stratus and stratocumulus clouds that form over the ocean advect onshore. When these low clouds touch the earth they are called fog although many people will also call the higher overcast clouds fog. When fog touches needles or other surfaces the fog water droplets coalesce becoming fog drip. Overcast clouds form a shield that reflects solar radiation bringing relief from summer heat. The added water from fog and reduced temperatures from low clouds can be critical for coastal species such as endangered coho salmon that require cool flowing streams during late summer. FLCC is highly variable across the landscape and throughout the summer resulting in many different climate regimes just a short distance from each other. Precisely located fog belt zones can help natural resource managers and others quantify the impacts of FLCC on ecosystem dynamics. A summertime FLCC dataset was developed as a Pacific Coastal Fog Project partnership between the US Geological Survey and the Cooperative Institute for Research on the Atmosphere (CIRA). The project goal is to quantify coastal ecosystem response to summertime patterns of marine stratus and stratocumulus cloud. A first step toward that goal is quantifying the FLCC patterns. We used 26,000 cloud maps, generated by CIRA from hourly weather satellite imagery to generate raster grids of average summertime FLCC. The images were collected from 1999 to 2009 and were subset into several temporal periods: decadal, annual, and monthly. By compressing large quantities of FLCC data into manageable units we sought to simplify the complex FLCC meteorological phenomenon into coherent FLCC indices applicable to landscape-level analysis. For more details see the publication, GOES-derived fog and low cloud indices for coastal north and central California ecological analyses, Earth and Space Science, 3, doi:10.1002/2015EA000119. The dataset uses hours per day (h/d) as the unit of analysis. This metric, like percent cover, gives a relative measure of cover however rather than a base of 100 it uses a base of 24 hours. Either measure could be used however our use of h/d is intended to facilitate an intuitive grasp of the amount of FLCC affecting the ecological process-of-interest on a daily time-step. Other indices in the series include the nighttime and daytime patterns and two measures of variation: standard deviation and coefficient of variation.
+</blockquote>
+<hr/>
+<h3><a name="how">How was the data set created?</a></h3>
+<ol>
+<li style="margin-bottom: 1em;"><a name="how.1"><b>From what previous works were the data drawn?</b></a>
+<dl>
+<dt><b>NOAA GOES</b> (source 1 of 1)
+<dd>
+<div style="margin-left: 1em;">
+NOAA, 20091001, NOAA GOES: NOAA, Online.<p>
+Online Links:
+<ul>
+<li><a href="http://www.nsof.class.noaa.gov/saa/products/search?datatype_family=GVAR_IMG">http://www.nsof.class.noaa.gov/saa/products/search?datatype_family=GVAR_IMG</a>
+</ul>
+<p>
+</div>
+<dl>
+<dt><em>Type_of_Source_Media:</em>  hardcopy</dt>
+<dt><em>Source_Scale_Denominator:</em>  4000</dt>
+<dt><em>Source_Contribution:</em>  Satellite image data</dt>
+</dl>
+</dl>
+</li>
+<li style="margin-bottom: 1em;"><a name="how.2"><b>How were the data generated, processed, and modified?</b></a>
+<dl>
+<dt>Date: 30-Jun-2012 (process 1 of 3)
+<dd>
+1. Processed 3 GOES channel data into cloud maps. for details see Combs, C. L., R. Mazur, J. Clark, M. Norquist, and D. Molenar (2010), An effort to improve marine stratus forecasts using satellite cloudclimatologies for the Eureka, CA region, paper presented at 17th Conference on Satellite and Oceanography, Annapolis, Md, Sept. 30.[Available at <a href="https://usgs.illiad.oclc.org/illiad/GIM/illiad.dll?Action=10andForm=70Meteorology.">https://usgs.illiad.oclc.org/illiad/GIM/illiad.dll?Action=10andForm=70Meteorology.</a>]
+<dt>Date: 30-Nov-2014 (process 2 of 3)
+<dd>
+2. Converted cloud maps into georectified raster grids and ran statistical analysis using python code in ArcGIS. For more details see Torregrosa, A., C. Combs, and J. Peters (2016), GOES-derived fog and low cloud indices for coastal north and central California ecological analyses, Earth and Space Science, 3, doi:10.1002/2015EA000119
+<dt>Date: 31-Jan-2015 (process 3 of 3)
+<dd>
+3. Interpolated (bilinear) the decadal index to derive a contours for mapping purposes.
+</dl>
+</li>
+<li style="margin-bottom: 1em;"><a name="how.3"><b>What similar or related data should the user be aware of?</b></a>
+</li>
+</ol>
+<hr/>
+<h3><a name="quality">How reliable are the data; what problems remain in the data set?</a></h3>
+<ol>
+<li style="margin-bottom: 1em;"><a name="quality.1"><b>How well have the observations been checked?</b></a><br/>
+Two methods were used to ensure quality and assess attribute accuracy: 1) visual assessment of individual images-run through as movies with removal of any images that had systematic contamination such as poor image quality during dusk and dawn when extreme Sun angles impact brightness values causing the image to stand out starkly during the run-through; 2) manual calculations of statistical analysis were compared with results from the results of the python coded scripts run in ArcGIS. When the results were different from each other it triggered examination to troubleshoot and correct the code.
+</li>
+<li style="margin-bottom: 1em;"><a name="quality.2"><b>How accurate are the geographic locations?</b></a><br/>
+Horizontal accuracy was assessed using coastline basemaps. Familiarity with coastal fog patterns was used to identify images that had very obvious geopositional offset from the coast. Most data for August 2001 had error and were deleted from the collection. Practicing meteorologists with deep familiarity with coastal low cloud patterns provided technical review and closely examined the landscape level patterns that came out of the long term statistical spatial analysis (decadal averages and coefficient of variation). Known patterns such as the Petaluma Gap and deep incursion into Salinas Valley were well represented in the new outputs.
+</li>
+<li style="margin-bottom: 1em;"><a name="quality.3"><b>How accurate are the heights or depths?</b></a><br/>
+The vertical positional accuracy although useful cannot be ascertained from this dataset.
+</li>
+<li style="margin-bottom: 1em;"><a name="quality.4"><b>Where are the gaps in the data?  What is missing?</b></a><br/>
+The purpose of the data was to understand summertime coastal cloud patterns, the dataset is therefore restricted to June, July, August and September. There are data gaps in the dataset collection. Only about 72,000 of the 95,000 images that could have been potentially captured during summers of 1999-2009, from the NOAA weather satellite, also known as GOES (geostationary operational environmental satellite), from the Imager sensor channels 1 (visible), 2 (shortwave infrared), and 4 (longwave infrared), were processed into about 26,000 hourly cloud maps. Quality control removal of images and missing images gaps include all data for August 2001 and June 2006, leaving only nine full summers for interannual and decadal statistical calculations. Monthly averages from all 11 years were used when available. When an hourly dusk or dawn cloud map was removed because it had been impacted by extreme Sun angles, a substitution was made by averaging the hour before and hour after. Data set is considered complete for the information presented, as described in the abstract. Users are advised to read the rest of the metadata record carefully for additional details.
+</li>
+<li style="margin-bottom: 1em;"><a name="quality.5"><b>How consistent are the relationships among the observations, including topology?</b></a><br/>
+Two methods were used to assess logical accuracy: 1) expert knowledge was used to cross-check landscape level results of mapped FLCC patterns to meteorologically accepted patterns of FLCC. This assessment showed high logical accuracy. 2) regression analyses were conducted comparing airport observations of fog with point data sampled from the FLCC databse. The results of this assessment showed a high R squared value for Monterey (0.83) and a lower value for Arcata (0.32). These results are discussed and plotted as Figure 10 in Torregrosa, A., C. Combs, and J. Peters (2016), GOES-derived fog and low cloud indices for coastal north and central California ecological analyses, Earth and Space Science, 3, doi:10.1002/2015EA000119.
+</li>
+</ol>
+<hr/>
+<h3><a name="getacopy">How can someone get a copy of the data set?</a></h3>
+<blockquote>
+<a name="getacopy.0"><b>Are there legal restrictions on access or use of the data?</b></a>
+<blockquote>
+<dl>
+<dt><em>Access_Constraints:</em>  None</dt>
+<dt><em>Use_Constraints:</em>  
+<dd>
+
+Please use the following citation when using this dataset: Torregrosa, A., C. Combs, and J. Peters (2016), GOES-derived fog and low cloud indices for coastal north and central California ecological analyses, Earth and Space Science, 3, doi:10.1002/2015EA000119.
+
+</dd>
+</dl>
+</blockquote>
+</blockquote>
+<ol>
+<li style="margin-bottom: 1em;"><a name="getacopy.1"><b>Who distributes the data set?</b></a> (Distributor 1 of 1)<br/>
+<div style="margin-left: 2em">
+<div title="Contact_Organization_Primary">U.S. Geological Survey, PACIFIC REGION</div>
+<div>Attn: <span title="Contact_Person">Alicia Torregrosa</span></div>
+<div title="Contact_Position">Physical Scientist</div>
+<div title="Address">Mail Stop 531, 345 Middlefield Road</div>
+<span title="City">Menlo Park</span>, <span title="State_or_Province">CA</span> <span title="Postal_Code"94025</span><br/>
+<p>
+<div title="Contact_Voice_Telephone">650-329-4091 (voice)</div>
+<div title="Contact_Facsimile_Telephone">650-329-4429 (FAX)</div>
+<div title="Contact_Electronic_Mail_Address">atorregrosa@usgs.gov</div>
+</div>
+</li>
+<li style="margin-bottom: 1em;"><a name="getacopy.2"><b>What's the catalog number I need to order this data set?</b></a>
+</li>
+<li style="margin-bottom: 1em;"><a name="getacopy.3"><b>What legal disclaimers am I supposed to read?</b></a>
+<blockquote>
+Distributor assumes no liability for misuse of data.
+</blockquote>
+</li>
+<li style="margin-bottom: 1em;"><a name="getacopy.4"><b>How can I download or order the data?</b></a>
+<ul>
+<li><b>Availability in digital form:</b>
+<table border="0" cellpadding="2">
+<tr><th align="left" valign="top">Data&nbsp;format:</th>
+<td>
+Raster Digital Data Set
+
+</td>
+</tr>
+<tr><th align="left" valign="top">Network&nbsp;links:</th>
+<td>
+<a href="http://climate.calcommons.org/datasets/summertime-fog">http://climate.calcommons.org/datasets/summertime-fog</a><br/>
+</td>
+</tr>
+</table>
+<li><b>Cost to order the data:</b> None. No fees are applicable for obtaining the data set.<p></p>
+</ul>
+</li>
+</ol>
+<hr/>
+<h3><a name="metaref">Who wrote the metadata?</a></h3>
+<dl>
+<dt>Dates:
+<dd>Last modified: 07-Mar-2016<br/>
+</dd>
+<dt>Metadata author:
+<dd>
+<div style="margin-left: 2em">
+<div title="Contact_Organization_Primary">U.S. Geological Survey, PACIFIC REGION</div>
+<div>Attn: <span title="Contact_Person">Alicia Torregrosa</span></div>
+<div title="Contact_Position">Physical Scientist</div>
+<div title="Address">Mail Stop 531, 345 Middlefield Road</div>
+<span title="City">Menlo Park</span>, <span title="State_or_Province">CA</span> <span title="Postal_Code"94025</span><br/>
+<p>
+<div title="Contact_Voice_Telephone">650-329-4091 (voice)</div>
+<div title="Contact_Facsimile_Telephone">650-329-4429 (FAX)</div>
+<div title="Contact_Electronic_Mail_Address">atorregrosa@usgs.gov</div>
+</div>
+</dd>
+<dt>Metadata standard: <dd>FGDC Content Standard for Digital Geospatial Metadata (FGDC-STD-001-1998)</dl>
+<hr/>
+<span class="mp-generated">Generated by <a href="http://geology.usgs.gov/tools/metadata/tools/doc/mp.html"><tt>mp</tt></a> version 2.9.32 on Tue Mar  8 11:34:14 2016<br/></span>
+
+</body>
+</html>
