@@ -2,7 +2,11 @@
 title: An R Markdown document converted from "./08_Pulling_It_All_Together.ipynb"
 output: html_document
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 
+knitr::opts_knit$set(root.dir = '~/Documents/repos/Geospatial-Fundamentals-in-R-with-sf')
+```
 # 08. Pulling it all Together
 
 For this last lesson, we'll practice going through a full workflow!! We'll answer the question:
@@ -15,6 +19,7 @@ For this last lesson, we'll practice going through a full workflow!! We'll answe
 Here's a set of steps that we will implement in the labeled cells below:
 
 <u> 8.1 Read in and Prep Data</u>
+
 - read in tracts ACS joined data
 - read our grocery-data CSV into a plain data.frame (it lives at `'notebook_data/other/ca_grocery_stores_2019_wgs84.csv`)
 - coerce it to an `sf` data.frame
@@ -23,10 +28,12 @@ Here's a set of steps that we will implement in the labeled cells below:
 - take a peek
 
 <u>8.2 Aggregation</u>
+
 - aggregate the grocery points by tract and calculate the total grocery-store sales volume of each tract
 - don't forget to check the dimensions, contents, and any other relevant aspects of your results
 
 <u>8.3 Plot and Review</u>
+
 - plot the tracts, coloring them by total grocery-store sales volume
 - plot the grocery stores on top
 - bonus points for devising a nice visualization scheme that helps you heuristically check your results!
@@ -37,7 +44,7 @@ Here's a set of steps that we will implement in the labeled cells below:
 **We've written out some of the code for you, but you'll need to replace the ellipses with the correct
 content.**
 
-*You can check your answers by double-clicking on the Markdown cells where indicated.*
+*You can check your answers by the hidden solutions where indicated.*
 
 
 <br>
@@ -114,7 +121,7 @@ grocery_pts_sf = st_transform(..., ...)
 head(grocery_pts_sf)
 ```
 
-## Double-click here to see solution!
+## Solution hidden here!
 
 <!--
 
@@ -173,7 +180,7 @@ print(...)
 head(tracts_totsalesvol)
 ```
 
-## Double-click here to see solution!
+## Solution hidden here!
 
 <!--
 
@@ -228,7 +235,7 @@ final_map +
          size= ...)
 ```
 
-## Double-click here to see solution!
+## Solution hidden here!
 
 <!--
 
@@ -274,8 +281,8 @@ final_map +
 </div>
 
 <div style="display:inline-block;vertical-align:middle;">
-    <div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
-    <div>&nbsp;Team Geo<div>
+<div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
+<div>&nbsp;Team Geo<div>
 </div>
         
 
