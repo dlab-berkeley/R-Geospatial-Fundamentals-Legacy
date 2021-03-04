@@ -66,7 +66,7 @@ Use `setwd` to set your working directory to the location of the tutorial files.
 For example:
 
 ```{r, eval=FALSE}
-path = "/path/to/your/working_directory"
+path = "~/Documents/repos/Geospatial-Fundamentals-in-R-with-sf"
 setwd(path)
 ```
 
@@ -76,14 +76,14 @@ setwd(path)
 
 ```{r}
 # Read in the 'sftracts_wpop' shapefile
-SFtracts <- st_read("./data", "sftracts_wpop")
+SFtracts <- st_read("./notebook_data/part_3", "sftracts_wpop")
 ```
 
 ## SF Properties 2015
 
 ```{r}
 # Read in from CSV file
-SFhomes <- read.csv('./data/sf_properties.csv', 
+SFhomes <- read.csv('./notebook_data/part_3/sf_properties.csv', 
                     stringsAsFactors = FALSE)
 # subset the data
 SFhomes15 <- subset(SFhomes, as.numeric(SalesYear) == 2015)
@@ -111,7 +111,7 @@ Using the fabulous `raster` package
 
 #read in a Bay Area DEM (Digital Elevation Model)
 #(from http://www.webgis.com/terr_pages/CA/dem1/sanfrancisco.html)
-DEM = raster('./data/san_francisco-e.DEM')
+DEM = raster('./notebook_data/part_3/san_francisco-e.DEM')
 ```
 
 ## Plot it
@@ -599,7 +599,7 @@ We can make an interactive plot using `tmap`
 my_map <- tm_shape(DEM_WGS_crop_masked) +
   tm_raster() +
 tm_shape(SFtracts) + 
-  tm_borders() +
+  tm_borders()
 
 # Set mode to interactive
 tmap_mode("view")
@@ -618,7 +618,7 @@ if we like!
 ```{r}
 #write our reprojected, cropped data to the data directory, using the Geotiff format
 #(and allow R to overwrite if file already exists)
-writeRaster(DEM_WGS_crop_masked, filename="./data/DEM_reproject_crop.tif", format="GTiff", overwrite = T)
+writeRaster(DEM_WGS_crop_masked, filename="./outdata/DEM_reproject_crop.tif", format="GTiff", overwrite = T)
 ```
 
 
@@ -726,7 +726,7 @@ Read that file in as an object called `nlcd`, and plot it.
 
 ```{r}
 #read in nlcd data
-nlcd = raster('./data/nlcd2011_sf.tif')
+nlcd = raster('./notebook_data/part_3/nlcd2011_sf.tif')
 
 #plot nlcd
 plot(nlcd)
@@ -774,7 +774,7 @@ st_crs(nlcd) == st_crs(SFtracts)
 nlcd_WGS = projectRaster(nlcd, projectExtent(nlcd, st_crs(SFtracts)$proj4string))
 
 #check projection equality again
-st_crs(nlcd_WGS)$epsg == st_crs(SFtracts)$epsg
+st_crs(nlcd_WGS) == st_crs(SFtracts)
 
 #crop
 nlcd_WGS_crop = crop(nlcd_WGS, SFtracts)
@@ -850,7 +850,7 @@ So let's do that:
 nlcd_WGS = projectRaster(nlcd, projectExtent(nlcd, st_crs(SFtracts)$proj4string),
                          method='ngb')
 #check projection equality again
-st_crs(nlcd_WGS)$epsg == st_crs(SFtracts)$epsg
+st_crs(nlcd_WGS) == st_crs(SFtracts)
 #crop again
 nlcd_WGS_crop = crop(nlcd_WGS, SFtracts)
 #grab our legend again
@@ -1123,7 +1123,7 @@ Data on summertime coastal fog in CA (a.k.a. Karl)
 ```{r}
 #(from http://climate.calcommons.org/dataset/monthly-summertime-fog)
 #(units are in average hours per day)
-karl_files = unique(gsub('.aux.xml', '', list.files('./data/CalMnYr')))
+karl_files = unique(gsub('.aux.xml', '', list.files('./notebook_data/Part_3/CalMnYr')))
 karl_files = karl_files[grep('flcc', karl_files)]
 
 # Take  a look
@@ -1134,7 +1134,7 @@ karl_files
 
 Read all of the KARL files into one RasterStack object
 ```{r}
-karl <- stack(paste0('./data/CalMnYr/', karl_files))
+karl <- stack(paste0('./notebook_data/part_3/CalMnYr/', karl_files))
 
 # look at what we made!
 karl
@@ -1165,7 +1165,7 @@ Let's reproject this
 karl_WGS = projectRaster(karl, projectExtent(karl, st_crs(SFtracts)$proj4string))
 
 # check resultant CRS
-st_crs(karl_WGS)$epsg == st_crs(SFtracts)$epsg
+st_crs(karl_WGS) == st_crs(SFtracts)
 
 ```
 
