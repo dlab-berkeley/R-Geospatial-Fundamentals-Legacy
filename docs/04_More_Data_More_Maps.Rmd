@@ -41,7 +41,9 @@ library(tmap)
 ## 4.1 Berkeley Bike Boulevards
 
 We're going to bring in data bike boulevards in Berkeley. Note two things that are different from our previous data:
+
 - We're bringing in a [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) this time and not a shapefile
+
 - We have a **line** geometry GeoDataFrame (our county and states data had **polygon** geometries)
 
 ```{r}
@@ -74,6 +76,7 @@ colnames(bike_blvds)
 ```
 
 Our bike boulevard data includes the following information:
+
  - `BB_STRNAM` - bike boulevard Streetname
  - `BB_STRID` - bike boulevard Street ID
  - `BB_FRO` - bike boulevard origin street
@@ -87,13 +90,7 @@ Our bike boulevard data includes the following information:
  - `geometry`
 
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
-
-#### Question
-</div>
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 Why are there 211 features when we only have 8 bike boulevards?
 
@@ -127,9 +124,7 @@ head(schools_df)
 dim(schools_df)
 ```
 
-<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Questions** 
-
-Without looking ahead:
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Questions** Without looking ahead:
 
 1. Is this a geodataframe? 
 2. How do you know?
@@ -197,7 +192,7 @@ In the code cell provided below, compose code to:
 1. Transform the CRS to 26910
 1. Use `tmap` to plot and customize as desired!
 
-To see the solution, double-click the Markdown cell below.
+To see the solution, look at the hidden text below.
 
 ```{r}
 # YOUR CODE HERE:
@@ -209,7 +204,7 @@ To see the solution, double-click the Markdown cell below.
 
 ```
 
-## Double-click to see solution!
+## Solution hidden here!
 
 <!--
 
@@ -266,6 +261,7 @@ tm_shape(bike_blvds_utm10) +
 ## 4.4 Recap
 
 In this lesson we learned a several new skills:
+
 - Transformed an aspatial data.frame into an `sf` data.frame
 - Worked with point and line datasets
 - Overlayed point and line datasets
@@ -279,12 +275,12 @@ Let's take some time to practice reading in and reconciling new datasets, then m
 In the code cell provided below, write code to:
 
 1. Bring in your Berkeley places shapefile (and don't forget to check/transform the crs!) (`notebook_data/berkeley/BerkeleyCityLimits.shp`)
-1. Overlay the parcel points on top of the bike boulevards
-1. Create the same plot, but limit it to Berkeley by cropping to the extent of Berkeley city limits
+2. Overlay the parcel points on top of the bike boulevards
+3. Create the same plot, but limit it to Berkeley by cropping to the extent of Berkeley city limits
 
 ***BONUS***: *Add the Berkeley outline to your last plot!*
 
-To see the solution, double-click the Markdown cell below.
+To see the solution, look at the hidden text below.
 
 ```{r}
 # YOUR CODE HERE:
@@ -297,7 +293,7 @@ To see the solution, double-click the Markdown cell below.
 
 ```
 
-## Double-click the see the solution!
+## Solution hidden here!
 
 <!--
 
@@ -353,8 +349,8 @@ tm_shape(schools_utm10) +
 </div>
 
 <div style="display:inline-block;vertical-align:middle;">
-    <div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
-    <div>&nbsp;Team Geo<div>
+<div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
+<div>&nbsp;Team Geo<div>
 </div>
         
 
