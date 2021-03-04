@@ -113,13 +113,7 @@ tm_shape(counties) +
               title = "Population Density per mi^2")
 ```
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
-
-#### Question
-</div>
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 Why are we plotting `POP12_SQMI` instead of `POP2012`?
 
@@ -173,13 +167,7 @@ We see just this sort of problem in our population-density map.
 hist(counties$POP12_SQMI,breaks=40, main = 'Population Density per mi^2')
 ```
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
-
-#### Question
-</div>
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 What county does that outlier represent? What problem does that pose?
 
@@ -318,13 +306,7 @@ tm_add_legend('fill', col = RColorBrewer::brewer.pal(5, "Blues"),
               labels = c('<20%','20% - 40%','40% - 60%','60% - 80%','80% - 100%'))
 ```
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
-
-#### Questions
-</div>
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 1. What new options and operations have we added to our code?
 1. Based on our code, what title would you give this plot to describe what it displays?
@@ -340,7 +322,7 @@ If you know both mapping methods you can expand how much information you can sho
 For example, point maps are a great way to map `counts` because the varying sizes of areas are deemphasized.
 
 
------------------------
+
 Let's read in some point data on Alameda County schools.
 
 ```{r}
@@ -362,7 +344,9 @@ Then we can map it.
 plot(schools_sf)
 ```
 
+
 ### Proportional Color Maps
+
 **Proportional color maps** linearly scale the `color` of a point symbol by the data values.
 
 Let's try this by creating a map of `API`. API stands for *Academic Performance Index*, which is a measurement system that looks at the performance of an individual school.
@@ -403,13 +387,17 @@ although some options only apply to one or the other.
 For example, uncomment the `size` parameter above sets the size of our dots, but such an argument would make
 no sense for a choropleth map!
 
+
 ### Graduated symbol maps
+
 
 `Graduated symbol maps` are also a great method for mapping points.  These are just like graduated color maps but instead of associating symbol color with data values they associate point size. Similarly,graduated symbol maps use `classification schemes` to set the size of point symbols. 
 
 > We demonstrate how to make graduated symbol maps along with some other mapping techniques in the `Optional Mapping notebook` which we encourage you to explore on your own. (***Coming Soon***)
 
+
 ## 5.5 Mapping Categorical Data
+
 
 Mapping categorical data, also called qualitative data, is a bit more straightforward. There is no need to scale or classify data values. The goal of the color map is to provide a contrasting set of colors so as to clearly delineate different categories. Here's a point-based example:
 
@@ -418,8 +406,11 @@ tm_shape(schools_sf) +
   tm_dots(col='Org', size=0.15, palette='Spectral')
 ```
 
+
 ## 5.6 Recap
+
 We learned about important data driven mapping strategies and mapping concepts
+
 - Choropleth Maps
 - Point maps
 - Color schemes 
@@ -432,18 +423,18 @@ Point and polygons are not the only geometry-types that we can use in data-drive
 Run the next cell to load a dataset containing Berkeley's bicycle boulevards (which we'll be using more in the following notebook).
 
 Then in the following cell, write your own code to:
+
 1. plot the bike boulevards;
 2. color them by status (find the correct column in the head of the dataframe, displayed below);
 3. color them using a fitting, good-looking qualitative colormap that you choose from [The Matplotlib Colormap Reference](https://matplotlib.org/3.1.1/gallery/color/colormap_reference.html);
-4. set the line width to 5 (check the plot method's documentation to find the right argument for this!);
-4. add the argument `figsize=[20,20]`, to make your map nice and big and visible!
-    
+4. set the line width to 10 (check the plot method's documentation to find the right argument for this!);
+
 Then answer the questions posed in the last cell.
 
 <br>
 
 
-To see the solution, double-click the Markdown cell below.
+To see the solution, look at the hidden text below.
 
 ```{r}
 bike_blvds = st_read('notebook_data/transportation/BerkeleyBikeBlvds.geojson')
@@ -460,7 +451,7 @@ head(bike_blvds)
 
 ```
 
-## Double-click to see solution!
+## Solution hidden here!
 
 <!--
 
@@ -474,16 +465,10 @@ tm_shape(bike_blvds) +
 
 -------------------------------------
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
-
-#### Questions
-</div>
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 1. What does that map indicate about the status of the Berkeley bike boulevards?
-1. What does that map indicate about the status of your Berkeley bike-boulevard *dataset*?
+2. What does that map indicate about the status of your Berkeley bike-boulevard *dataset*?
 
 
 ---
@@ -493,8 +478,8 @@ tm_shape(bike_blvds) +
 </div>
 
 <div style="display:inline-block;vertical-align:middle;">
-    <div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
-    <div>&nbsp;Team Geo<div>
+<div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
+<div>&nbsp;Team Geo<div>
 </div>
         
 
