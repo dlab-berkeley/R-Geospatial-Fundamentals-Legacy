@@ -2,7 +2,11 @@
 title: An R Markdown document converted from "./02_Introduction_to_sf.ipynb"
 output: html_document
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 
+knitr::opts_knit$set(root.dir = '~/Documents/repos/Geospatial-Fundamentals-in-R-with-sf')
+```
 # Lesson 2. Introduction to the `sf` package
 
 In this lesson we'll learn about `sf`, the package that is core to using geospatial data in R. We'll go through the structure of the data (it's not too different from regular data.frames!), geometries, shapefiles, and how to save your hard work.
@@ -293,6 +297,7 @@ then CSV might be a good option!
 ## 2.7 Recap
 
 In this lesson we learned about...
+
 - The `sf` package 
 - Reading in shapefiles 
     - `st_read`
@@ -312,15 +317,14 @@ Now you'll get a chance to practice the operations we learned above.
 
 In the following cell, compose code to:
 
-1. Read in the California places data (`notebook_data/census/Places/cb_2018_06_place_500k.zip`)
+1. Read in the California places data (`notebook_data/census/Places/cb_2018_06_place_500k.shp`)
 2. Subset the data to Berkeley
 3. Plot using base R `plot`, and customize as desired
 4. Save out as a shapefile (`outdata/berkeley_places.shp`)
 
 
-*Note: pulling in a zipped shapefile has the same syntax as just pulling in a shapefile. The only difference is that insead of just putting in the filepath you'll want to write `zip://notebook_data/census/Places/cb_2018_06_place_500k.zip`*
 
-To see the solution, double-click the Markdown cell below.
+To see the solution, look at the hidden text below.
 
 ```{r}
 # YOUR CODE HERE
@@ -332,7 +336,7 @@ To see the solution, double-click the Markdown cell below.
 
 ```
 
-## Double-click to see solution!
+## Solution hidden here!
 
 <!--
 # SOLUTION
@@ -359,8 +363,8 @@ st_write(berkeley_places, "outdata/berkeley_places.shp")
 </div>
 
 <div style="display:inline-block;vertical-align:middle;">
-    <div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
-    <div>&nbsp;Team Geo<div>
+<div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
+<div>&nbsp;Team Geo<div>
 </div>
         
 
