@@ -110,17 +110,11 @@ numbers!
 
 ...?
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
-
-#### Questions
-</div>
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 1. What do those numbers mean?
-1. What are the units?
-1. And if we're not sure, how might be find out?
+2. What are the units?
+3. And if we're not sure, how might be find out?
 
 
 Let's take a look at our CRS.
@@ -178,13 +172,7 @@ print(st_area(census_tracts_ac_utm10)[[1]])
 print(census_tracts$ALAND[1])
 ```
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
-
-#### Question
-</div>
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 What explains the discrepancy? Which areas are correct? Which are incorrect?
 
@@ -222,7 +210,7 @@ Much nicer! In case you're wondering how we knew the right abbreviation to use f
 check out the leftmost column in this reference table:
 
 ```{r}
-View(units::valid_udunits())
+# View(units::valid_udunits())
 ```
 
 As it turns out, we can similarly use another attribute
@@ -363,7 +351,7 @@ Then in the following cell, write your own code to:
 1. subset the schools for only those `within` Berkeley
 2. plot the Berkeley boundary and then the schools as an overlay map
 
-To see the solution, double-click the Markdown cell below.
+To see the solution, look at the hidden text below.
 
 ```{r}
 # load the Berkeley boundary
@@ -398,7 +386,7 @@ head(schools_sf_utm10)
 
 ```
 
-## Double-click to see solution!
+## Solution hidden here!
 
 <!--
 
@@ -428,7 +416,7 @@ that are within some maximum distance of features in a reference feature set.
 A common workflow for this analysis is:
 
 1. Buffer (i.e. add a margin around) the reference dataset, out to the maximum distance.
-1. Run a spatial relationship query to find all focal features that intersect (or are within) the buffer.
+2. Run a spatial relationship query to find all focal features that intersect (or are within) the buffer.
 
 ---------------------------------
 
@@ -506,12 +494,12 @@ Then in the following cell, write your own code to find all schools within walki
 
 As a reminder, let's break this into steps:
 1. buffer your Berkeley BART stations to 1 km (**HINT**: remember your units!)
-2. use the schools' `within` attribute to check whether or not they're within the buffers (**HINT**: don't forget the `unary_union`!)
+2. use the schools' `within` attribute to check whether or not they're within the buffers
 3. subset the Berkeley schools using the object returned by your spatial relationship query
 
 4. as always, plot your results for a good visual check!
 
-To see the solution, double-click the Markdown cell below.
+To see the solution, look at the hidden text below.
 
 ```{r}
 # load the BART stations from CSV
@@ -535,7 +523,7 @@ berkeley_bart = st_intersection(bart_stations_sf_utm10, berkeley_utm10)
 
 ```
 
-## Double-click to see solution!
+## Solution hidden here!
 
 <!--
 
@@ -568,6 +556,7 @@ tm_shape(bart_schools) +
 
 ## 6.4 Recap
 Leveraging what we've learned in our earlier lessons, we got to work with map overlays and start answering questions related to proximity. Key concepts include:
+
 - Measuring area and length
 	- `st_area`, 
 	- `st_length`
@@ -585,8 +574,8 @@ Leveraging what we've learned in our earlier lessons, we got to work with map ov
 </div>
 
 <div style="display:inline-block;vertical-align:middle;">
-    <div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
-    <div>&nbsp;Team Geo<div>
+<div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
+<div>&nbsp;Team Geo<div>
 </div>
         
 
