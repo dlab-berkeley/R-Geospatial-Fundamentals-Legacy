@@ -123,7 +123,9 @@ acs5_df_ac = acs5_df[acs5_df$year==2018 & acs5_df$county_fips==1, ]
 head(acs5_df_ac)
 ```
 
----------------------------------
+
+
+
 Now let's also read in our census tracts again!
 
 ```{r}
@@ -155,18 +157,12 @@ In order to map the ACS data we need to associate it with the tracts. Let's do t
 
 
 
---------------------------
-
-<img src="https://documentation.mindsphere.io/resources/html/predictive-learning/en-US/Joins_Diagram.png">
 
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
+<img src="https://shanelynnwebsite-mid9n9g1q9y8tt.netdna-ssl.com/wp-content/uploads/2017/03/join-types-merge-names.jpg">
 
-#### Question
-</div>
+
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 The image above gives us a nice conceptual summary of the types of joins we could run.
 
@@ -197,7 +193,9 @@ Also note that they are **not in the same order**.
         
         That's not only okay... That's the point! (If they were in the same order already then we could just join them side by side, without having R find and line up the matching rows from each!)
 
--------------------------------
+
+
+
 
 Let's do a `left` join to keep all of the census tracts in Alameda County and only the ACS data for those tracts.
 
@@ -220,13 +218,7 @@ Let's check that we have all the variables we have in our dataset now.
 colnames(tracts_acs_sf_ac)
 ```
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
-
-#### Question
-</div>
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 It's always important to run sanity checks on our results, at each step of the way!
 
@@ -251,7 +243,7 @@ st_write(tracts_acs_sf_ac, './outdata/tracts_acs_gdf_ac.json', driver='GeoJSON',
 ## Exercise: Choropleth Map
 We can now make choropleth maps using our attribute joined geodataframe. Go ahead and pick one variable to color the map, then map it using `tmap` (since it's too easy using the `plot` method). You can go back to lesson 5 if you need a refresher on how to make this!
 
-To see the solution, double-click the Markdown cell below.
+To see the solution, look at the hidden text below.
 
 ```{r}
 head(tracts_acs_sf_ac)
@@ -266,7 +258,7 @@ head(tracts_acs_sf_ac)
 
 ```
 
-## Double-click to see solution!
+## Solution hidden here!
 
 <!--
 
@@ -280,7 +272,7 @@ tm_shape(tracts_acs_sf_ac) +
 
 -->
 
--------------------
+
 # 7.2 Spatial Joins
 
 Great! We've wrapped our heads around the concept of an attribute join.
@@ -341,7 +333,8 @@ So, we'll use a spatial relationship query to figure out the census tract that
 each school is in, then associate the tract's data with that school (as additional data in the school's row).
 This is a **spatial join**!
 
----------------------------------
+
+
 
 ### Census Tract Data Associated with Each School
 
@@ -412,17 +405,11 @@ Looks like the key arguments to consider are:
 
 - By default `st_join` maintains the geometries of the first `sf` data.frame input to the operation (i.e. the geometries of `x`). 
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
-
-#### Questions
-</div>
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 1. Which `sf` data.frame are we joining onto which (i.e. which one is getting the other one's data added to it)?
-1. What happened to 'outer' as a join type?
-1. Thus, in our operation, which `sf` data.frame should be `x`, which should be `y`, and should `left` be `TRUE` or `FALSE`?
+2. What happened to 'outer' as a join type?
+3. Thus, in our operation, which `sf` data.frame should be `x`, which should be `y`, and should `left` be `TRUE` or `FALSE`?
 
 
 Alright! Let's run our join!
@@ -435,21 +422,15 @@ schools_jointracts = st_join(schools_sf_api, tracts_acs_sf_ac, left=T, join=st_w
 
 <br>
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
-
-#### Questions
-</div>
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 As always, we want to sanity-check our intermediate result before we rush ahead.
 
 One way to do that is to introspect the structure of the result object a bit.
 
 1. What type of object should that have given us?
-1. What should the dimensions of that object be, and why?
-1. If we wanted a visual check of our results (i.e. a plot or map), what could we do?
+2. What should the dimensions of that object be, and why?
+3. If we wanted a visual check of our results (i.e. a plot or map), what could we do?
 
 
 ```{r}
@@ -467,7 +448,7 @@ Confirmed! The output of the our `st_join` operation is an `sf` data.frame (`sch
 - the **point geometry** of that school
 - all of the attribute data columns (non-geometry columns) from both input `sf` data.frames
 
-----------------------------
+
 
 Let's also take a look at an overlay map of the schools on the tracts.
 If we color the schools categorically by their tracts IDs, then we should see
@@ -507,7 +488,8 @@ In this case, for each feature in one dataset we find all the features in anothe
 dataset that satisfy our chosen spatial relationship query with it (e.g. within, intersects),
 then aggregate them using some summary function (e.g. count, mean).
 
-------------------------------------
+
+
 
 ### Getting the Aggregated School Counts
 
@@ -535,13 +517,7 @@ print(dim(tracts_acs_sf_ac))
 head(schools_countsbytract)
 ```
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
-
-#### Questions
-</div>
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 1. Above we selected the geometry column, added a column of 1s, then aggregated. Why?
 1. What explains the dimensions of the new object (361, 2)?
@@ -558,7 +534,6 @@ tm_shape(schools_sf) +
   tm_dots(col='black', alpha=0.75, size=0.1)
 ```
 
----------------------
 
 # Exercise: Aggregation
 
@@ -572,11 +547,12 @@ on an attribute column.
 In this case, we want to calculate and map the mean API of the schools in each census tract.
 
 Copy and paste code from above where useful, then tweak and/or add to that code such that your new code:
-1. joins the schools onto the tracts (**HINT**: make sure to decide whether or not you want to include schools with API = 0!)
-1. dissolves that joined object by the tract IDs, giving you a new GeoDataFrame with each tract's mean API (**HINT**: because this is now a different calculation, different problems may arise and need handling!)
-1. plots the tracts, colored by API scores (**HINT**: overlay the schools points again, visualizing them in a way that will help you visually check your results!)
 
-To see the solution, double-click the Markdown cell below.
+1. joins the schools onto the tracts (**HINT**: make sure to decide whether or not you want to include schools with API = 0!)
+2. dissolves that joined object by the tract IDs, giving you a new GeoDataFrame with each tract's mean API (**HINT**: because this is now a different calculation, different problems may arise and need handling!)
+3. plots the tracts, colored by API scores (**HINT**: overlay the schools points again, visualizing them in a way that will help you visually check your results!)
+
+To see the solution, look at the hidden text below.
 
 ```{r}
 # YOUR CODE HERE:
@@ -588,7 +564,7 @@ To see the solution, double-click the Markdown cell below.
 
 ```
 
-## Double-click to see solution!
+## Solution hidden here!
 
 <!--
 
@@ -613,10 +589,11 @@ tm_shape(schools_sf_api) +
 
 -->
 
-----------------------------
+
 
 ## 7.4 Recap
 We discussed how we can combine datasets to enhance any geospatial data analyses you could do. Key concepts include:
+
 -  Attribute joins
 	- `merge()`
 - Spatial joins (order matters!)
@@ -631,8 +608,8 @@ We discussed how we can combine datasets to enhance any geospatial data analyses
 </div>
 
 <div style="display:inline-block;vertical-align:middle;">
-    <div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
-    <div>&nbsp;Team Geo<div>
+<div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
+<div>&nbsp;Team Geo<div>
 </div>
         
 
