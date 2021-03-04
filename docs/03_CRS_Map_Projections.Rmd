@@ -2,6 +2,11 @@
 title: An R Markdown document converted from "./03_CRS_Map_Projections.ipynb"
 output: html_document
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_knit$set(root.dir = '~/Documents/repos/Geospatial-Fundamentals-in-R-with-sf')
+```
 
 # Lesson 3. Coordinate Reference Systems (CRS) & Map Projections
 
@@ -155,7 +160,7 @@ It all revolves around **coordinate reference systems** and **projections**.
 A `geographic CRS` consists of: 
 - a 3D model of the shape of the earth (a **datum**), approximated as a sphere or spheroid (aka ellipsoid)
 - the **units** of the coordinate system (e.g, decimal degrees, meters, feet) and 
-- the **origin** (i.e. the 0,0 location), specified as the meeting of the **equator** and the **prime meridian**( 
+- the **origin** (i.e. the 0,0 location), specified as the meeting of the **equator** and the **prime meridian** 
 
 A `projected CRS` consists of
 - a geographic CRS
@@ -207,6 +212,8 @@ For example, below is a list of commonly used CRSs for California geospatial dat
 -`4269: NAD83` (units decimal degrees) - the geographic CRS customized to best fit the USA. This is used by all Census geographic data.
 
 >  `NAD83 (epsg:4269)` are approximately the same as `WGS84(epsg:4326)` although locations can differ by up to 1 meter in the continental USA and elsewhere up to 3m. That is not a big issue with census tract data as these data are only accurate within +/-7meters.
+
+
 ##### Projected CRSs
 
 -`5070: CONUS NAD83` (units meters) projected CRS for mapping the entire contiguous USA (CONUS)
@@ -240,8 +247,9 @@ st_crs(states_limited)
 As we can clearly see from those two printouts (even if we don't understand all the content!),
 the CRSs of our two datasets are different! **This explains why we couldn't overlay them correctly!**
 
--------------------------------------------------------------------
-The above CRS definition specifies a bunch of information, including: 
+
+The above CRS definition specifies a bunch of information, including:
+
 - the name of the CRS (`WGS84`), 
 - the axis units (`degree`)
 - the shape (`datum`),
@@ -249,6 +257,7 @@ The above CRS definition specifies a bunch of information, including:
 - and the area for which it is best suited (`World`)
 
 > Notes:
+>
 >    - `geocentric` latitude and longitude assume a spherical (round) model of the shape of the earth
 >    - `geodetic` latitude and longitude assume a spheriodal (ellipsoidal) model, which is closer to the true shape.
 >    - `geodesy` is the study of the shape of the earth.
@@ -319,17 +328,11 @@ plot(states_limited_utm10$geometry, asp=1)
 # Your thoughts here
 ```
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
-
-#### Questions
-</div>
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 1. What two key differences do you see between the two plots above?
-1. Do either of these plotted USA maps look good?
-1. Try looking at the common CRS EPSG codes above and see if any of them look better for the whole country than what we have now. Then try transforming the states data to the CRS that you think would be best and plotting it. (Use the code cell two cells below.)
+2. Do either of these plotted USA maps look good?
+3. Try looking at the common CRS EPSG codes above and see if any of them look better for the whole country than what we have now. Then try transforming the states data to the CRS that you think would be best and plotting it. (Use the code cell two cells below.)
 
 
 ```{r}
@@ -341,7 +344,7 @@ plot(states_limited_utm10$geometry, asp=1)
 
 ```
 
-**Double-click to see solution!**
+## Solution hidden here!
 
 <!--
 #SOLUTION 
@@ -383,13 +386,7 @@ plot(counties_conus$geometry, col = 'darkgreen', add=T)
 
 <br>
 
-<div style="display:inline-block;vertical-align:top;">
-    <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="30" align=left > 
-</div>  
-<div style="display:inline-block;">
-
-#### Question
-</div>
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 You may have noticed that we have not used `tmap` to create any of the overlay maps in this notebook. "Why?", you might ask.
 
@@ -417,11 +414,15 @@ This is a really handy feature, but it means that `tmap` is not useful for visua
 ## 3.9 Recap
 
 In this lesson we learned about...
+
 - Coordinate Reference Systems 
+
 - Getting the CRS of a geodataframe
     - `st_crs`
+    
 - Transforming/repojecting CRS
     - `st_transform`
+    
 - Overlaying maps
 
 ## Exercise: CRS Management
@@ -432,7 +433,7 @@ Now it's time to take a crack and managing the CRS of a new dataset. In the code
 2. Check if the CRS is EPSG code 26910. If not, transform the CRS
 3. Plot the California counties and places together.
 
-To see the solution, double-click the Markdown cell below.
+To see the solution, look at the hidden text below.
 
 ```{r}
 # YOUR CODE HERE
@@ -444,7 +445,7 @@ To see the solution, double-click the Markdown cell below.
 
 ```
 
-## Double-click to see solution!
+## Solution hidden here!
 
 <!--
 
@@ -471,8 +472,8 @@ plot(california_places_utm10$geometry, col='purple',add = T)
 </div>
 
 <div style="display:inline-block;vertical-align:middle;">
-    <div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
-    <div>&nbsp;Team Geo<div>
+<div style="font-size:larger">&nbsp;D-Lab @ University of California - Berkeley</div>
+<div>&nbsp;Team Geo<div>
 </div>
         
 
