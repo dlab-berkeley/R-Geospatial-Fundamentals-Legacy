@@ -23,7 +23,7 @@ knitr::opts_knit$set(root.dir = normalizePath('../'))
     - Download and unzip the zip file
     - Take note of where the folder is located
 
-2. Start RStudio and open a **new script**, or **./docs/03-raster_data.Rmd**
+2. Start RStudio and open a **new script**, or **./docs/09_Raster_Data.Rmd**
 
 3. Set your working directory to the folder you unzipped 
 
@@ -37,7 +37,7 @@ for (i in our_packages) {
   }
 }
 ```
-5. Open the slides, **./docs/03-raster_data.html**, in your browser (or click the "Part 3 Slides" link the repo).
+5. Open the slides, **./docs/09_Raster_Data.html**, in your browser (or click the "Part 3 Slides" link the repo).
 
 ## Part III Overview
 
