@@ -3,7 +3,7 @@
 ### Prior to the workshop start date please do the following.
 
 1. Download and unzip (or clone, using the `git clone` command) this repository. To download, just click on the green "Clone or download" button near the top of the repo's [home page] (https://github.com/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf). 
-> Note, the files are typically updated prior to a workshop so it's good to download these just before the workshop.
+    > Note, the files are typically updated prior to a workshop so it's good to download these just before the workshop.
 
 
 2. If you do not have R and RStudio installed on your computer, download and install [RStudio Desktop](https://rstudio.com/products/rstudio/), with R version >= 3.5.
