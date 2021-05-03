@@ -30,11 +30,11 @@ TO DO add confirmation code that their packages are installed correctly
 
 1. Open RStudio
 
-2. In the lower-right Files tab, navigate to the folder that contains the worksop files (Geospatial-Fundamentals-in-R-with-sf)
+2. In the lower-right Files tab, navigate to the folder that contains the worksop files: **Geospatial-Fundamentals-in-R-with-sf**
 
 3. Click on **More > Set as Working Directory** to set your R working directory to the folder with the workshop files.
 
-4. Open a new, empty R script file: RStudio > File > New File > R Script**
+4. Open a new, empty R script file: **RStudio > File > New File > R Script**
 
 
  
