@@ -1,50 +1,201 @@
 ---
-title: An R Markdown document converted from "./04_More_Data_More_Maps.ipynb"
+title: Geospatial Data Fundamentals in R
 output: html_document
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
+```
 
 # Lesson 4. More Data, More Maps!
 
 Now that we know how to pull in data, check and transform Coordinate Reference Systems (CRS), and plot `sf` data.frames together - let's practice doing the same thing with other geometry types. In this notebook we'll be bringing in bike boulevards and schools, which will get us primed to think about spatial relationship queries.
 
-- 4.1 Berkeley Bike Boulevards
-- 4.2 Alameda County Schools
-- **Exercise**: Even More Data!
-- 4.3 Map Overlays with Matplotlib
-- 4.4 Recap
+- 4.1 Overview of R Mapping Libraries
+- 4.2 Introducing tmap
+- 4.3 New datasets
+    - Berkeley Bike Boulevards
+    - Alameda County Schools
+- 4.4 Map Overlays with `tmap`
+- 4.5 Recap
 - **Exercise**: Overlay Mapping
-- 4.5 Teaser for Day 2
-
+- 4.6 Teaser for Day 2
 
 <br>
 <font color='grey'>
     <b>Instructor Notes</b>
 
 - Datasets used
+    - 'notebook_data/california_counties/CaliforniaCounties.shp'
+    - 'notebook_data/census/Places/cb_2018_06_place_500k.shp'
     - 'notebook_data/transportation/BerkeleyBikeBlvds.geojson'
     - 'notebook_data/alco_schools.csv'
-    - 'notebook_data/parcels/parcel_pts_rand30pct.geojson'
-    - ‘notebook_data/berkeley/BerkeleyCityLimits.shp’
 
 - Expected time to complete
     - Lecture + Questions: 30 minutes
     - Exercises: 20 minutes
 </font>
 
+
+
 ### Import Libraries
 
-```{r}
+```{r, message=F}
 library(sf)
-library(tmap)
 ```
 
-## 4.1 Berkeley Bike Boulevards
+#### Load some data
+```{r}
+counties = st_read('notebook_data/california_counties/CaliforniaCounties.shp')
 
-We're going to bring in data bike boulevards in Berkeley. Note two things that are different from our previous data:
+ca_places = st_read('notebook_data/census/Places/cb_2018_06_place_500k.shp')
+```
+## Mapping `sf` objects
 
-- We're bringing in a [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) this time and not a shapefile
+Just like with other plots we can make in R, we can customize our maps' colors, title, etc.
 
-- We have a **line** geometry GeoDataFrame (our county and states data had **polygon** geometries)
+The most basic way to do this would be to use the `sf::plot` function.
+
+```{r}
+# Make a map with plot
+plot(counties$geometry, col='tan', border='darkgreen', main="CA counties")
+```
+
+
+However, we'll get much more functionality and customizability if we use a special-purpose mapping package, rather than just relying on `sf` methods of base R functions.
+
+## R packages for Mapping `sf` objects
+
+There are many different packages you can use to make maps of `sf` data, including:
+
+- `ggplot2`: which is fantastic if you are already a ggplot user
+- `mapview`: for a quick and easy interactive map
+- `tmap`: for great custom static and interactive maps
+- `leaflet`: for highly custom interactive maps that you can output and host on a website
+- `shiny`: for interactive R based applications that use leaflet maps
+
+We won't cover leaflet or shiny, but we will present an quick look at ggplot2 and mapview and then dive into tmap.
+
+### Maps with ggplot
+
+Here is a simple example of a ggplot map syntax. 
+```{r}
+library(ggplot2)
+ggplot(counties, aes(fill = MED_AGE)) + 
+  geom_sf() +  # tells ggplot that geographic data are being plotted
+  scale_fill_viridis_c() +
+  theme_minimal() + 
+  labs(title = "2010 Median Age by County")
+```
+
+### Maps with `mapview`
+
+The `mapview` package is the easiest way to make a basic interactive map with very little code. 
+
+- See the documentation (?mapview) or webpage (https://r-spatial.github.io/mapview) for more info.
+
+```{r, eval=F}
+library(mapview)
+
+# Interactive map of counties
+mapview(counties)
+
+# with areas colored by data values
+mapview(counties, zcol='MED_AGE')
+
+# and overlaying CA Places data
+mapview(counties, zcol='MED_AGE') + mapview(ca_places)
+
+```
+Mapview is great for exploring your data. Less great for making pretty custom maps.
+
+## 4.2 Mapping with `tmap`
+
+Our go-to mapping package of choice is [`tmap`](https://github.com/mtennekes/tmap). Its name stands for "thematic maps", i.e. maps in which we use attributes of our dataset to control the visualization parameters of our maps, thus creating effective data visualizations. 
+
+`tmap` is great for creating both static and interactive maps.
+
+You'll get plenty of introduction here in the workshop, but for additional support you can check out the [tmap vignette](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) or Google other tutorials and references.
+
+Let's start by loading the package and creating a 'quick tmap'.
+
+```{r}
+# load tmap
+library(tmap)
+
+# plot a 'quick tmap'
+qtm(counties)
+```
+
+Nice!
+
+That's the quickest, simplest example of a static map that `tmap` can make. 
+
+### Toggling `tmap` modes
+
+`tmap` has 2 modes:
+
+- Use `tmap_mode('plot')` to set the mapping mode for static maps
+
+- Use `tmap_mode('view')` to set the mapping mode for interactive maps
+
+- use `ttm()` to quickly toggle between modes
+
+`tmap` loads up in 'plot' mode. Let's switch it to 'view' mode and then take a look at that same map. 
+
+
+```{r}
+# toggle the mode
+ttm()
+```
+
+```{r}
+# then make our quick tmap again
+qtm(counties)
+```
+That's outstanding! We get a clickable, scrollable, zoomable map built in Javascript's Leaflet package... right out of the box!
+
+- You can change the **basemap** using the `Layer Control` under the `Zoom Controls`.
+
+And to create thematic maps, we can use `tmap`'s more verbose mapping functions to create a new `tmap` object and then add geometry layers to it, setting different aesthetic aspects of those layers.
+
+For now, let's recreate that same map we made above with `plot`, but this time using `tmap` syntax:
+
+```{r}
+tm_shape(counties) +  # use the `tm_shape` function to create a tmap object
+  tm_polygons(col='tan', border.col='darkgreen', # add `tm_polygons` layer, coloring as before, 
+              alpha=0.5) # & making transparent
+```
+
+Above, `tm_shape` creates the new `tmap` object by identifying the data source for the first map layer (`counties`).  Then, `tm_polygons` provides the aesthetics for how the data should be displayed.
+
+- If we only want to display the polygon outlines we would use `tm_borders` instead of `tm_polygons`:
+
+```{r}
+tm_shape(counties) +  # use the `tm_shape` function to create a tmap object
+  tm_borders(col='darkgreen', 
+              alpha=0.85) 
+```
+
+
+
+Now we have two primary mapping tools:
+
+    - `plot`: nice for simple, pared down plotting tasks
+    - `tmap`: quick maps, both static and interactive, with greater flexibility
+    
+## 4.3 More Data, More Maps!
+
+In this section we are going to bring in some new data for mapping
+
+- Berkeley Bike Boulevards
+- Alameda County Schools
+
+First, we will read in the Berkeley bike boulevards in data. Note two things that are different from our previous data:
+
+- We're reading in data from a [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) file and not a shapefile
+
+- The data have **line** geometry (our county and states data had **polygon** geometries)
 
 ```{r}
 bike_blvds = st_read('notebook_data/transportation/BerkeleyBikeBlvds.geojson')
@@ -54,7 +205,7 @@ plot(bike_blvds$geometry)
 Of course, we could also use `tmap` to plot our lines:
 
 ```{r}
-# set to view mode
+# set to interactive view mode
 tmap_mode('view')
 
 tm_shape(bike_blvds) +
@@ -101,17 +252,9 @@ And now take a look at our CRS...
 st_crs(bike_blvds)
 ```
 
-Let's tranform our CRS to UTM Zone 10N, NAD83 that we used in the last lesson.
+We can see that the CRS of the bike blvds dataframe is UTM Zone 10N, NAD83. This is a common CRS for locations in Northern CA.
 
-```{r}
-bike_blvds_utm10 = st_transform(bike_blvds, crs = 26910)
-```
-
-```{r}
-head(bike_blvds_utm10)
-```
-
-## 4.2 Alameda County Schools
+### Alameda County Schools
 
 Alright! Now that we have our bike boulevard data squared away, we're going to bring in our Alameda County school data.
 
@@ -130,7 +273,6 @@ dim(schools_df)
 2. How do you know?
 
 
-
 <br>
 <br>
 This is not an `sf` data.frame! A couple of clues to figure that out are..
@@ -141,7 +283,11 @@ This is not an `sf` data.frame! A couple of clues to figure that out are..
 
 -------------------------------
 
-Although our school data is not starting off as an `sf` data.frame, we actually have the tools and information to make it one. Using the `st_as_sf` function, we can coerce our plain data.frame into an `sf` data.frame (specifying the columns containings the points' coordinates and the EPSG code of the CRS).
+Although our school data is not starting off as an `sf` data.frame, we actually have the tools and information to make it one. Using the `st_as_sf` function, we can transform our plain data.frame into an `sf` data.frame by:
+
+- specifying the columns containings the points' coordinates 
+
+- and the identifying the CRS of the data (*How do we know what it is?*)
 
 ```{r}
 schools_sf = st_as_sf(schools_df,
@@ -154,11 +300,11 @@ head(schools_sf)
 dim(schools_sf)
 ```
 
-You'll notice that the shape is almost the same as what we had as a data.frame, except with
+You'll notice that the spatial dataframe is almost the same as what we had as a data.frame, except with
 one less column (because the two coordinate columns, `X`, and `Y`, were consumed into a single
 `geometry` column.
 
-Now that it's an `sf` data.frame, we can use the fancy plot method for it just as we did for our other data sets.
+Now that it's an `sf` data.frame, we can map it with the `plot` method for it just as we did for our other data sets.
 Notice that this is our first **point** dataset.
 
 ```{r}
@@ -173,100 +319,64 @@ schools_utm10 = st_transform(schools_sf, crs = 26910)
 
 And keep in mind that we can always use `tmap` to plot any of our datasets.
 
-Here's how we'd use tmap for point data:
+Here's how we can use the tmap `tm_dots` function for point data:
 
 ```{r}
 tm_shape(schools_utm10) +
-  tm_dots(col='green', size=0.2)
+  tm_dots(col='purple', border.col='white', border.lwd=2, size=0.2)
 ```
 
-*In Lesson 2 we discussed that you can save out `sf` data.frames in multiple file formats. You could opt for a GeoJSON, a shapefile, etc... However, for point data sets it is also an option to save it out as a CSV since each geometry only has a single X and single Y value.*
+### Writing Data to a CSV file
 
-## Exercise: Even More Data!
-Let's play around with another points dataset.
+In Lesson 2 we discussed that you can save out `sf` data.frames in multiple file formats. You could opt for a GeoJSON, a shapefile, etc... However, for point data sets it is also an option to save it out as a CSV since each geometry only has a single X and single Y value.
 
-In the code cell provided below, compose code to:
-
-1. Read in the parcel points data (`notebook_data/parcels/parcel_pts_rand30pct.geojson`)
-1. Set the CRS to be 4326
-1. Transform the CRS to 26910
-1. Use `tmap` to plot and customize as desired!
-
-To see the solution, look at the hidden text below.
-
-```{r}
-# YOUR CODE HERE:
-
-
-
-
-
-
+```{r, eval=F}
+st_write(schools_utm10, 'outdata/schools_utm10.csv', layer_options= "geometry=AS_XY", delete_dsn = T)
 ```
+ 
 
-## Solution hidden here!
-
-<!--
-
-# SOLUTION
-# 1. Read in the parcel points data ('notebook_data/parcels/parcel_pts_rand30pct.geojson')
-parcel_pts = st_read('notebook_data/parcels/parcel_pts_rand30pct.geojson')
-head(parcel_pts)
-# 2. Transform CRS to EPSG code 4326 if need be
-st_crs(parcel_pts)
-parcel_pts_utm10 = st_transform(parcel_pts, crs = 26910)
-
-# 3. Plot and customize!
-tm_shape(parcel_pts_utm10) +
-  tm_dots(size=0.2, col='limegreen',
-          border.col='black',
-          alpha=0.3)
--->
-
--------------------------
-
-## 4.3 Map Overlays with Matplotlib
+## 4.4 Map Overlays with `tmap`
 
 No matter the geometry type we have for our `sf` data.frame, we can create overlay plots.
 
 Since we've already done the legwork of transforming our CRS, we can go ahead and plot them together.
 
+- Note, we add lines to the `tmap` with the `tm_lines` function.
+
 ```{r}
 tm_shape(schools_utm10) + 
   tm_dots(size=0.1) +
-tm_shape(bike_blvds_utm10) +
+tm_shape(bike_blvds) +
   tm_lines(col='red')
 ```
+
+
+### Practice
+
+Now try that same map with the `schools_sf` dataframe instead of the `schools_utm10` dataframe. What does the output tell you about `tmap`?
+
+```{r}
+## Your code here!
+
+```
+
+> Yeh, `tmap` will dynamically transform (reproject) spatial dataframes so that they can overlay in the same map if the CRS of each dataframe is defined. If it is not defined, `tmap` will assume the WGS84 crs.
+
+### Asking questions of the data
 
 If we want to answer questions like *"What schools are close to bike boulevards in Berkeley?"*, the above plot isn't super helpful, since the extent covers all of Alameda county.
 
-Luckily, it is easy for us to crop a `sf` data.frame, so that we only retain the rows
-whose geometries are within the bounding box (or extent) of another dataset. 
+- How could you answer this question with the data we have used in this lesson?
 
-We do this with the `st_crop` function.
 
-```{r}
-schools_utm10_crop = st_crop(schools_utm10, bike_blvds_utm10)
-```
-
-Now what's see what that last plot looks like using our cropped data.
-
-```{r}
-tm_shape(schools_utm10_crop) + 
-  tm_dots(size=0.1) +
-tm_shape(bike_blvds_utm10) +
-  tm_lines(col='red')
-```
-
-## 4.4 Recap
+## 4.5 Recap
 
 In this lesson we learned a several new skills:
-
-- Transformed an aspatial data.frame into an `sf` data.frame
+- We looked at different R packages for making maps.
+- Took a deeper look at `tmap` and interactive mapping
+- Transformed a non-spatial data.frame into an `sf` spatial data.frame
 - Worked with point and line datasets
-- Overlayed point and line datasets
-- Cropped one dataset to the extent of another
-    - `st_crop`
+
 
 ## Exercise: Overlay Mapping
 
@@ -274,11 +384,9 @@ Let's take some time to practice reading in and reconciling new datasets, then m
 
 In the code cell provided below, write code to:
 
-1. Bring in your Berkeley places shapefile (and don't forget to check/transform the crs!) (`notebook_data/berkeley/BerkeleyCityLimits.shp`)
-2. Overlay the parcel points on top of the bike boulevards
-3. Create the same plot, but limit it to Berkeley by cropping to the extent of Berkeley city limits
-
-***BONUS***: *Add the Berkeley outline to your last plot!*
+1. Extract the Berkeley boundary from the CA Places data
+2. Create a static tmap with the Berkeley boundary, the Berkeley Bike Boulevards, and the Alameda County Schools, subset to the city of Berkeley.
+3. Repeat the above as an interactive `tmap`.
 
 To see the solution, look at the hidden text below.
 
@@ -299,41 +407,36 @@ To see the solution, look at the hidden text below.
 
 # SOLUTION
 
-# 1. Bring in your Berkeley places shapefile
-berkeley_places = st_read("./notebook_data/berkeley/BerkeleyCityLimits.shp")
-st_crs(berkeley_places)
-berkeley_places_utm10 = st_transform(berkeley_places, crs = 26910)
+# 1. Subset Berkeley from CA places data
+berkeley = ca_places[ca_places$NAME=='Berkeley',]
 
-# 2. Overlay the parcel points on top of the bike boulevards
-tm_shape(parcel_pts_utm10) + 
-  tm_dots(col='orange', size=0.1) +
-tm_shape(bike_blvds_utm10) + 
-  tm_lines(col='black')
+# 2. Subset the schools to Berkeley
+berkeley_schools = schools_sf[schools_sf$City=='Berkeley',]
 
-# 3. Create the same plot but limit it to the extent of Berkeley city limits
-bike_blvds_utm10_crop = st_crop(bike_blvds_utm10, berkeley_places_utm10)
-parcel_pts_utm10_crop = st_crop(parcel_pts_utm10, berkeley_places_utm10)
-crop_map = tm_shape(parcel_pts_utm10_crop) + 
-  tm_dots(col='orange', size=0.1) + 
-tm_shape(bike_blvds_utm10_crop) + 
-  tm_lines(col='black') + 
-crop_map
+# 2. Overlay data on a static tmap
+tmap_mode('plot')
 
-# BONUS: Add the Berkeley outline to your last plot
-crop_map + 
-  tm_shape(berkeley_places_utm10) + 
-  tm_polygons(border.col='darkgrey', alpha=0)
+berkeley_map <- tm_shape(berkeley) + 
+  tm_borders(col='blue') +
+tm_shape(bike_blvds) + 
+  tm_lines(col='black') +
+tm_shape(berkeley_schools) +
+  tm_dots(col="purple")
 
+# 3. Overlay on interactive tmap
+ttm()
+
+berkeley_map
 
 -->
 
 -----------------------------------
 
-## 4.5 Teaser for Day 2...
+## 4.6 Teaser for Part 2...
 
 You may be wondering if and how we could make our maps more interesting and informative than we have so far.
 
-To give you a tantalizing taste of Day 2, the answer is: Yes, we can! And here's how (using an approach we hinted at earlier on)!
+To give you a tantalizing taste of Part 2, the answer is: Yes, we can! And here's how (using an approach we hinted at earlier on)!
 
 ```{r}
 tm_shape(schools_utm10) + 
