@@ -73,6 +73,7 @@ highly recommended but not required.
 ## Resources
 
 - The [Geocomputation with R](https://geocompr.robinlovelace.net/) textbook (Lovelace, Nowosad, and Muenchow, 2019) is an excellent resource for getting up and running.
+- The [R sf package](https://r-spatial.github.io/sf/) webpage, especially the Articles tab of tutorials for getting started.
 - The [`tmap` getting started](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) documentation is a great source of plotting support.
 - The [`sf` vignettes](https://cran.r-project.org/web/packages/sf/vignettes/sf1.html) and [`sf` cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) are great resources for developing and debugging `sf` code.
 - The [`raster` vignettes](https://cran.r-project.org/web/packages/raster/vignettes/Raster.pdf) should help you troubleshoot that package.
