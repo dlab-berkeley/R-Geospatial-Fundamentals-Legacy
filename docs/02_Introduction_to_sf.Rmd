@@ -1,129 +1,186 @@
 ---
-title: Introduction to the `sf` package
+title: Geospatial Data Fundamentals in R
 output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
-knitr::opts_knit$set(root.dir = '~/Documents/repos/Geospatial-Fundamentals-in-R-with-sf')
+knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
 ```
+
 # Lesson 2. Introduction to the `sf` package
 
-In this lesson we'll learn about `sf`, the package that is core to using geospatial data in R. We'll go through the structure of the data (it's not too different from regular data.frames!), geometries, shapefiles, and how to save your hard work.
+In this lesson we'll learn about `sf`, the primary package for working with **vector** geospatial data in R. We'll go through the structure of the `sf` data object (it's not too different from a regular data.frame!), the types of `sf` geometries, reading in data from files like the ESRI shapefile, and how to save your hard work to a new file.
 
 - 2.1 What is the `sf` package?
-- 2.2 Read in a shapefile
-- 2.3 Explore the `sf` object
-- 2.4 Plot the `sf` object
+- 2.2 Spatial data input with `st_read`
+- 2.3 Plot the `sf` object
+- 2.4 Explore the `sf` object
 - 2.5 Subset the `sf` object
-- 2.6 Save your data
+- 2.6 Save your data with `st_write`
 - 2.7 Recap
-- **Exercise**: IO, Manipulation, and Mapping
+- **Exercise**: File IO, Manipulation, and Mapping
 
-<br>
-<font color='grey'>
-    <b>Instructor Notes</b>
+#
 
-- Datasets used
-    - 'notebook_data/california_counties/CaliforniaCounties.shp'
-    - 'notebook_data/census/Places/cb_2018_06_place_500k.zip'
+##### Instructor Notes
 
-- Expected time to complete
-    - Lecture + Questions: 30 minutes
-    - Exercises: 5 minutes
-</font>
+###### Datasets used
+
+- 'notebook_data/california_counties/CaliforniaCounties.shp'
+- 'notebook_data/census/Places/cb_2018_06_place_500k.zip'
+
+###### Expected time to complete
+
+- Lecture + Questions: 40 minutes
+- Exercises: 5 minutes
 
 ## 2.1 What is `sf`?
 
-### `sf` and related geospatial packages
+### The `sf` package
 
-[`sf`](https://r-spatial.github.io/sf/) is a relatively new package that makes it easier to work with geospatial data in R. In the last few years it has grown more powerful and stable. This is really great because the previous means of working with geospatial data in R (the `sp` package) was more complicated. `sf` is now the go-to package for working with `vector` geospatial data in R. 
+[`sf`](https://r-spatial.github.io/sf/) is a relatively new package that makes it easier to work with geospatial data in R. In the last few years it has grown more stable and more widely used. This is really great because the previous go to package for working with vector geospatial data in R, the `sp` package, was more complicated. However, although `sf` is now the go-to package for working with `vector` geospatial data in R, some older spatial data packages still require the use of `sp`, so you may run into it.
 
-> **Protip**: If you work with `raster` data you will want to checkout the [raster](https://cran.r-project.org/web/packages/raster/index.html) package. We will not cover raster data in this tutorial.
+  > **Tip**: If you work with `raster` data you will want to checkout the [raster](https://cran.r-project.org/web/packages/raster/index.html) package. 
 
 ### `sf` = <u>s</u>imple <u>f</u>eatures
-`sf` creates geospatial `data.frame`s that retain all of the functionality of R `data.frame`s, but which are extended with a geometry column and with geospatial metadata, making it easy to process your data using both standard table-based operations and explicitly geospatial operations.
+`sf` provides object classes and functions for working with geospatial data. The primary `sf` object class is the spatial dataframe. An sf spatial dataframe retains all of the functionality of an R `data.frame` extended with a geometry column, metadata about the geometry column, and functions for working with the geometry. This makes it possible to process your data using both standard table-based operations and explicitly geospatial operations from the `sf` library.
+
+### References
+
+There are two primary sources on which this workshop is based. I encourage anyone interested in learning about `sf` in depth to read through both of these.
+
+- The [Geocomputation with R](https://geocompr.robinlovelace.net/) textbook (Lovelace, Nowosad, and Muenchow, 2019) is an excellent resource for getting up and running.
+
+- The [R sf package](https://r-spatial.github.io/sf/) webpage, especially the Articles tab of tutorials for getting started.
 
 
-
-### Load `sf`
+### Load the `sf` Library
 
 Let's start by loading the `sf` library.
 
-```{r}
+```{r, message=T}
 library(sf)
 ```
 
-## 2.2 Read in a shapefile
+## 2.2 Read in a shapefile with `st_read`
 
-As we discussed in the initial geospatial overview, a *shapefile* is one type of geospatial data that holds vector data. 
+The first step in most data analysis workflows is to load data from a file on your computer into the software you are using. We will read in an **ESRI Shapefile** with the `st_read` function.
 
-> To learn more about ESRI Shapefiles, this is a good place to start: [ESRI Shapefile Wiki Page](https://en.wikipedia.org/wiki/Shapefile) 
+The [ESRI shapefile](https://en.wikipedia.org/wiki/Shapefile) is the most widely used type of file format for storing geospatial vector data.
 
-The tricky thing to remember about shapefiles is that they're actually a collection of 3 to 9+ files together. Here's a list of all the files that can make up a shapefile:
- 
->`shp`: The main file that stores the feature geometry
->
->`shx`: The index file that stores the index of the feature geometry  
->
->`dbf`: The dBASE table that stores the attribute information of features 
->
->`prj`: The file that stores the coordinate system information. (should be required!)
->
->`xml`: Metadata —Stores information about the shapefile.
->
->`cpg`: Specifies the code page for identifying the character set to be used.
+The tricky thing to remember about a shapefile is that it is actually a collection of 3 or more files. Here's a list of some of the files commonly included in a shapefile:
 
-But it remains the most commonly used file format for vector spatial data, and it's really easy to visualize in one go!
+* **Mandatory**: 
+  - `shp`: The main file that stores the feature geometry
 
-Let's try it out with California counties, and use `sf` for the first time. `sf::st_read` is a flexible function that let's you read in many different types of geospatial data.
+  - `shx`: A positional index for locating the feature geometry in the `shp` file
 
+  - `dbf`: The data table (in dBase IV format) that stores the attribute information for each feature
+
+* **Optional**
+
+  - `prj`: Stores the coordinate reference system information. (**should be required!**)
+  
+  - `sbn` and `sbx`: spatial index to speed up geometry operations - *used only by ESRI software*
+
+  - `xml`: Metadata — Stores information about the shapefile.
+  
+  - `cpg`: Specifies the code page for identifying the character encoding set to be used.
+
+The shapefile can be a pain because of this structure! The files need to be kept together in the same directory and are typically distributed as zip files.
+
+### Shapefile limitations
+
+The shapefile also has some serious limitations, including:
+
+- none of the component files can exceed 2GB
+- column names cannot be longer than 10 characters
+- unicode support is weak, e.g. apostrophes (single quotes) can crash the software
+
+It's an old file format, but it remains the most commonly used file format for vector spatial data!
+
+### California Counties
+
+We are going to read in a shapefile with California county data. 
+
+First, take a look at the shapefile on your computer using the RStudio `Files` browser or with the R `dir()` command
+```{r}
+dir("notebook_data/california_counties/")
+```
+
+### Load the data into R
+
+Now use `st_read` to load the data into R. Take a look at the info st_read gives us about the data.
 ```{r}
 # Read in the counties shapefile
 counties = st_read('notebook_data/california_counties/CaliforniaCounties.shp')
 ```
 
-```{r}
+## 2.3 Plotting Spatial Data
+
+One of the first things one does with geospatial data after loading it into R is to make a simple map of the data. You can do that with the `sf::plot` function which extends the base R plot command to work with `sf` data objects.
+
+```{r, label='plot_CA', eval=T}
 # Plot out California counties
 plot(counties)
 ```
 
-Wow! That gives us a plot grid of up to the first 9 attributes (i.e. columns) in our dataset.
+That gives us a grid of maps where colors are used to symbolize the data values in the first 9 columns (i.e. attributes) of the sf dataframe.
 
-And what if we just want to plot a single variable?
+That can be tedious for a large dataframe. What if we just want to map the data by a single variable?
 
-```{r}
-plot(counties['MED_AGE_M'])
+```{r, label='plot_medage'}
+plot(counties['MED_AGE'])
 ```
 
-Wow! So easy! We just made a **choropleth** map of median male age, by county!
+This returns a **choropleth** map of median male age, by county!
+
+> A `choropleth` map is a thematic map where data values are used to symbolize polygons.
 
 We're off to a running start.
 
-## 2.3 Explore the `sf data.frame`
+### Mapping Just the Geometry
 
-Before we get in too deep, let's discuss what a `sf data.frame` is, and how it's different from a plain `data.frame`.
+To make a map the geometry without setting the color by the data values, you can plot the geometry column.
 
-### The `sf data.frame`
+```{r, label='plot_geom'}
+plot(counties['geometry'])
+```
 
-An `sf data.frame`, a.k.a. an `sf` object, is just like a plain `data.frame`, but with an extra geometry column. The `sf` package then has a variety of geospatial functions that use that geometry column. 
+
+There are some variations on the plot command that only map the geometry column.
+
+```{r, label='plot_geom2', eval=F}
+plot(counties$geometry)
+plot(counties[['geometry']])
+plot(st_geometry(counties))
+```
+
+
+## 2.4 Explore the `sf` Spatial data.frame
+
+Before we get in too deep, let's discuss what a `sf spatial data.frame` is, and how it's different from a standard R `data.frame`.
+
+A `sf spatial data.frame`, or more formally, an `sf` **simple feature collection object**, is just like a standard R `data.frame`, but with an extra geometry column. The `sf` package includes additional functions that operate on that geometry column. We've used a few already!
 
 I repeat because it's important:
 
-> `An sf object is a plain data.frame with a geometry column added.`
+> `An sf object is a standard R data.frame extended with spatial data (geometry) and spatial operations.`
 
-> This means all the normal operations that we can run on `data.frame`s will also work on `sf` objects!
+*In case you are wondering, an sf object can have more than one geometry column, but only one geometry column is considered active.*
+
+This means all the standard R operations that we can run on a `data.frame will also work on `sf` spatial dataframe!
 
 With that in mind, let's start exploring our `sf` object just like we would a dataset in a plain `data.frame`.
 
 ```{r}
-# Find the number of rows and columnds in counties
+# Find the number of rows and columns in counties
 dim(counties)
 ```
 
 ```{r}
-# Look at the first couple of rows in our sf object
-head(counties)
+# Look at the first few rows of our sf object
+counties
 ```
 
 ```{r}
@@ -131,14 +188,30 @@ head(counties)
 colnames(counties)
 ```
 
-It looks like we have a good amount of information about the total population for different years and the densities, as well as race, age, and occupancy info.
+This CA Counties data contains a good amount of information including population totals and densities, as well as race, age, and occupancy info.
 
-## 2.4 Plotting `sf` objects
+*Do you notice anything inconsistent in the output of `dim`, `head`, `colnames`?*
 
-We're able to map our `sf` object because of the extra `geometry` column.
+## 2.4 `sf` Geometries
 
-### `sf` Geometries
-There are three main types of geometries that can be associated with your `sf` object: points, lines and polygons:
+We are able to map our `sf` object because of the data in the `geometry` column.
+
+#### A sf spatial data frame..
+
+- is a simple feature collection
+- where each row contains a feature (geometry + the column attributes that describe it)
+    - and each feature contains a `simple feature geometry list column (sfc)`
+        - which in turn contains `simple feature geometry (sfg)`
+        
+```{r}
+head(counties[1:5,1:4])
+```
+
+> <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question** Based on the output of the head command above, can you guess why they call the geometry column `sticky`?
+
+### sf Geometry Types
+
+There are three main types of geometries that can be associated with `sf` object: points, lines and polygons:
 
 <img src ="https://datacarpentry.org/organization-geospatial/fig/dc-spatial-vector/pnt_line_poly.png" width="450"></img>
 
@@ -148,92 +221,67 @@ In an `sf data.frame` these geometries are encoded in a format known as [Well-Kn
 > - LINESTRING (30 10, 10 30, 40 40)
 > - POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))
 >
-> *where coordinates are separated by a space and coordinate pairs by a comma*
+*where X,Y coordinate values are separated by a space, coordinate pairs by a comma, and geometries by parentheses*
 
-Your `sf` object may also include the variants **multipoints, multilines, and multipolgyons** if some of the features are composed multiple parts. For example, if we had data representing US states (one per row), we could use a POLYGON geometry for states like Utah or Colorado, but would need a MULTIPOLYGON for states like Hawaii, which includes many islands.
+An `sf` object may also include the variants **multipoints, multilines, and multipolgyons** if some of the features are composed multiple parts. 
 
+> - MULTIPOINT ((10 40), (40 30), (20 20), (30 10))
+> - MULTILINESTRING ((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))
+> - MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))
 
-<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question** What kind of geometry would a roads `sf` object have? What about one that includes landmarks in the San Francisco Bay Area?
+For example, if we had data representing US states (one per row), we could use a POLYGON geometry for states like Utah or Colorado, but would need a MULTIPOLYGON for states like Hawaii, which includes many islands.
 
+> <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question** What kind of geometry would a roads `sf` object have? What about one that includes landmarks in the San Francisco Bay Area?
 
+### Making your own sf objects
 
+You can hand code your own sf objects, but most people just read in spatial data from a file!
 
-Just like with other plots we can make in R, we can start customizing our maps' colors, title, etc.
-
-The most rudimentary way to do this would be to use base R's `plot` function to plot our `sf` objects geometries.
-
-```{r}
-# Plot our geometries, coloring them pale, with dark green borders
-plot(counties$geometry, col='tan', border='darkgreen', main="CA counties")
+```{r, eval=T}
+p <- rbind(c(10, 40), c(40, 30), c(20, 20), c(30, 10))
+(mp <- st_multipoint(p))
+plot(mp)
 ```
 
-However, we'll get much more customizability if we use a special-purpose mapping package, rather than just relying on `sf` methods of base R functions.
+## 2.5 Attribute Operations with `sf` objects
 
-Our go-to mapping package of choice will be [`tmap`](https://github.com/mtennekes/tmap). Its name stands for "thematic maps", i.e. maps in which we use dimensions of our dataset to control the visualization parameters of our maps, thus creating effective data visualizations. 
+To get a better sense of the ways in which a spatial dataframe is like a standard R dataframe, let's practice working with the counties attribute data.
 
-You'll get plenty of introduction here in the workshop, but for additional support you can check out the [tmap vignette](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) or Google other tutorials and references.
+### Subset columns
 
-Let's start by loading the package and creating a 'quick tmap'.
-
-```{r}
-# load tmap
-library(tmap)
-
-# plot a 'quick tmap'
-qtm(counties)
-```
-
-Nice!
-
-That's the quickest, simplest example of a static map that `tmap` can make. However, `tmap` has 2 modes:
-    - 'plot' mode: static maps
-    - 'view' mode: interactive maps
-
-`tmap` loads up in 'plot' mode. Let's switch it to 'view' mode and then take a look at that same map. 
-
-We could either set the mode explicitly (`tmap_mode('view')`) or just toggle back and forth using the `ttm` ('toggle tmap mode') function. Let's use the latter.
+Let's create a new sf object that includes all rows but only a subset of columns.
 
 ```{r}
-# toggle the mode
-ttm()
-# then make our quick tmap again
-qtm(counties)
+counties2 = counties[c('NAME','POP2012','MED_AGE')]
+head(counties2)
 ```
 
-That's outstanding! We get a clickable, scrollable, zoomable map built in Javascript's Leaflet package... right out of the box!
+> <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question** What is interesting to note in the output above?
 
-And to create thematic maps, we can use `tmap`'s more verbose mapping functions to create a new `tmap` object and then add geometry layers to it, setting different aesthetic aspects of those layers.
-
-For now, let's recreate that same map from above, but this time using `tmap` instead of the `sf` method of base R's `plot`.
-
-```{r}
-tm_shape(counties) +  # use the `tm_shape` function to create a tmap object
-  tm_polygons(col='tan', border.col='darkgreen', # add `tm_polygons` layer, coloring as before, 
-              alpha=0.5) # & making transparent
+Now rename the columns in our subset. (not run)
+```{r, eval=F}
+colnames(counties2)<- c('county', 'pop2012', 'median_age')
+head(counties2)
 ```
 
-Nice! Looks pretty much the same as above, except now it's interactive, and overlaid on a super-sweet basemap!
+> Takeawy: Don't get stuck on sticky geometry! 
 
-Now we have two mapping methods:
-    - base R `plot`: nice for simple, pared down plotting tasks
-    - `tmap`: quick maps, both static and interactive, with greater flexibility
+### Subset rows by column value
 
-## 2.5 Subset the `sf` object
-
-Since we'll be focusing on Berkeley later in the workshop, let's subset our `sf` object to just be for Alameda County.
+Since we'll be focusing on Berkeley later in the workshop, let's subset our counties to create a new `sf` object for Alameda County.
 
 ```{r}
 # See the vector of all county names included in our dataset
-counties$'NAME'
+sort(counties$'NAME')
 ```
 
-It looks like Alameda county is specified as "Alameda" in this dataset.
+It looks like Alameda County is specified simply as "Alameda" in this dataset.
 
 ```{r}
 counties[counties$NAME == 'Alameda',]
 ```
 
-Now we can create a new `sf` object called `alameda_county` that is a subset of our counties geodataframe.
+Now we can save that subset by creating a new `sf` object called `alameda_county.
 
 ```{r}
 alameda_county = counties[counties$NAME == 'Alameda',]
@@ -241,58 +289,87 @@ alameda_county = counties[counties$NAME == 'Alameda',]
 
 ```{r}
 # Plot our newly subsetted sf object
-plot(alameda_county$geometry, col='pink', border='green', lwd=5, main='Why not?')
+plot(alameda_county$geometry, col='pink', border='green', lwd=3, main='Alameda County, Why not?')
 ```
 
 Nice! Looks like we have what we were looking for.
 
-*FYI*: You can also make dynamic plots of one or more county without saving to a new gdf.
+### Plotting overlays
+
+Map overlays are one of the most powerful methods for visualizing spatial data. We can create these with the basic `plot` command.
 
 ```{r}
-bay_area_counties = c('Alameda', 'Contra Costa', 'Marin', 'Napa', 'San Francisco', 
-                      'San Mateo', 'Santa Clara', 'Santa Cruz', 'Solano', 'Sonoma')
-qtm(counties[counties$NAME %in% bay_area_counties,])
+# Plot our newly subsetted sf object
+plot(counties$geometry, col='lightgrey', border='white')
+plot(alameda_county$geometry, col='pink', border='green', lwd=3, main='Alameda County, Why not?', add=TRUE)
 ```
+
+> In the next lessons we will spend more time creating maps and map overlays.
+
+Let's save out our `alameda_county` object. This way we won't need to repeat the processing steps we did above.
 
 ## 2.6 Save your Data
 
-Let's not forget to save out our `alameda_county` object. This way we won't need to repeat the processing steps and attribute join we did above.
+We can output`sf` objects to files using the **st_write** command. 
 
-We can save it as a shapefile.
+`st_write` supports a wide range of output geographic vector file formats. It automattically determines the output file type based on the filename you specify.
+
+### Save to a Shapefile
 
 ```{r}
-st_write(alameda_county, "outdata/alameda_county.shp", delete_dsn=T)
+# Save to shapefile, deleting existing file if present
+st_write(alameda_county, "outdata/alameda_county.shp", delete_dsn = T)
 ```
 
 One of the problems of saving to a shapefile is that our column names get truncated to 10 characters (a shapefile limitation.) 
 
-Instead of renaming all columns with obscure names that are less than 10 characters, we can save our `sf` object to a spatial data file format that does not have this limation - [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) or [GPKG](https://en.wikipedia.org/wiki/GeoPackage) (geopackage) file.
-- These formats have the added benefit of outputting only one file in contrast tothe multi-file shapefile format.
+Instead of renaming all columns with obscure names that are less than 10 characters, we can save our `sf` object to a spatial data file format that does not have this limitation, such as the [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) file format or the [GPKG](https://en.wikipedia.org/wiki/GeoPackage) (geopackage) file format.
 
+- These formats have the added benefit of outputting only one file in contrast to the multi-file shapefile format.
+
+### Save to a GeoJSON file
 ```{r}
+st_write(alameda_county, "outdata/alameda_county.geojson", delete_dsn = T)
+#or
 st_write(alameda_county, "outdata/alameda_county.json", driver="GeoJSON", delete_dsn=T)
 ```
 
-```{r}
-st_write(alameda_county, "outdata/alameda_county.gpkg", driver="GPKG", delete_dsn=TRUE)
-```
-
-You can read these in, just as you would a shapefile, with `st_read`
+### Save to a [GPKG](https://en.wikipedia.org/wiki/GeoPackage) (geopackage) file.
 
 ```{r}
-gpkg_test = st_read("outdata/alameda_county.gpkg")
-plot(gpkg_test)
+st_write(alameda_county, "outdata/alameda_county.gpkg", delete_dsn=T)
 ```
 
+### Save to CSV file
+
+You can even ouput geospatial data to CSV - *check out the resultant file.*
 ```{r}
-json_test = st_read("outdata/alameda_county.json")
-plot(json_test)
+st_write(alameda_county, "outdata/alameda_county.csv", layer_options="GEOMETRY=AS_WKT", delete_dsn=T)
 ```
 
-There are also many other formats we could use for data output.
+### Practice reading in these files
+
+To review, you can read these in any of these files with `st_read`. Give it a try, plotting just the geometry column.
+
+```{r, eval=F}
+shp_test = st_read(...)
+plot(...)
+```
+
+```{r, eval=F}
+json_test = st_read(...)
+plot(...)
+```
+
+
+```{r, eval=F}
+csv_test = st_read(...)
+plot(...)
+```
+
 
 **NOTE**: If you're working with point data (i.e. a single latitude and longitude value per feature),
-then CSV might be a good option!
+then CSV might be a good option! Otherwise, may be a big file!
 
 ## 2.7 Recap
 
@@ -305,9 +382,8 @@ In this lesson we learned about...
     - `dim`, `head`, `colnames`, `str`
 - Plotting `sf` objects
     - `plot`
-    - `tmap`
 - Subsetting `sf` objects
-    - matrix subsetting syntax
+    - by attribute
 - Saving `sf` objects to file
     - `st_write`
 
@@ -318,10 +394,11 @@ Now you'll get a chance to practice the operations we learned above.
 In the following cell, compose code to:
 
 1. Read in the California places data (`notebook_data/census/Places/cb_2018_06_place_500k.shp`)
-2. Subset the data to Berkeley
-3. Plot using base R `plot`, and customize as desired
-4. Save out as a shapefile (`outdata/berkeley_places.shp`)
-
+2. Make a map of the CA Places geometry
+3. Subset the CA Places data to keep only Berkeley
+4. Plot Berkeley using base and customize  the border and fill colors
+5. Map the Berkeley geometry in a bright color over the CA PLaces geometry
+6. Save out Berkeley as a shapefile (`outdata/berkeley_places.shp`)
 
 
 To see the solution, look at the hidden text below.
@@ -336,22 +413,31 @@ To see the solution, look at the hidden text below.
 
 ```
 
-## Solution hidden here!
+### Solution hidden here!
+
+*You can right-click and inspect element in the browser*
 
 <!--
 # SOLUTION
 
 # 1. Read in the California places data 
-california_places = st_read('./notebook_data/census/Places/cb_2018_06_place_500k.shp')
-head(california_places)
+ca_places = st_read('./notebook_data/census/Places/cb_2018_06_place_500k.shp')
+head(ca_places)
 
-# 2. Subset the data to Berkeley
-berkeley_places = california_places[california_places$NAME=='Berkeley',]
+# 2. Make a map of the CA Places geometry
+plot(ca_places$geometry)
 
-# 3. Plot and customize
-plot(berkeley_places, col='lightgreen', border='grey')
+# 3. Subset the data to Berkeley
+berkeley_places = ca_places[ca_places$NAME=='Berkeley',]
 
-# 4. Save to a shapefile
+# 4. Plot and customize
+plot(berkeley_places$geometry, col='yellow', border='red')
+
+# 5. Plot CA Places and then overlay Berkeley
+plot(ca_places$geometry)
+plot(berkeley_places$geometry, col='yellow', border='red', add=T)
+
+# 6. Save to a shapefile
 st_write(berkeley_places, "outdata/berkeley_places.shp")
 
 -->
