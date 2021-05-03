@@ -1,16 +1,15 @@
 ---
-title: An R Markdown document converted from "./03_CRS_Map_Projections.ipynb"
+title: Geospatial Data Fundamentals in R
 output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
-knitr::opts_knit$set(root.dir = '~/Documents/repos/Geospatial-Fundamentals-in-R-with-sf')
+knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
 ```
 
 # Lesson 3. Coordinate Reference Systems (CRS) & Map Projections
 
-Building off of what we learned in the previous notebook, we'll get to understand an integral aspect of geospatial data: Coordinate Reference Systems.
+Building off of what we learned in the previous lesson, the goal here is to improve our understanding of an integral aspect of geospatial data: Coordinate Reference Systems and Map Projections.
 
 - 3.1 California County Shapefile
 - 3.2 USA State Shapefile
@@ -41,7 +40,6 @@ Building off of what we learned in the previous notebook, we'll get to understan
 
 ```{r}
 library(sf)
-library(tmap)
 ```
 
 ## 3.1 California County shapefile
@@ -49,14 +47,14 @@ Let's go ahead and bring back in our California County shapefile. As before, we 
 
 ```{r}
 counties = st_read('notebook_data/california_counties/CaliforniaCounties.shp')
-plot(counties$geometry, col='darkgreen')
+plot(counties$geometry, col='lightgrey', border='white')
 ```
 
-Even if we have an awesome map like this, sometimes we want to have more geographical context, or we just want additional information. We're going to try **overlaying** our counties `sf` data.frame on our USA states shapefile.
+Even if we have an awesome map like this, sometimes we want to have more geographical context, or we just want additional information. We're going to try **overlaying** our counties `sf` data.frame with data from a shapefile with USA states.
 
 ## 3.2 USA State shapefile
 
-We're going to bring in our states geodataframe, and let's do the usual operations to start exploring our data.
+We're going to bring in our states data, and let's do the usual operations to start exploring our data.
 
 ```{r}
 # Read in states shapefile
@@ -84,13 +82,14 @@ You might have noticed that our plot extends beyond the 50 states. Let's double 
 states$STATE
 ```
 
-Beyond the 50 states we seem to have American Samoa, Puerto Rico, Guam, Commonwealth of the Northern Mariana Islands, and United States Virgin Islands included in this geodataframe. To make our map cleaner, let's limit the states to the contiguous states (so we'll also exclude Alaska and Hawaii).
+Beyond the 50 states we seem to have American Samoa, Puerto Rico, Guam, Commonwealth of the Northern Mariana Islands, and United States Virgin Islands included in this spatial dataframe. To make our map cleaner, let's limit the states to the contiguous states (so we'll also exclude Alaska and Hawaii).
 
 ```{r}
 # Define list of non-contiguous states
 non_contiguous_us = c('American Samoa','Puerto Rico','Guam',
                       'Commonwealth of the Northern Mariana Islands',
                       'United States Virgin Islands', 'Alaska','Hawaii')
+
 # Limit data according to above list
 states_limited = states[!states$STATE %in% non_contiguous_us, ]
 ```
@@ -100,53 +99,40 @@ states_limited = states[!states$STATE %in% non_contiguous_us, ]
 plot(states_limited['STATE'])
 ```
 
-To prepare for our mapping overlay, let's make our states a nice, light grey color.
+To prepare for our mapping overlay, let's make our states a nice, bold color
 
-```{r}
-plot(states_limited$geometry, col='lightgrey')
+```{r, label='lower48'}
+plot(states_limited$geometry, col='blue', border='red', lwd=5)
 ```
 
 ## 3.3 Plot the two together
 
 Now that we have both geodataframes in our environment, we can plot both in the same figure.
 
-**NOTE**: Once we've created a plot (using base R's `plot` function), we can add more layers to it by calling subsequent `plot` commands and adding the argument `add=T`.
+> Once we've created a plot (using base R's `plot` function), we can add more layers to it by calling subsequent `plot` commands and adding the argument `add=T`.
 
-```{r}
-plot(counties$geometry, col='darkgreen')
-plot(states_limited$geometry, col='lightgrey', add=T)
+```{r, label='overlay1'}
+plot(counties$geometry, col='lightgrey', border='white')
+plot(states_limited$geometry, col='blue', border='red',lwd=5, add=T)
 ```
 
-Oh no, what happened here? Where's our CA data?
+Oh no, what happened here? Where's our CA data? What's going on?
 
 <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question** Without looking ahead, what do you think happened?
-
-
 
 <br>
 <br>
 If you look at the coordinate values associated with the polygons in our two datasets, you'll see that the county data has much larger-magnitude numbers than our states data. It's represented in some different type of unit other than decimal degrees!
 
-```{r}
-print(counties$geometry[[1]])
+```{r, label='bboxes'}
+print(st_bbox(counties))
+print(st_bbox(states_limited))
 ```
 
-```{r}
-print(states_limited$geometry[[1]])
-```
 
-In fact, that means if we zoom in really close into our plot we'll probably see the states data plotted.
+This data misalignment is a key issue that you'll have to resolve time and time again when working with geospatial data!
 
-Let's do this by limiting the extent of our plot using `xlim` and `ylim` arguments.
-
-```{r}
-plot(counties$geometry, col='darkgreen', xlim = c(-140,-50), ylim = c(20,50))
-plot(states_limited$geometry, col='lightgrey', add=T)
-```
-
-This is a key issue that you'll have to resolve time and time again when working with geospatial data!
-
-It all revolves around **coordinate reference systems** and **projections**.
+It all revolves around **coordinate reference systems** and **map projections**.
 
 ----------------------------
 
@@ -158,17 +144,20 @@ It all revolves around **coordinate reference systems** and **projections**.
 <br><br>As a refresher, a CRS describes how the coordinates in a geospatial dataset relate to locations on the surface of the earth. 
 
 A `geographic CRS` consists of: 
+
 - a 3D model of the shape of the earth (a **datum**), approximated as a sphere or spheroid (aka ellipsoid)
 - the **units** of the coordinate system (e.g, decimal degrees, meters, feet) and 
 - the **origin** (i.e. the 0,0 location), specified as the meeting of the **equator** and the **prime meridian** 
 
+A map projection is a mathematical model used to transform coordinate data from a curved to a flat surface.
+
 A `projected CRS` consists of
+
 - a geographic CRS
-- a **map projection** and related parameters used to transform the geographic coordinates to `2D` space.
-  - a map projection is a mathematical model used to transform coordinate data
+- a specific **map projection** and related parameters used to transform the geographic coordinates to `2D` space.
 
 ### A Geographic vs Projected CRS
-<img src ="https://www.e-education.psu.edu/natureofgeoinfo/sites/www.e-education.psu.edu.natureofgeoinfo/files/image/projection.gif" height="100" width="500">
+<img src ="https://www.e-education.psu.edu/natureofgeoinfo/sites/www.e-education.psu.edu.natureofgeoinfo/files/image/projection.gif" height="200" width="500"></src>
 
 #### There are many, many CRSs
 
@@ -178,18 +167,15 @@ Why? Primariy, because there are many different definitions of the shape of the 
 
 #### Why are CRSs Important?
 
-- You need to know the data about your data (or `metadata`) to use it appropriately.
+- Most R spatial libraries, including `sf`, require geospatial data to have `the same CRS` for analysis.
 
+- Most analysis methods expect geospatial data to be in a `projected CRS`.
 
-- All projected CRSs introduce distortion in shape, area, and/or distance. So understanding what CRS best maintains the characteristics you need for your area of interest and your analysis is important.
+- All `projected CRSs` introduce distortion in shape, area, and/or distance. So understanding what CRS best maintains the characteristics you need for your area of interest and your analysis is important.
 
+- Some R packages, but not all, assume a specific CRS (WGS84) when a CRS is not explicitly defined. That can cause trouble if it is an incorrect assumption.
 
-- Some analysis methods expect geospatial data to be in a projected CRS
-
-- Some R packages, but not all, implement dynamic reprojection from the input CRS to the required CRS and assume a specific CRS (WGS84) when a CRS is not explicitly defined.
-
-
-- Most R spatial libraries, including `sf`, require geospatial data to be in the same CRS if they are being analysed together.
+- In short, you need to know the CRS of your data to use it appropriately!
 
 #### What you need to know when working with CRSs
 
@@ -200,23 +186,27 @@ Why? Primariy, because there are many different definitions of the shape of the 
 
 ### Codes for CRSs commonly used with CA data
 
-CRSs are typically referenced by an [EPSG code](http://wiki.gis.com/wiki/index.php/European_Petroleum_Survey_Group).  
+CRSs are typically referenced by an [EPSG code](http://wiki.gis.com/wiki/index.php/European_Petroleum_Survey_Group).
+
+The EPSG Registry maintains information about CRSs and specifies the short codes by which they are more easily referenced.
 
 It's important to know the commonly used CRSs and their EPSG codes for your geographic area of interest.  
 
 For example, below is a list of commonly used CRSs for California geospatial data along with their EPSG codes.
 
+
 ##### Geographic CRSs
--`4326: WGS84` (units decimal degrees) - the most commonly used geographic CRS
 
--`4269: NAD83` (units decimal degrees) - the geographic CRS customized to best fit the USA. This is used by all Census geographic data.
+- `4326: WGS84` (units decimal degrees) - the most commonly used geographic CRS
 
->  `NAD83 (epsg:4269)` are approximately the same as `WGS84(epsg:4326)` although locations can differ by up to 1 meter in the continental USA and elsewhere up to 3m. That is not a big issue with census tract data as these data are only accurate within +/-7meters.
+- `4269: NAD83` (units decimal degrees) - a geographic CRS customized to best fit the USA. This is used by most geographic data produced by US federal agencies including the Census.
+
+  - `NAD83 (epsg:4269)` and `WGS84(epsg:4326)` geographic data can be considered equivalent although locations can differ by up to 1 meter in the continental USA and elsewhere up to 3m. That is not a big issue with census tract data as these data are only accurate within +/-7meters.
 
 
 ##### Projected CRSs
 
--`5070: CONUS NAD83` (units meters) projected CRS for mapping the entire contiguous USA (CONUS)
+-`5070: USA CONUS NAD83` (units meters) projected CRS for mapping the entire contiguous USA (CONUS)
 
 -`3857: Web Mercator` (units meters) conformal (shape preserving) CRS used as the default in web mapping
 
@@ -230,9 +220,7 @@ For example, below is a list of commonly used CRSs for California geospatial dat
 
 You can find the full CRS details on the website https://www.spatialreference.org
 
-## 3.5 Getting the CRS
-
-### Getting the CRS of an `sf` data.frame
+## 3.5 Getting the CRS of an `sf` data.frame
 
 `sf` data.frames have CRS metadata. It can be accessed using the `st_crs` function.
 
@@ -251,12 +239,12 @@ the CRSs of our two datasets are different! **This explains why we couldn't over
 The above CRS definition specifies a bunch of information, including:
 
 - the name of the CRS (`WGS84`), 
-- the axis units (`degree`)
+- the units (`degree`)
 - the shape (`datum`),
 - and the origin (`Prime Meridian`, and the equator)
 - and the area for which it is best suited (`World`)
 
-> Notes:
+> Terminology Notes:
 >
 >    - `geocentric` latitude and longitude assume a spherical (round) model of the shape of the earth
 >    - `geodetic` latitude and longitude assume a spheriodal (ellipsoidal) model, which is closer to the true shape.
@@ -264,52 +252,59 @@ The above CRS definition specifies a bunch of information, including:
 
 ## 3.6 Setting the CRS
 
-You can also set the CRS of a gdf using the same `st_crs` function, but feeding a value into it.  You would only set the CRS if is not defined or if you think it is incorrectly defined.
+You can also set the CRS of a spatial dataframe using the same `st_crs` function, but feeding a value into it.  You would only set the CRS if is not defined or if you think it is incorrectly defined.
 
 > In desktop GIS terminology setting the CRS is called **defining the CRS**
 
-As an example, we could try to set the CRS of our data to EPSG code 26910 (UTM Zone 10 N, NAD83 datum).
+As an example, we could try to set the CRS of our states data to Web Mercator (EPSG code 3857).
 
-Note that `sf` lets us specify CRSs using just the EPSG codes as R integers!
+Note that `sf` lets us specify CRSs using just the EPSG codes as integers (not strings)!
 
 ```{r}
-# first set the CRS to None
+# What is the crs? Always check before setting!
+print(st_crs(states_limited))
+
+# Set the CRS - should only be done if not set!
 st_crs(states_limited) = 26910
 ```
 
-See that warning message? That's telling us that changing the CRS of a dataset by just replacing the current value using `st_crs` does not actually reproject data.
+See that warning message? That's telling us that changing the CRS of a dataset by just replacing the current value using `st_crs` does not transform (i.e., reproject) the data. It just changes the metadata.
 
 **THIS IS REALLY IMPORTANT!** If we want to reproject a dataset (to reconcile its CRS with that of another dataset, for example), then this is **NOT THE WAY TO DO IT!** 
 
 We'll see how to correctly reproject a dataset in just a second. In the meantime, **we'd better undo what we just did!**
 
 ```{r}
+# Set the CRS back to what it was
 st_crs(states_limited) = st_crs(states)
 ```
 
+*What did we just do above?*
+
 ```{r}
-# Check it again
+# Check CRS again - is it set correctly?
 st_crs(states_limited)
 ```
 
 ## PHEW! Okay! ... Never do that again! :)
 
 ## 3.7 Transforming or Reprojecting the CRS
-You can transform the CRS of a geodataframe with the `st_transform` function.
+
+You can transform the CRS of a geodataframe with the `st_transform` function. This outputs a new object with transformed coordinate data.
 
 
 > In desktop GIS terminology transforming the CRS is called **projecting the data** (or **reprojecting the data**)
 
-When you do this you'll want to save the output to a new `sf` data.frame.
-
+Let's transform the states data to Web Mercator (3857), giving the output dataframe a name that will make tje CRS obvious to us. This can be very helpful when working with multiple copies of a spatial dataframe.
 ```{r}
-states_limited_utm10 = st_transform(states_limited, crs=26910)
+# Convert the states data to Web Mercator
+states_limited_3857 = st_transform(states_limited, crs=3857)
 ```
 
 Now take a look at the CRS.
 
 ```{r}
-st_crs(states_limited_utm10)
+st_crs(states_limited_3857)
 ```
 
 You can see the result immediately by plotting the data.
@@ -321,95 +316,67 @@ par(mfrow=c(1,2))
 plot(states_limited$geometry, asp=1)
 
 # plot utm sf data.frame
-plot(states_limited_utm10$geometry, asp=1)
-```
-
-```{r}
-# Your thoughts here
+plot(states_limited_3857$geometry, asp=1)
 ```
 
 <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
 1. What two key differences do you see between the two plots above?
-2. Do either of these plotted USA maps look good?
-3. Try looking at the common CRS EPSG codes above and see if any of them look better for the whole country than what we have now. Then try transforming the states data to the CRS that you think would be best and plotting it. (Use the code cell two cells below.)
-
-
-```{r}
-# YOUR CODE HERE
-
-
-
-
-
-```
-
-## Solution hidden here!
-
-<!--
-#SOLUTION 
-states_limited_conus = st_transform(states_limited, crs=5070)
-plot(states_limited_conus$geometry, asp=1);
--->
+2. Does either of these look better?
+3. Look at the list of common CRSs above - is there another one we could try that would be a good fit for the states_limited data?
 
 ## 3.8 Plotting states and counties together
 
-Now that we know what a CRS is and how we can set them, let's convert our counties `sf` data.frame to match up with out states' CRS.
+Now that we know what a CRS is and how we can set them, let's convert our counties `sf` data.frame to match up with the states' CRS.
 
 ```{r}
-# Convert counties data to UTM 10N, NAD83
-counties_utm10 = st_transform(counties, crs = 26910)
+# Convert counties data to web mercator
+counties_3857 = st_transform(counties, crs = 3857)
+
+# or
+#counties_3857 = st_transform(counties, 3857)
 ```
+
+We can also do the transformation the following way to make sure the CRS values match:
 
 ```{r}
-plot(counties_utm10$geometry)
+# Make sure the CRSs match!
+counties_3857 = st_transform(counties, st_crs(states_limited_3857))
 ```
 
+This last method is preferred when trying to do analysis with multiple data layers. Why? Because although data may be in the same CRS they could have very slightly different CRS metadata that could cause an error later on.
+
+Take a look...
+```{r}
+plot(counties_3857$geometry)
+```
+
+Overlay...
 ```{r}
 # Plot it together!
-plot(states_limited_utm10$geometry, col = 'lightgrey')
-plot(counties_utm10$geometry, col='darkgreen', add=T)
+plot(states_limited_3857$geometry, col = 'lightgrey')
+plot(counties_3857$geometry, col='darkgreen', add=T)
 ```
 
-Since we know that the best CRS to plot the contiguous US from the above question is 5070, let's also transform and plot everything in that CRS.
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question** The original counties data had the CRS CAL Albers (3310). Would it make sense to transform the states_limited to that CRS for mapping these two datasets?
 
-```{r}
-counties_conus = st_transform(counties, crs = 5070)
-```
+### Practice
+
+Let's see if the best CRS to plot both datasets is 5070. Start by transforming the data to that CRS.
 
 ```{r, eval=F}
-plot(states_limited_conus$geometry, col = 'lightgrey')
-plot(counties_conus$geometry, col = 'darkgreen', add=T)
+states_limited_5070 = st_transform(...)
+counties_5070 = st_transform(counties, st_crs())
 ```
 
-### Overlay maps in `tmap`
-
-<br>
-
-<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
-
-You may have noticed that we have not used `tmap` to create any of the overlay maps in this notebook. "Why?", you might ask.
-
-Check out the code below, then decide whether `tmap` would be a good choice for visually checking whether two datasets have their CRSs correctly reconciled, and why or why not.
-
-```{r}
-print('EPSG CODE, states_limited_utm10')
-st_crs(states_limited_utm10)$epsg
-print('EPSG CODE, counties_conus')
-st_crs(counties_conus)$epsg
+Now make an overlay map!
+```{r, eval=F}
+plot(states_limited_5070$geometry, col = 'lightgrey')
+plot(counties_5070$geometry, col = 'darkgreen', add=T)
 ```
 
-```{r}
-tm_shape(states_limited_utm10) +
-  tm_polygons(col='lightgrey') +
-tm_shape(counties_conus) +
-  tm_polygons(col='darkgreen')
-```
+What would you use for your map? Web Mercator (3857) or USA Conus (5070)?
 
-
-`tmap` is such a wonderful, high-level package that it automatically reprojects all of a map's layers on the fly before mapping them!
-
-This is a really handy feature, but it means that `tmap` is not useful for visually checking that we have successfully aligned our datasets!
 
 ## 3.9 Recap
 
@@ -418,20 +385,24 @@ In this lesson we learned about...
 - Coordinate Reference Systems 
 
 - Getting the CRS of a geodataframe
-    - `st_crs`
+    - `st_crs(<sf dataframe>)`
     
-- Transforming/repojecting CRS
-    - `st_transform`
+- Setting (or defining) the CRS
+    - `st_crs(<sf dataframe>, <crs>)`
     
-- Overlaying maps
+- Transforming, or repojecting, the CRS
+    - `st_transform(<sf dataframe>, <crs>)`
+    
+- Overlaying maps practice
 
 ## Exercise: CRS Management
 
 Now it's time to take a crack and managing the CRS of a new dataset. In the code cell below, write code to:
 
 1. Bring in the CA places data (`notebook_data/census/Places/cb_2018_06_place_500k.zip`)
-2. Check if the CRS is EPSG code 26910. If not, transform the CRS
-3. Plot the California counties and places together.
+2. Check if the CRS of the data 
+3. Transform the CRS to 3310
+3. Plot the California counties and CA places together.
 
 To see the solution, look at the hidden text below.
 
@@ -452,16 +423,18 @@ To see the solution, look at the hidden text below.
 # SOLUTION
 
 # 1. Bring in the CA places data
-california_places = st_read('notebook_data/census/Places/cb_2018_06_place_500k.shp')
-head(california_places)
+ca_places = st_read('notebook_data/census/Places/cb_2018_06_place_500k.shp')
+head(ca_places)
 
-# 2. Check and transorm the CRS if needed
-st_crs(california_places)
-california_places_utm10 = st_transform(california_places, crs = 26910)
+# 2. Check the CRS
+st_crs(ca_places)
+
+# 3. Transform the CRS to 3310
+ca_places_3310 = st_transform(ca_places, crs = 3310)
 
 # 3. Plot the California counties and places together
-plot(counties_utm10$geometry, col='lightgrey')
-plot(california_places_utm10$geometry, col='purple',add = T)
+plot(counties$geometry, col='lightgrey')
+plot(ca_places_3310$geometry, col='purple',add = T)
 
 -->
 
