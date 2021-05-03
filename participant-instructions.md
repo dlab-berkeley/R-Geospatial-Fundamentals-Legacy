@@ -2,18 +2,20 @@
 
 ### Prior to the workshop start date please do the following.
 
-1. Download and unzip (or clone, using the `git clone` command) this repository. To download, just click on the green "Clone or download" button near the top of the repo's [home page] (https://github.com/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf). 
+1. Download and unzip (or clone, using the `git clone` command) this repository. To download, just click on the green **CODE** button near the top of the repo's [home page] (https://github.com/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf). 
     > Note, the files are typically updated prior to a workshop so it's good to download these just before the workshop.
 
 
 2. If you do not have R and RStudio installed on your computer, download and install [RStudio Desktop](https://rstudio.com/products/rstudio/), with R version >= 3.5.
 
 3. Then, open RStudio and install the following R packages, using the syntax **install.package('<pkg_name>')** 
-  * `ggplot2`
   * `sf`
-  * `units`
   * `tmap`
+  * `units`
+  * `tidyverse`
   * `raster`
+  * `ggplot2`
+  * `mapview`
 
 If you are __prompted by the question__, "Do you want to install from sources the package which needs compilation? (Yes/no/cancel)", type "**no**" in your console and press Enter. (***Note**: This is most common for Mac users.*)
 
