@@ -60,6 +60,12 @@ Both of these types of queries operate on the geometry of features in one or two
 
 An important distinction between these two types of queries is that measurement queries depend on the CRS of the data while spatial relationship queries do not. This is because `topological relationships`, the term used to describe spatial relationships, are invariant to rotation, translation and scaling transformations like those that CRS transformations entail.
 
+### Attribute vs. Spatial Queries
+
+We already know how to do attribute queries with our data. For example, we can select one or more specific counties by name or select those counties where the total population is greater than 100,000 because we have these columns in the dataset.
+
+Spatial queries are special because they are dynamic. For example, we can compute area from the geometry without it already being encoded or we can select BART stations in Berkeley even if city is not encoded in the BART data by linking those two spatial datasets in the same geographic space. This dynamic query capability is extremely powerful!
+
 In this lesson we'll work through examples of each of those types of queries.
 
 Then we'll try a very common spatial analysis method that 
