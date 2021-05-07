@@ -1,12 +1,12 @@
 ---
-title: An R Markdown document converted from "./08_Pulling_It_All_Together.ipynb"
+title: Geospatial Data in R
 output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
-knitr::opts_knit$set(root.dir = '~/Documents/repos/Geospatial-Fundamentals-in-R-with-sf')
+knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
 ```
+
 # 08. Pulling it all Together
 
 For this last lesson, we'll practice going through a full workflow!! We'll answer the question:
@@ -20,23 +20,22 @@ Here's a set of steps that we will implement in the labeled cells below:
 
 <u> 8.1 Read in and Prep Data</u>
 
-- read in tracts ACS joined data
-- read our grocery-data CSV into a plain data.frame (it lives at `'notebook_data/other/ca_grocery_stores_2019_wgs84.csv`)
-- coerce it to an `sf` data.frame
-- define its CRS (EPSG:4326)
-- transform it to match the CRS of the tracts
+- Read in the tracts ACS joined data (created in Lesson 7)
+- Read in a CSV file of grocery store data into a standard R data.frame (it lives at `'notebook_data/other/ca_grocery_stores_2019_wgs84.csv`)
+- Promote the grocery store dataframe to an `sf` data.frame with the CRS NAD83 (EPSG:4326)
+- Transform the grocery store sf dataframe to match the CRS of the tracts sf dataframe
 - take a peek
 
 <u>8.2 Aggregation</u>
 
-- aggregate the grocery points by tract and calculate the total grocery-store sales volume of each tract
-- don't forget to check the dimensions, contents, and any other relevant aspects of your results
+- Aggregate the grocery store points by tract and calculate the total grocery-store sales volume of each tract
+- Don't forget to check the dimensions, contents, and any other relevant aspects of your results
 
 <u>8.3 Plot and Review</u>
 
-- plot the tracts, coloring them by total grocery-store sales volume
-- plot the grocery stores on top
-- bonus points for devising a nice visualization scheme that helps you heuristically check your results!
+- Plot the tracts, coloring them by total grocery-store sales volume
+- Plot the grocery store points on top
+- Bonus points for devising a nice visualization scheme that helps you heuristically check your results!
 
 
 
@@ -52,7 +51,7 @@ content.**
     <b>Instructor Notes</b>
 
 - Datasets used
-    - 'outdata/tracts_acs_gdf_ac.json'
+    - 'outdata/tracts_acs_sdf_ac.json'
     - 'notebook_data/other/ca_grocery_stores_2019_wgs84.csv'
 
 - Expected time to complete
@@ -131,7 +130,7 @@ head(grocery_pts_sf)
 # read in and prep data:
 #-----------------------
 # read in tracts acs data
-tracts_acs_ac = st_read('outdata/tracts_acs_gdf_ac.json')
+tracts_acs_ac = st_read('outdata/tracts_acs_sdf_ac.json')
 # read in the grocery-store data
 grocery_pts_df = read.csv('notebook_data/other/ca_grocery_stores_2019_wgs84.csv')
 # coerce to an `sf` data.frame, and define the CRS
