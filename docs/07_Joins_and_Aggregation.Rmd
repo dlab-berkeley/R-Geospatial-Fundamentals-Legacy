@@ -1,7 +1,11 @@
 ---
-title: An R Markdown document converted from "./07_Joins_and_Aggregation.ipynb"
+title: Geospatial Data in R
 output: html_document
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
+```
 
 # Lesson 7. Attribute and Spatial Joins
 
@@ -10,7 +14,7 @@ let's take a look at another fundamental spatial operation that relies on them.
 
 This operation, called a **spatial join**, is the process by which we can
 leverage the spatial relationships between distinct datasets to merge
-their information into a new, synthetic dataset.
+their information into a new output dataset.
 
 This operation can be thought as the spatial equivalent of an
 **attribute join**, in which multiple tabular datasets can be merged by
@@ -22,7 +26,7 @@ Thus, we'll start by developing an understanding of this operation first!
 - **Exercise**: Choropleth Map
 - 7.2 Spatial Joins
 - 7.3 Aggregation
-- **Exercise**: Aggregation
+- **Exercise**: Spatial Joins & Aggregation
 - 7.4 Recap
 
 <br>
@@ -39,12 +43,12 @@ Thus, we'll start by developing an understanding of this operation first!
     - Exercises: 20 minutes
 </font>
 
-```{r}
+```{r, message=F}
 library(sf)
 library(tmap)
 ```
 
-# 7.0 Data Input and Prep
+## 7.0 Data Input and Prep
 
 Let's read in a table of data from the US Census' 5-year American Community Survey (ACS5).
 
@@ -61,10 +65,11 @@ Below is a table of the variables in this table. They were combined from
 different ACS 5 year tables.
 
 <u>NOTE</u>:
+
 - variables that start with `c_` are counts
 - variables that start with `med_` are medians
 - variables that end in `_moe` are margin of error estimates
-- variables that start with `_p` are proportions calcuated from the counts divided by the table denominator (the total count for whom that variable was assessed)
+- variables that start with `p_` are proportions calcuated from the counts divided by the table denominator (the total count for whom that variable was assessed)
 
 
 | Variable        | Description                                     |
@@ -96,6 +101,7 @@ different ACS 5 year tables.
 | `c_walk`        |Number of commuters who bike
 | `year`          | ACS data year
 | `FIPS_11_digit` | 11-digit FIPS code
+| ....            | *and more*
 
 We're going to drop all of our `moe` columns by identifying all of those that end with `_moe`. We can do that in two steps, first by using `filter` to identify columns that contain the string `_moe`.
 
@@ -119,6 +125,7 @@ And lastly, let's grab only the rows for year 2018 and county FIPS code 1 (i.e. 
 acs5_df_ac = acs5_df[acs5_df$year==2018 & acs5_df$county_fips==1, ]
 ```
 
+Now, take another look at the dataframe
 ```{r}
 head(acs5_df_ac)
 ```
@@ -129,7 +136,7 @@ head(acs5_df_ac)
 Now let's also read in our census tracts again!
 
 ```{r}
-tracts_sf = st_read("./notebook_data/census/Tracts/cb_2013_06_tract_500k.shp", )
+tracts_sf = st_read("./notebook_data/census/Tracts/cb_2018_06_tract_500k.shp", )
 ```
 
 ```{r}
@@ -141,21 +148,17 @@ tracts_sf_ac = tracts_sf[tracts_sf$COUNTYFP == '001',]
 plot(tracts_sf_ac$geometry)
 ```
 
-# 7.1 Attribute Joins
+## 7.1 Attribute Joins
 
 **Attribute Joins  between `sf` data.frames and plain data.frames**
 
 *We just mapped the census tracts. But what makes a map powerful is when you map the data associated with the locations.*
 
-- `tracts_sf_ac`: These are polygon data in an `sf` data.frame. However, as we saw in the `head` of that dataset, they no attributes of interest!
+- `tracts_sf_ac`: These are polygon data in this `sf` data.frame. However, as we saw with the `head` command, it contains no attributes of interest!
 
-- `acs5_df_ac`: These are 2018 ACS data from a CSV file ('census_variables_CA.csv'), imported and read in as a plain data.frame. However, they have no geometries!
+- `acs5_df_ac`: These are 2018 ACS data attributes for CA census tracts read in from a CSV file ('census_variables_CA.csv'), into a regular data.frame. However, this data has no geometry column!
 
-In order to map the ACS data we need to associate it with the tracts. Let's do that now, by joining the columns from `acs5_df_ac` to the columns of `tracts_gdf_ac` using a common column as the key for matching rows. This process is called an **attribute join**.
-
-
-
-
+In order to map the ACS data we need to associate it with the tracts.  We can do that by `joining` the columns from `acs5_df_ac` to the columns of `tracts_gdf_ac` using a common column as the key for matching rows. This process is called an **attribute join**.
 
 
 
@@ -209,6 +212,29 @@ Let's do a `left` join to keep all of the census tracts in Alameda County and on
 ```{r}
 # Left join keeps all tracts and the acs data for those tracts
 tracts_acs_sf_ac = base::merge(tracts_sf_ac, acs5_df_ac, by.x = 'GEOID', by.y = "FIPS_11_digit", all.x=TRUE)
+
+# what is the class of the  output data object
+class(tracts_acs_sf_ac)
+```
+
+*What is the class of the output if you join the tracts to the ACS data (i.e reverse the order of the inputs)?*
+
+```{r}
+acs_and_tracts_ac = base::merge(acs5_df_ac, tracts_sf_ac, by.y = 'GEOID', by.x = "FIPS_11_digit", all.x=TRUE)
+class(acs_and_tracts_ac)
+```
+
+> ORDER MATTERS with `base::merge`
+
+- If you use `base::merge` to join a dataframe to an spatial dataframe the output is a spatial df.
+
+- If you use `base::merge` to join a spatial dataframe to a dataframe the output is as dataframe!
+
+
+Take a look at the output
+
+```{r}
+# take a look at the output
 head(tracts_acs_sf_ac)
 ```
 
@@ -226,18 +252,18 @@ In this case, how many rows and columns should we have?
 
 
 ```{r}
-print("Rows and columns in the Alameda County Census tract gdf:")
+print("Rows and columns in the Alameda County Census tract spatial df:")
 print(dim(tracts_sf_ac))
-print("Row and columns in the ACS5 2018 data:")
+print("Row and columns in the ACS5 2018 data for Alameda County:")
 print(dim(acs5_df_ac))
-print("Rows and columns in the Alameda County Census tract gdf joined to the ACS data:")
+print("Rows and columns in the Alameda County Census tract spatial df joined to the ACS data:")
 print(dim(tracts_acs_sf_ac))
 ```
 
 Let's save out our merged data so we can use it in the final notebook.
 
 ```{r}
-st_write(tracts_acs_sf_ac, './outdata/tracts_acs_gdf_ac.json', driver='GeoJSON', delete_dsn=T)
+st_write(tracts_acs_sf_ac, './outdata/tracts_acs_sdf_ac.json', driver='GeoJSON', delete_dsn=T)
 ```
 
 ## Exercise: Choropleth Map
@@ -273,7 +299,7 @@ tm_shape(tracts_acs_sf_ac) +
 -->
 
 
-# 7.2 Spatial Joins
+## 7.2 Spatial Joins
 
 Great! We've wrapped our heads around the concept of an attribute join.
 
@@ -287,7 +313,10 @@ To start, we'll read in some other data: The Alameda County schools data.
 Then we'll work with that data and our `tracts_acs_sf_ac` data together.
 
 ```{r}
+# read in school data from a csv file
 schools_df = read.csv('notebook_data/alco_schools.csv')
+
+# promote to a spatial df
 schools_sf = st_as_sf(schools_df, coords = c('X', 'Y'), crs=4326)
 ```
 
@@ -373,12 +402,19 @@ As a first pass at this possibility, let's overlay the two datasets, coloring ea
 its variable of interest. This should give us a sense of whether or not similar values co-occur.
 
 ```{r}
+
+tmap_mode('view')
+
 tm_shape(tracts_acs_sf_ac) + 
   tm_polygons(col = 'med_hhinc',
-             palette = 'RdPu') + 
+              border.col="white",
+             palette = 'RdYlGn',
+             style="jenks") + 
 tm_shape(schools_sf_api) + 
   tm_dots(col = 'API',
-          palette = 'RdPu',
+          palette = 'RdYlGn',
+          border.col="black",
+          style="jenks",
           size = 0.15)
 ```
 
@@ -396,14 +432,21 @@ We'll first take a look at the documentation for the spatial join function, `st_
 ```
 
 Looks like the key arguments to consider are:
-- the two `sf` data.frames (**`x`** and **`y`**)
-- the type of join to run (**`left`**), which is a left join if `TRUE`, or an inner join if `FALSE`
-- the spatial relationship query to use (**`join`**)
 
-**NOTE**:
-- By default `st_join` is a left join, because `left` defaults to TRUE. 
+- the two `sf` data.frames to be spatially joined (**`x`** and **`y`**)
 
-- By default `st_join` maintains the geometries of the first `sf` data.frame input to the operation (i.e. the geometries of `x`). 
+- the type of join to execute (**`left=`**), which is a left join if `TRUE` (default), or an inner join if `FALSE`
+
+- the spatial relationship query to use in the join (**`join=`**), which by default is `st_intersects`
+
+**NOTES**:
+
+- By default `st_join` is a left join
+
+- By default `st_join` maintains the geometries of the first data.frame input to the operation (i.e. the geometries of `x`).
+
+
+> When spatially joining two `sf` dataframes with `st_join`, the spatial dataframe whose geometry you want to keep should be listed first!
 
 <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
@@ -415,7 +458,10 @@ Looks like the key arguments to consider are:
 Alright! Let's run our join!
 
 ```{r}
-schools_jointracts = st_join(schools_sf_api, tracts_acs_sf_ac, left=T, join=st_within)
+schools_jointracts = st_join(schools_sf_api, tracts_acs_sf_ac)
+
+# We don't need to specify default arguments!
+#schools_jointracts = st_join(schools_sf_api, tracts_acs_sf_ac, left=T, join=st_within)
 ```
 
 ### Checking Our Output
@@ -434,9 +480,9 @@ One way to do that is to introspect the structure of the result object a bit.
 
 
 ```{r}
-print(dim(schools_jointracts))
-print(dim(schools_sf))
-print(dim(tracts_acs_sf_ac))
+print(dim(schools_jointracts))   # the join output
+print(dim(schools_sf_api))       # the input schools
+print(dim(tracts_acs_sf_ac))     # the input tracts
 ```
 
 ```{r}
@@ -444,10 +490,10 @@ head(schools_jointracts)
 ```
 
 Confirmed! The output of the our `st_join` operation is an `sf` data.frame (`schools_jointracts`) with:
+
 - a row for each school that is located inside a census tract (all of them are)
 - the **point geometry** of that school
-- all of the attribute data columns (non-geometry columns) from both input `sf` data.frames
-
+- all of the attribute data columns (non-geometry columns) from **both** input `sf` data.frames
 
 
 Let's also take a look at an overlay map of the schools on the tracts.
@@ -478,91 +524,112 @@ there's a pretty obvious, strong, and positive correlation
 between median household income in a school's tract
 and the school's API.
 
-# 7.3: Aggregation
+### Spatial Join Revisited
+
+#### Keep it simple
+
+Instead of joining everything in the ACS data to the schools
+you can just pick one var!
+
+```{r}
+#simple spatial join
+schools_jointracts2 = st_join(schools_sf_api, tracts_acs_sf_ac['med_hhinc'])
+head(schools_jointracts2)
+```
+
+
+## 7.3: Aggregation
 
 We just saw that a spatial join in one way to leverage the spatial relationship
-between two datasets in order to create a new, synthetic dataset.
+between two datasets in order to create a new, composite dataset.
 
 An **aggregation** is another way we can generate new data from this relationship.
 In this case, for each feature in one dataset we find all the features in another
 dataset that satisfy our chosen spatial relationship query with it (e.g. within, intersects),
-then aggregate them using some summary function (e.g. count, mean).
+then aggregate one or more of the joined output variables using some summary function (e.g. count, mean).
 
+### Calculating the Mean API within each Census Tract
 
-
-
-### Getting the Aggregated School Counts
-
-Let's take this for a spin with our data. We'll count all the schools within each census tract.
-
-We could do this using an aspatial group-by operation on the GEOID column of the new, spatially joined dataset that we just made. However, since we're in a geospatial workshop let's use a spatial aggregation instead!
-
-(Also, to get the correct count, lets use all our schools, not just those with APIs > 0.)
+In our spatial join exercise the output suggested that API scores are related to median household income. However, many census tracts have more than one school. So, a mean API score per census tract would be a better way to explore this relationship. Let's use a spatial data aggregation to calculate that value.
 
 ```{r}
-schools_for_count = schools_sf['geometry']
-schools_for_count$count = 1
-schools_countsbytract = sf:::aggregate.sf(x=schools_for_count, by=tracts_acs_sf_ac, FUN=sum)
+tracts_meanAPI = sf:::aggregate.sf(x=schools_sf_api['API'], by=tracts_acs_sf_ac, FUN=mean)
+head(tracts_meanAPI)
 ```
 
-Let's see what we got out.
+Let's plot the results
 
 ```{r}
-print("Counts, rows and columns:")
-print(dim(schools_countsbytract))
-print("Tracts, rows and columns:")
-print(dim(tracts_acs_sf_ac))
-
-# take a look at the data
-head(schools_countsbytract)
+# plot the tracts, coloring them by *mean* API
+tm_shape(tracts_acs_sf_ac) + 
+  tm_polygons(col = 'med_hhinc',
+              border.col='white',
+             palette = 'RdYlGn',
+             style = 'jenks',
+             title = 'Median HHInc by Tract') + 
+  
+# Now plot the tracts as points, colored by med HHI
+tm_shape(tracts_meanAPI) + 
+  tm_dots(col='API',
+          border.col='black',
+          palette='RdYlGn',
+          style='jenks',
+          size=0.1,
+          title='Mean API by Tract')
 ```
 
-<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
-
-1. Above we selected the geometry column, added a column of 1s, then aggregated. Why?
-1. What explains the dimensions of the new object (361, 2)?
-
-
-### Mapping our Spatial Join Output
-
-As a sanity-check, we can now map the school counts for all census tracts.
+# Now let's join our spatially aggregated API Mean back to the census tract sf dataframe `tracts_acs_sf_ac` so that we can create a scatter plot of the data.
 
 ```{r}
-tm_shape(schools_countsbytract) + 
-  tm_polygons(col='count') + 
-tm_shape(schools_sf) + 
-  tm_dots(col='black', alpha=0.75, size=0.1)
+#simple spatial join of one var
+# first rename the col before the join bc alread have an API col
+colnames(tracts_meanAPI) <- c('mean_API','geometry')
+tracts_acs_sf_ac2 = st_join(tracts_acs_sf_ac, tracts_meanAPI['mean_API'])
+
+plot(tracts_acs_sf_ac2$med_hhinc, tracts_acs_sf_ac2$mean_API,
+     xlab = 'median household income ($)',
+     ylab = 'Mean API')
+
 ```
 
+### Exercise: Spatial Joins and Aggregations
 
-# Exercise: Aggregation
+##### Getting the Aggregated School Counts
 
-#### What is the mean API of each census tract?
+In this exercise, you will practice spatial aggregation and spatial joins.
 
-As we mentioned, the spatial aggregation workflow that we just put together above
-could have been used not to generate a new count variable, but also
-to generate any other new variable the results from calling an aggregation function
-on an attribute column.
+1. Aggregate the number of schools (`schools_sf`) within each census tract with the `sum` function.
+2. Join the count back to the Alameda County census tract data frame `tracts_acs_sf_ac2`
 
-In this case, we want to calculate and map the mean API of the schools in each census tract.
-
-Copy and paste code from above where useful, then tweak and/or add to that code such that your new code:
-
-1. joins the schools onto the tracts (**HINT**: make sure to decide whether or not you want to include schools with API = 0!)
-2. dissolves that joined object by the tract IDs, giving you a new GeoDataFrame with each tract's mean API (**HINT**: because this is now a different calculation, different problems may arise and need handling!)
-3. plots the tracts, colored by API scores (**HINT**: overlay the schools points again, visualizing them in a way that will help you visually check your results!)
-
-To see the solution, look at the hidden text below.
+**Note**: to make this easier, we will add a dummy variable "count" to the schools data and set it to 1.
 
 ```{r}
-# YOUR CODE HERE:
-
-
-
-
-
-
+schools_sf$school_count = 1  # Add a new variable
+head(schools_sf)# Take a look
 ```
+
+#### Your code here!
+
+```{r}
+# YOUR CODE HERE
+
+# Aggregate the number of schools (`schools_sf`) within each census tract with the `sum` function
+# And save to a new sf dataframe called `school_counts_by_tract`
+school_counts_by_tract = sf:::aggregate.sf(x=schools_sf['school_count'], by=tracts_acs_sf_ac, FUN=sum)
+
+# Take a look
+head(school_counts_by_tract)
+
+# Join the count back to the Alameda County census tract data frame `tracts_acs_sf_ac2`
+tracts_acs_sf_ac2 = st_join(tracts_acs_sf_ac2, school_counts_by_tract['school_count'])
+
+# Take a look at the output
+head(tracts_acs_sf_ac2)
+
+# map the output with plot
+plot(tracts_acs_sf_ac2['school_count'])
+```
+
 
 ## Solution hidden here!
 
@@ -570,22 +637,21 @@ To see the solution, look at the hidden text below.
 
 # SOLUTION:
 
+# Aggregate the number of schools (`schools_sf`) within each census tract with the `sum` function
+# And save to a new sf dataframe called `school_counts_by_tract`
+school_counts_by_tract = sf:::aggregate.sf(x=schools_sf['school_count'], by=tracts_acs_sf_ac, FUN=sum)
 
-tracts_meanAPI = sf:::aggregate.sf(x=schools_sf_api['API'], by=tracts_acs_sf_ac, FUN=mean)
+# Take a look
+head(school_counts_by_tract)
 
-# plot the tracts, coloring them by mean API
-tm_shape(tracts_meanAPI) + 
-  tm_polygons(col = 'API',
-             palette = 'RdYlGn',
-             style = 'equal',
-             border.col = 'grey',
-             title = 'mean API (tracts)') + 
-tm_shape(schools_sf_api) + 
-  tm_dots(col='API',
-          palette='RdYlGn',
-          size=0.1,
-          title='API (schools)')
+# Join the count back to the Alameda County census tract data frame `tracts_acs_sf_ac2`
+tracts_acs_sf_ac2 = st_join(tracts_acs_sf_ac2, school_counts_by_tract['school_count'])
 
+# Take a look at the output
+head(tracts_acs_sf_ac2)
+
+# map the output with plot
+plot(tracts_acs_sf_ac2['school_count'])
 
 -->
 
