@@ -4,7 +4,7 @@ output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
+# knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
 ```
 
 # Lesson 3. Coordinate Reference Systems (CRS) & Map Projections
@@ -40,14 +40,20 @@ Building off of what we learned in the previous lesson, the goal here is to impr
 
 ```{r}
 library(sf)
+library(here)
 ```
 
 ## 3.1 California County shapefile
 Let's go ahead and bring back in our California County shapefile. As before, we can read the file in using `st_read` and plot it straight away.
 
 ```{r}
-counties = st_read('notebook_data/california_counties/CaliforniaCounties.shp')
-plot(counties$geometry, col='lightgrey', border='white')
+counties = st_read(here("notebook_data",
+                        "california_counties", 
+                        "CaliforniaCounties.shp"))
+                   
+plot(counties$geometry, 
+     col = 'lightgrey', 
+     border = 'white')
 ```
 
 Even if we have an awesome map like this, sometimes we want to have more geographical context, or we just want additional information. We're going to try **overlaying** our counties `sf` data.frame with data from a shapefile with USA states.
@@ -58,7 +64,9 @@ We're going to bring in our states data, and let's do the usual operations to st
 
 ```{r}
 # Read in states shapefile
-states = st_read('notebook_data/us_states/us_states.shp')
+states = st_read(here("notebook_data", 
+                      "us_states",
+                      "us_states.shp"))
 ```
 
 ```{r}
@@ -86,9 +94,13 @@ Beyond the 50 states we seem to have American Samoa, Puerto Rico, Guam, Commonwe
 
 ```{r}
 # Define list of non-contiguous states
-non_contiguous_us = c('American Samoa','Puerto Rico','Guam',
+non_contiguous_us = c('American Samoa',
+                      'Puerto Rico',
+                      'Guam',
                       'Commonwealth of the Northern Mariana Islands',
-                      'United States Virgin Islands', 'Alaska','Hawaii')
+                      'United States Virgin Islands', 
+                      'Alaska',
+                      'Hawaii')
 
 # Limit data according to above list
 states_limited = states[!states$STATE %in% non_contiguous_us, ]
@@ -99,10 +111,13 @@ states_limited = states[!states$STATE %in% non_contiguous_us, ]
 plot(states_limited['STATE'])
 ```
 
-To prepare for our mapping overlay, let's make our states a nice, bold color
+To prepare for our mapping overlay, let's make our states a nice, bold color.
 
 ```{r, label='lower48'}
-plot(states_limited$geometry, col='blue', border='red', lwd=5)
+plot(states_limited$geometry, 
+     col='blue', 
+     border='red', 
+     lwd=5)
 ```
 
 ## 3.3 Plot the two together
@@ -423,7 +438,10 @@ To see the solution, look at the hidden text below.
 # SOLUTION
 
 # 1. Bring in the CA places data
-ca_places = st_read('notebook_data/census/Places/cb_2018_06_place_500k.shp')
+ca_places = st_read(here("notebook_data",
+                         "census", 
+                         "Places", 
+                         "cb_2018_06_place_500k.shp"))
 head(ca_places)
 
 # 2. Check the CRS
