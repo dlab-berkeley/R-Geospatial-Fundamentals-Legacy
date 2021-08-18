@@ -189,8 +189,8 @@ pre code {
 <div id="datasets-used" class="section level6">
 <h6>Datasets used</h6>
 <ul>
-<li>‘notebook_data/california_counties/CaliforniaCounties.shp’</li>
-<li>‘notebook_data/census/Places/cb_2018_06_place_500k.zip’</li>
+<li>California county shapefiles with demographic data: ‘notebook_data/california_counties/CaliforniaCounties.shp’</li>
+<li>California places cartographic boundaries for 2019 from the United States Census Bureau: ‘notebook_data/census/Places/cb_2019_06_place_500k.zip’</li>
 </ul>
 </div>
 <div id="expected-time-to-complete" class="section level6">
@@ -224,7 +224,7 @@ pre code {
 </div>
 <div id="load-the-sf-library" class="section level3">
 <h3>Load the <code>sf</code> Library</h3>
-<p>Let’s start by loading the <code>sf</code> library (as well as the <code>here</code> library, which allows us to use relative paths easily).</p>
+<p>Let’s start by loading the <code>sf</code> library (as well as the <code>here</code> library, which provides a <code>here()</code> command that builds file paths from the project directory).</p>
 <pre class="r"><code>library(sf)</code></pre>
 <pre><code>## Linking to GEOS 3.9.0, GDAL 3.2.1, PROJ 7.2.1</code></pre>
 <pre class="r"><code>library(here)</code></pre>
@@ -628,11 +628,7 @@ st_write(alameda_county,
          here(&quot;outdata&quot;, 
               &quot;alameda_county.shp&quot;),
          delete_dsn = T)</code></pre>
-<pre><code>## Warning in CPL_write_ogr(obj, dsn, layer, driver,
-## as.character(dataset_options), : GDAL Error 1: C:/Users/kathe/berkeley_drive/
-## analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.shp
-## does not appear to be a file or directory.</code></pre>
-<pre><code>## Deleting source `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.shp&#39; failed
+<pre><code>## Deleting source `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.shp&#39; using driver `ESRI Shapefile&#39;
 ## Writing layer `alameda_county&#39; to data source 
 ##   `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.shp&#39; using driver `ESRI Shapefile&#39;
 ## Writing 1 features with 58 fields and geometry type Multi Polygon.</code></pre>
@@ -648,7 +644,7 @@ st_write(alameda_county,
          here(&quot;outdata&quot;, 
               &quot;alameda_county.geojson&quot;), 
          delete_dsn = T)</code></pre>
-<pre><code>## Deleting source `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.geojson&#39; failed
+<pre><code>## Deleting source `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.geojson&#39; using driver `GeoJSON&#39;
 ## Writing layer `alameda_county&#39; to data source 
 ##   `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.geojson&#39; using driver `GeoJSON&#39;
 ## Writing 1 features with 58 fields and geometry type Multi Polygon.</code></pre>
@@ -658,7 +654,7 @@ st_write(alameda_county,
               &quot;alameda_county.json&quot;), 
               driver=&quot;GeoJSON&quot;, 
               delete_dsn = T)</code></pre>
-<pre><code>## Deleting source `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.json&#39; failed
+<pre><code>## Deleting source `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.json&#39; using driver `GeoJSON&#39;
 ## Writing layer `alameda_county&#39; to data source 
 ##   `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.json&#39; using driver `GeoJSON&#39;
 ## Writing 1 features with 58 fields and geometry type Multi Polygon.</code></pre>
@@ -669,7 +665,7 @@ st_write(alameda_county,
          here(&quot;outdata&quot;, 
               &quot;alameda_county.gpkg&quot;), 
          delete_dsn = T)</code></pre>
-<pre><code>## Deleting source `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.gpkg&#39; failed
+<pre><code>## Deleting source `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.gpkg&#39; using driver `GPKG&#39;
 ## Writing layer `alameda_county&#39; to data source 
 ##   `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.gpkg&#39; using driver `GPKG&#39;
 ## Writing 1 features with 58 fields and geometry type Multi Polygon.</code></pre>
@@ -682,11 +678,7 @@ st_write(alameda_county,
               &quot;alameda_county.csv&quot;), 
          layer_options=&quot;GEOMETRY=AS_WKT&quot;, 
          delete_dsn = T)</code></pre>
-<pre><code>## Warning in CPL_write_ogr(obj, dsn, layer, driver,
-## as.character(dataset_options), : GDAL Error 1: It seems no file system object
-## called &#39;C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-
-## R-with-sf/outdata/alameda_county.csv&#39; exists.</code></pre>
-<pre><code>## Deleting source `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.csv&#39; failed
+<pre><code>## Deleting source `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.csv&#39; using driver `CSV&#39;
 ## Writing layer `alameda_county&#39; to data source 
 ##   `C:/Users/kathe/berkeley_drive/analyses/dlab/Geospatial-Fundamentals-in-R-with-sf/outdata/alameda_county.csv&#39; using driver `CSV&#39;
 ## options:        GEOMETRY=AS_WKT 
@@ -736,7 +728,7 @@ plot(...)</code></pre>
 <p>Now you’ll get a chance to practice the operations we learned above.</p>
 <p>In the following cell, compose code to:</p>
 <ol style="list-style-type: decimal">
-<li>Read in the California places data (<code>notebook_data/census/Places/cb_2018_06_place_500k.shp</code>)</li>
+<li>Read in the California places data (<code>notebook_data/census/Places/cb_2019_06_place_500k.shp</code>)</li>
 <li>Make a map of the CA Places geometry</li>
 <li>Subset the CA Places data to keep only Berkeley</li>
 <li>Plot Berkeley using base and customize the border and fill colors</li>
@@ -747,12 +739,16 @@ plot(...)</code></pre>
 <pre class="r"><code># YOUR CODE HERE</code></pre>
 <div id="solution-hidden-here" class="section level3">
 <h3>Solution hidden here!</h3>
-<p><em>You can right-click and inspect element in the browser</em></p>
+<p><em>To see it, right-click and select “inspect element” in your browser.</em></p>
 <!--
 # SOLUTION
 
 # 1. Read in the California places data 
-ca_places = st_read('./notebook_data/census/Places/cb_2018_06_place_500k.shp')
+ca_places <- st_read(here("notebook_data",
+                          "census",
+                          "Places",
+                          "cb_2019_06_place_500k.shp"))
+                         
 head(ca_places)
 
 # 2. Make a map of the CA Places geometry

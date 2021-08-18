@@ -26,8 +26,9 @@ In this lesson we'll learn about `sf`, the primary package for working with **ve
 
 ###### Datasets used
 
-- 'notebook_data/california_counties/CaliforniaCounties.shp'
-- 'notebook_data/census/Places/cb_2018_06_place_500k.zip'
+- California county shapefiles with demographic data:
+'notebook_data/california_counties/CaliforniaCounties.shp'
+- California places cartographic boundaries for 2019 from the United States Census Bureau: 'notebook_data/census/Places/cb_2019_06_place_500k.zip'
 
 ###### Expected time to complete
 
@@ -414,15 +415,13 @@ Now you'll get a chance to practice the operations we learned above.
 
 In the following cell, compose code to:
 
-1. Read in the California places data (`notebook_data/census/Places/cb_2018_06_place_500k.shp`)
+1. Read in the California places data (`notebook_data/census/Places/cb_2019_06_place_500k.shp`)
 2. Make a map of the CA Places geometry
 3. Subset the CA Places data to keep only Berkeley
 4. Plot Berkeley using base and customize  the border and fill colors
 5. Map the Berkeley geometry in a bright color over the CA PLaces geometry
 6. Save out Berkeley as a shapefile (`outdata/berkeley_places.shp`)
 
-
-To see the solution, look at the hidden text below.
 
 ```{r}
 # YOUR CODE HERE
@@ -436,13 +435,17 @@ To see the solution, look at the hidden text below.
 
 ### Solution hidden here!
 
-*You can right-click and inspect element in the browser*
+*To see it, right-click and select "inspect element" in your browser.*
 
 <!--
 # SOLUTION
 
 # 1. Read in the California places data 
-ca_places = st_read('./notebook_data/census/Places/cb_2018_06_place_500k.shp')
+ca_places <- st_read(here("notebook_data",
+                          "census",
+                          "Places",
+                          "cb_2019_06_place_500k.shp"))
+                         
 head(ca_places)
 
 # 2. Make a map of the CA Places geometry

@@ -4,7 +4,7 @@ output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
+# knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
 ```
 
 # Lesson 6. Spatial Queries
@@ -25,12 +25,12 @@ Spatial analysis is a process that begins with exploring and mapping a dataset a
     <b>Instructor Notes</b>
 
 - Datasets used
-    - 'notebook_data/census/Tracts/cb_2018_06_tract_500k.zip'
-    - 'notebook_data/census/Places/cb_2018_06_place_500k.shp'
-    - 'notebook_data/protected_areas/CPAD_2020a_Units.shp'
-    - 'notebook_data/alco_schools.csv'
-    - 'notebook_data/transportation/BerkeleyBikeBlvds.geojson'
-    - 'notebook_data/transportation/bart.csv'
+    - California census tract cartographic boundaries for 2019 from the United States Census Bureau: 'notebook_data/census/Tracts/cb_2019_06_tract_500k.zip'
+    - California places cartographic boundaries for 2019 from the United States Census Bureau: 'notebook_data/census/Places/cb_2019_06_place_500k.shp'
+    - California protected areas boundaries and data: 'notebook_data/protected_areas/CPAD_2020a_Units.shp'
+    - Alameda County school locations and data: 'notebook_data/alco_schools.csv'
+    - Berkeley bike boulevards data: 'notebook_data/transportation/BerkeleyBikeBlvds.geojson'
+    - Bay Area Rapid Transit (BART) station locations: 'notebook_data/transportation/bart.csv'
 
 - Expected time to complete
     - Lecture + Questions: 45 minutes
@@ -79,12 +79,17 @@ Load the libraries we will use.
 ```{r, message=F}
 library(sf)
 library(tmap)
+library(here)
 ```
 
 Read in the CA census tracts data and then take a look at its geometry and attributes.
 
 ```{r}
-census_tracts = st_read("notebook_data/census/Tracts/cb_2018_06_tract_500k.shp")
+census_tracts = st_read(here("notebook_data",
+                             "census",
+                             "Tracts",
+                             "cb_2019_06_tract_500k.shp"))
+
 plot(census_tracts$geometry)
 ```
 
@@ -162,14 +167,16 @@ What if we compare areas calculated with our unprojected and projected CRS data?
 
 ```{r}
 # Using format to make for easier to read display
-print(format(st_area(census_tracts_ac)[[1]], big.mark=','))
-print(format(st_area(census_tracts_ac_utm10)[[1]], big.mark=","))
+print(format(st_area(census_tracts_ac)[[1]], big.mark = ','))
+print(format(st_area(census_tracts_ac_utm10)[[1]], big.mark = ","))
 ```
 
 Hmmm... The numbers are a bit different...specifically...
 
 ```{r}
-format((st_area(census_tracts_ac)[[1]] - st_area(census_tracts_ac_utm10)[[1]]),digits=0, big.mark=',')
+format((st_area(census_tracts_ac)[[1]] - st_area(census_tracts_ac_utm10)[[1]]),
+       digits = 0, 
+       big.mark = ',')
 ```
 
 ----------------------------
@@ -200,14 +207,14 @@ We can look up how large Alameda County is to check our work.The county is 739 m
 
 ```{r}
 # Sum the area of all Alameda county Census Tracts dynamically in square miles...
-sum(units::set_units(st_area(census_tracts_ac_utm10),mi^2))
+sum(units::set_units(st_area(census_tracts_ac_utm10), mi^2))
 ```
 
 Calculating the area of all features and adding the output to the dataframe is a useful operation because it allows us to convert count variables like population to densities.
 
 ```{r}
 # Add the area of all Alameda County Census tracts to the data frame
-census_tracts_ac_utm10$area_sqmi <-units::set_units(st_area(census_tracts_ac_utm10), mi^2)
+census_tracts_ac_utm10$area_sqmi <- units::set_units(st_area(census_tracts_ac_utm10), mi^2)
 
 # Check it by summing
 print(sum(census_tracts_ac_utm10$area_sqmi))
@@ -291,15 +298,22 @@ Enough talk. Let's work through some examples.
 First, load the `CA Places` data and select the city of Berkeley and save it to a sf dataframe. 
 
 ```{r}
-places = st_read('notebook_data/census/Places/cb_2018_06_place_500k.shp')
+places = st_read(here("notebook_data",
+                      "census",
+                      "Places",
+                      "cb_2019_06_place_500k.shp"))
+
 berkeley = places[places$NAME=='Berkeley',]
+
 plot(berkeley$geometry)
 ```
 
 Then, load the Alameda County schools data and make it a spatial dataframe.
 
 ```{r}
-schools_df = read.csv('notebook_data/alco_schools.csv')
+schools_df = read.csv(here("notebook_data",
+                           "alco_schools.csv"))
+
 schools_sf = st_as_sf(schools_df, 
                       coords = c('X','Y'),
                       crs = 4326)
@@ -314,7 +328,7 @@ st_crs(schools_sf) == st_crs(berkeley)
 They don't have the same CRS so we need to align them. Let's transform (or reproject) the CRS of both
 of these dataframes to UTM10N, NAD83 (EPSG 26910). This is a commonly used CRS for Northern CA data.
 ```{r}
-# Transform data CRSs...
+# Transform data CRSes
 schools_utm10 <- st_transform(schools_sf, 26910)
 berkeley_utm10 <- st_transform(berkeley, 26910)
 ```
@@ -322,14 +336,14 @@ berkeley_utm10 <- st_transform(berkeley, 26910)
 If you look at the Schools data you will see that it has a `City` column. So we can subset the data by attribute to select the Schools in Berkeley. No need to do a spatial selection.
 
 ```{r}
-berkeley_schools = schools_utm10[schools_utm10$City=='Berkeley',]
+berkeley_schools = schools_utm10[schools_utm10$City == 'Berkeley', ]
 dim(berkeley_schools)
 ```
 
 Confirm the results by plotting the data
 ```{r}
 plot(berkeley_utm10$geometry)
-plot(berkeley_schools$geometry, add=T)
+plot(berkeley_schools$geometry, add = T)
 ```
 
 That looks good and was a relatively simple operation. But what if the schools data didn't have that city column or if only some of the rows had a value in that column. *How can we identify the schools in Berkeley spatially?*
@@ -338,7 +352,7 @@ Here's how!
 
 ```{r}
 # SPATIALLY select only the schools within Berkeley
-berkeley_schools_spatial = schools_utm10[berkeley_utm10, , op=st_intersects]  #NO QUOTES!!!
+berkeley_schools_spatial = schools_utm10[berkeley_utm10, , op = st_intersects]  # NO QUOTES!!!
 ```
 
 **Yes that was it! Take a long look at that simple yet powerful spatial selection syntax.**
@@ -364,7 +378,7 @@ You should interpret that syntax as:
 
 The **op=st_intersects** argument is optional because `st_intersects` is the default spatial selector.
 
-To emphasize this, let's rerun the last command
+To emphasize this, let's rerun the last command.
 
 ```{r}
 # SPATIALLY select only the schools within Berkeley
@@ -390,16 +404,15 @@ dim(berkeley_schools_spatial)
 ```{r}
 # Map the results
 plot(berkeley_utm10$geometry)
-plot(berkeley_schools_spatial$geometry, add=T)
+plot(berkeley_schools_spatial$geometry, add = T)
 ```
 
 Interestingly, we have one more school in Berkeley based on the spatial selection!? Let's take a look.
 
 ```{r}
 plot(berkeley_utm10$geometry)
-plot(berkeley_schools_spatial$geometry, add=T)
-plot(berkeley_schools$geometry,col="red", add=T)
-
+plot(berkeley_schools_spatial$geometry, add = T)
+plot(berkeley_schools$geometry, col="red", add = T)
 ```
 
 Let's use an interactive `tmap` to zoom into the school that was not selected by attribute but was spatially selected.
@@ -409,11 +422,10 @@ tmap_mode('view')
 
 tm_shape(berkeley_utm10) +
   tm_borders() +
-tm_shape(berkeley_schools_spatial) +
- tm_dots(col="black", size=.3) +
- tm_shape(berkeley_schools) +
- tm_dots(col="red", size=.1)
- 
+  tm_shape(berkeley_schools_spatial) +
+  tm_dots(col = "black", size = 0.3) +
+  tm_shape(berkeley_schools) +
+  tm_dots(col = "red", size = 0.1)
 ```
 
 > **IMPORTANT**: The default spatial selection operator is `st_intersects`.  If you want to use any other operator, it must be specified.
@@ -422,12 +434,14 @@ For example, we can use the `st_disjoint` operator to select only those schools 
 
 ```{r}
 # Select all Alameda County Schools NOT in Berkeley with the disjoint operator
-berkeley_schools_disjoint = schools_utm10[berkeley_utm10, , op=st_disjoint]
+berkeley_schools_disjoint = schools_utm10[berkeley_utm10, , op = st_disjoint]
 
 # Plot the result
 plot(berkeley_schools_disjoint$geometry)
-plot(berkeley_utm10, col=NA, border="red", add=T)
-
+plot(berkeley_utm10, 
+     col = NA, 
+     border = "red", 
+     add = T)
 ```
 
 There is no need to memorize these spatial operators (aka predicates)! [Here](https://github.com/rstudio/cheatsheets/blob/master/sf.pdf) is a fantastic `sf` cheatsheet that lists and briefly explains all these common functions (and many more).
@@ -441,11 +455,13 @@ Let's load a new dataset, the CA Protected Areas Database (CPAD), to demonstrate
 
 This dataset contains all of the protected areas (parks and the like) in California.
 
-We will use this data and the Alameda County Census Tract Data that we created earlier to ask "What protected areas are within Alameda County?"
+We will use this data and the Alameda County census tract data that we created earlier to ask, "What protected areas are within Alameda County?"
 
 First load the CPAD data.
 ```{r}
-cpad = st_read('./notebook_data/protected_areas/CPAD_2020a_Units.shp')
+cpad <- st_read(here("notebook_data",
+                     "protected_areas",
+                     "CPAD_2020a_Units.shp"))
 ```
 
 What is the CRS of the CPAD data?
@@ -453,33 +469,33 @@ What is the CRS of the CPAD data?
 Let's transform the data to match `census_tracts_ac_utm10`.
 
 ```{r}
-cpad_utm10 = st_transform(cpad, st_crs(census_tracts_ac_utm10))
+cpad_utm10 <- st_transform(cpad, st_crs(census_tracts_ac_utm10))
 ```
 
-Let's plot the data in so that we know what to expect. CPAD is big so wait for it...
+Let's plot the data in so that we know what to expect. CPAD is big, so wait for it...
 ```{r}
-plot(census_tracts_ac_utm10$geometry, col='grey', border="grey")
-plot(cpad_utm10$geometry, col='green', add=T)
+plot(census_tracts_ac_utm10$geometry, col = 'grey', border = "grey")
+plot(cpad_utm10$geometry, col = 'green', add = T)
 ```
 
 We can see from our map that some of the protected areas are completely within Alameda County, some of them overlap, and some are completely outside of the county. To get both of the "inside" and "overlaps" cases we use the `st_intersects` spatial selection operator, which is the default. Let's check it out.
 
 ```{r}
-cpad_intersects = cpad_utm10[census_tracts_ac_utm10,]  #st_intersects
-cpad_within = cpad_utm10[census_tracts_ac_utm10, , op=st_within] #st_within
-
+cpad_intersects <- cpad_utm10[census_tracts_ac_utm10,]  # st_intersects
+cpad_within <- cpad_utm10[census_tracts_ac_utm10, , op = st_within] # st_within
 ```
 
 We can use `tmap` to explore the difference in the results from `st_intersects` vs `st_within`
 ```{r}
 tmap_mode('view')
 
-tm_shape(census_tracts_ac_utm10)+
-  tm_polygons(col="gray", border.col="grey") +
+tm_shape(census_tracts_ac_utm10) +
+  tm_polygons(col = "gray", 
+              border.col = "grey") +
 tm_shape(cpad_intersects) +
-  tm_borders(col="green") +
+  tm_borders(col = "green") +
 tm_shape(cpad_within) +
-  tm_borders(col='red')
+  tm_borders(col = 'red')
 ```
 
 What you can see from the above, is that by default, `st_intersects` returns the features that intersect but it does not **clip** the features to the boundary of Alameda County. For that, we would need to use a different spatial operation - `st_intersection`.
@@ -487,7 +503,7 @@ What you can see from the above, is that by default, `st_intersects` returns the
 Let's try it!
 
 ```{r}
-cpad_in_ac = st_intersection(cpad_utm10, census_tracts_ac_utm10)
+cpad_in_ac <- st_intersection(cpad_utm10, census_tracts_ac_utm10)
 ```
 
 Great! Now, if we scroll the resulting `sf` object we'll see that 
@@ -507,10 +523,13 @@ Let's also use an overlay plot to check the output geometry.
 
 ```{r}
 tm_shape(census_tracts_ac_utm10) + 
-  tm_polygons(col='gray', border.col='gray') +
+  tm_polygons(col = 'gray', 
+              border.col = 'gray') +
 tm_shape(cpad_in_ac) + 
-  tm_polygons(col = 'ACRES', palette = 'YlGn',
-              border.col = 'black', lwd = 0.4, 
+  tm_polygons(col = 'ACRES', 
+              palette = 'YlGn',
+              border.col = 'black', 
+              lwd = 0.4, 
               alpha = 0.8,
               title =  'Protected areas in Alameda County, colored by area')
 ```
@@ -538,9 +557,12 @@ Then, write your own code to:
 
 ```{r}
 # load the Berkeley boundary
-bart_df = st_read("notebook_data/transportation/bart.csv")
+bart_df = st_read(here("notebook_data",
+                       "transportation",
+                       "bart.csv"))
+
 bart_sf = st_as_sf(bart_df, 
-                   coords = c('lon','lat'),
+                   coords = c('lon', 'lat'),
                    crs = 4326)
   
 # transform to EPSG:26910
@@ -554,7 +576,7 @@ Plot the data together
 
 ```{r}
 plot(bart_utm10$geometry)
-plot(berkeley_utm10$geometry, border='blue', add=T)
+plot(berkeley_utm10$geometry, border = 'blue', add = T)
 ```
 
 #### Your code here!
@@ -572,7 +594,7 @@ Now, in the cell below, `write the code` to spatially select the Berkeley BART s
 
 ### Solution hidden here!
 
-To see the solution, inspect the text hidden below (or look in the `06_Spatial_Queries.Rmd` file,line 519.)
+*To see it, right-click and select "inspect element" in your browser (or look in the `06_Spatial_Queries.Rmd` file, line 599.)*
 
 <!--
 
@@ -615,7 +637,9 @@ Let's read in our bike boulevard data again.
 Then we'll find out which of our Berkeley schools are within a block's distance (200 meters) of the bike boulevards.
 
 ```{r}
-bike_blvds = st_read('notebook_data/transportation/BerkeleyBikeBlvds.geojson')
+bike_blvds <- st_read(here("notebook_data",
+                           "transportation",
+                           "BerkeleyBikeBlvds.geojson"))
 plot(bike_blvds$geometry)
 ```
 
@@ -628,7 +652,7 @@ bike_blvds_utm10 = st_transform(bike_blvds, st_crs(berkeley_utm10))
 Now we can create our 200 meter bike boulevard buffers.
 
 ```{r}
-bike_blvds_buf = st_buffer(bike_blvds_utm10, dist=200)
+bike_blvds_buf = st_buffer(bike_blvds_utm10, dist = 200)
 ```
 
 Now let's overlay everything.
@@ -641,16 +665,16 @@ tm_shape(bike_blvds_buf) +
 tm_shape(bike_blvds_utm10) + 
   tm_lines() + 
 tm_shape(berkeley_schools_spatial) + 
-  tm_dots(col = 'purple', size=0.2)
+  tm_dots(col = 'purple', size = 0.2)
 ```
 
 Great! Looks like we're all ready to run our spatial relationship query to complete the proximity analysis. At this point (pun intended) select the schools that are in within the bike boulevard buffer polygons.
 
 ```{r}
-schools_near_blvds = berkeley_schools_spatial[bike_blvds_buf,]
+schools_near_blvds = berkeley_schools_spatial[bike_blvds_buf, ]
 
 # or
-#schools_near_blvds = berkeley_schools_spatial[bike_blvds_buf, , op='st_within']
+#schools_near_blvds = berkeley_schools_spatial[bike_blvds_buf, , op = 'st_within']
 
 ```
 
@@ -665,17 +689,17 @@ tm_shape(berkeley_utm10) +
 tm_shape(bike_blvds_buf) + 
   tm_polygons(col = 'pink', alpha = 0.5) +
 
-# Add the bike blvd line features  
+# add the bike blvd line features  
 tm_shape(bike_blvds_utm10) + 
   tm_lines() + 
 
-# Add all berkeley schools  
+# add all berkeley schools  
 tm_shape(berkeley_schools_spatial) + 
-  tm_dots(col = 'purple', size=0.2) +
+  tm_dots(col = 'purple', size = 0.2) +
 
-# Add schools near bike blvds in yellow
+# add schools near bike boulevards in yellow
 tm_shape(schools_near_blvds) + 
-  tm_dots(col = 'yellow', size=0.2)
+  tm_dots(col = 'yellow', size = 0.2)
 ```
 
 
@@ -685,7 +709,7 @@ You can use `st_distance` and its companion function `st_nearest_feature` to com
 
 ```{r}
 # Identify the nearest bike boulevard for each school
-nearest = st_nearest_feature(berkeley_schools_spatial,bike_blvds_utm10)
+nearest = st_nearest_feature(berkeley_schools_spatial, bike_blvds_utm10)
 
 # take a look!
 nearest
@@ -694,7 +718,9 @@ nearest
 Then we can calculate the distance between each school and it's nearest bike boulevard.
 
 ```{r}
-st_distance(berkeley_schools_spatial, bike_blvds_utm10[nearest,], by_element=TRUE)
+st_distance(berkeley_schools_spatial, 
+            bike_blvds_utm10[nearest,], 
+            by_element = TRUE)
 ```
 
 ## Exercise: Proximity Analysis
@@ -707,7 +733,7 @@ As a reminder, let's break this into steps:
 
 1. Spatially select the BART stations in Berkeley from the `bart_utm10` dataframe
 2. Buffer your Berkeley BART stations to 1 km (**HINT**: remember your units!)
-2. Spatially select the schools within walking distance to the BERKELEY Bart stations.
+2. Spatially select the schools within walking distance to the Berkeley BART stations.
 3. As always, plot your results for a good visual check!
 
 To see the solution, look at the hidden text below.
@@ -717,15 +743,15 @@ To see the solution, look at the hidden text below.
 ```{r}
 # YOUR CODE HERE:
 
-# Spatially select the Berkeley Bart Stations
-# You may have done this in a previous exercise.
+# spatially select the Berkeley BART stations 
+# # (You may have done this in a previous exercise.)
 
 # buffer the BART stations to 1 km
 
 # spatially select the schools within the buffers
 
-# Map your results with tmap
-# plot the Berkeley boundary (for reference) in lightgrey
+# map your results with tmap
+# # plot the Berkeley boundary (for reference) in lightgrey
 
 # add the BART stations (for reference) to the plot in green
 
@@ -739,49 +765,51 @@ To see the solution, look at the hidden text below.
 
 ### Solution hidden here!
 
+*To see it, right-click and select "inspect element" in your browser (or look in the `06_Spatial_Queries.Rmd` file, line 770.)*
+
 <!--
 
 # SOLUTION
 
-# Spatially subset to select the Berkeley Bart Stations
-berkeley_bart = bart_utm10[berkeley_utm10,]
+# spatially subset to select the Berkeley BART stations
+berkeley_bart <- bart_utm10[berkeley_utm10,]
 
-# Buffer your Berkeley BART stations to 1 km (**HINT**: remember your units!)
-bart_buf = st_buffer(berkeley_bart, 1000)
+# buffer your Berkeley BART stations to 1 km (**HINT**: remember your units!)
+bart_buf <- st_buffer(berkeley_bart, 1000)
 
-# Spatially select the schools within walking distance to the BERKELEY Bart stations.
-schools_near_bart = schools_utm10[bart_buf,]
+# spatially select the schools within walking distance to the Berkeley BART stations
+schools_near_bart <- schools_utm10[bart_buf,]
 
-#map results with tmap
+# map results with tmap
 
 # plot the Berkeley boundary (for reference)
 tm_shape(berkeley_utm10) + 
-  tm_polygons(col='lightgrey') + 
+  tm_polygons(col = 'lightgrey') + 
   
 # plot the BART stations (for reference)
 tm_shape(berkeley_bart) + 
-  tm_dots(col='green', size=.1) + 
+  tm_dots(col = 'green', size = 0.1) + 
 
 # add the BART buffers (for check)
 tm_shape(bart_buf) + 
-  tm_borders(col='lightgreen') + 
+  tm_borders(col = 'lightgreen') + 
 
 # add all Berkeley schools (for reference)
 tm_shape(berkeley_schools) + 
-  tm_dots(col='black', size=.1) + 
+  tm_dots(col = 'black', size = 0.1) + 
 
 # add the schools near BART (for check)
 tm_shape(schools_near_bart) + 
-  tm_dots(col='yellow', size=0.25)
+  tm_dots(col = 'yellow', size = 0.25)
 
 -->
 
 ### Bonus Exercise
 
-Compute the distance between each Berkeley School and its nearest BART station!
+Compute the distance between each Berkeley school and its nearest BART station!
 
 ```{r}
-#YOUR CODE HERE
+# YOUR CODE HERE:
 
 ```
 ----------------------------------
@@ -793,7 +821,7 @@ Leveraging what we've learned in our earlier lessons, we got to work with map ov
 	- `st_area`, 
 	- `st_length`
 	- `st_distance`
-- Spatial Relationship Queries
+- Spatial relationship queries
 	- `st_intersects`, 
 	- `st_intersection`
 	- `st_within`, etc.
@@ -812,6 +840,3 @@ Leveraging what we've learned in our earlier lessons, we got to work with map ov
 <div>&nbsp;Team Geo<div>
 </div>
         
-
-
-

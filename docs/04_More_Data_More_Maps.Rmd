@@ -26,10 +26,10 @@ Now that we know how to pull in data, check and transform Coordinate Reference S
     <b>Instructor Notes</b>
 
 - Datasets used
-    - 'notebook_data/california_counties/CaliforniaCounties.shp'
-    - 'notebook_data/census/Places/cb_2018_06_place_500k.shp'
-    - 'notebook_data/transportation/BerkeleyBikeBlvds.geojson'
-    - 'notebook_data/alco_schools.csv'
+    - California county shapefiles with demographic data: 'notebook_data/california_counties/CaliforniaCounties.shp'
+    - California places cartographic boundaries for 2019 from the United States Census Bureau: 'notebook_data/census/Places/cb_2019_06_place_500k.shp'
+    - Berkeley bike boulevards data: 'notebook_data/transportation/BerkeleyBikeBlvds.geojson'
+    - Alameda County school locations and data: 'notebook_data/alco_schools.csv'
 
 - Expected time to complete
     - Lecture + Questions: 30 minutes
@@ -54,7 +54,7 @@ counties = st_read(here("notebook_data",
 ca_places = st_read(here("notebook_data",
                          "census",
                          "Places",
-                         "cb_2018_06_place_500k.shp"))
+                         "cb_2019_06_place_500k.shp"))
 ```
 
 ## Mapping `sf` objects
@@ -409,8 +409,6 @@ In the code cell provided below, write code to:
 2. Create a static tmap with the Berkeley boundary, the Berkeley Bike Boulevards, and the Alameda County Schools, subset to the city of Berkeley.
 3. Repeat the above as an interactive `tmap`.
 
-To see the solution, look at the hidden text below.
-
 ```{r}
 # YOUR CODE HERE:
 
@@ -423,6 +421,8 @@ To see the solution, look at the hidden text below.
 ```
 
 ## Solution hidden here!
+
+*To see it, right-click and select "inspect element" in your browser (or look in the `04_More_Data_More_Maps.Rmd` file near line 427.)*
 
 <!--
 
