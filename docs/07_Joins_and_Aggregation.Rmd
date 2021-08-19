@@ -306,7 +306,7 @@ head(tracts_acs_sf_ac)
 
 ## Solution hidden here!
 
-*To see it, right-click and select "inspect element" in your browser (or look in the `07_Joins_and_Aggregations.Rmd` file near line 311.)*
+*To see it, right-click and select "inspect element" in your browser (or look in the `07_Joins_and_Aggregations.Rmd` file near line 311).*
 
 <!--
 

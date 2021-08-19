@@ -410,7 +410,7 @@ In the code cell provided below, write code to:
 3. Repeat the above as an interactive `tmap`.
 
 ```{r}
-# YOUR CODE HERE:
+# YOUR CODE HERE
 
 
 
@@ -422,7 +422,7 @@ In the code cell provided below, write code to:
 
 ## Solution hidden here!
 
-*To see it, right-click and select "inspect element" in your browser (or look in the `04_More_Data_More_Maps.Rmd` file near line 427.)*
+*To see it, right-click and select "inspect element" in your browser (or look in the `04_More_Data_More_Maps.Rmd` file near line 427).*
 
 <!--
 

@@ -594,7 +594,7 @@ Now, in the cell below, `write the code` to spatially select the Berkeley BART s
 
 ### Solution hidden here!
 
-*To see it, right-click and select "inspect element" in your browser (or look in the `06_Spatial_Queries.Rmd` file, line 599.)*
+*To see it, right-click and select "inspect element" in your browser (or look in the `06_Spatial_Queries.Rmd` file, line 599).*
 
 <!--
 
@@ -765,7 +765,7 @@ To see the solution, look at the hidden text below.
 
 ### Solution hidden here!
 
-*To see it, right-click and select "inspect element" in your browser (or look in the `06_Spatial_Queries.Rmd` file, line 770.)*
+*To see it, right-click and select "inspect element" in your browser (or look in the `06_Spatial_Queries.Rmd` file, line 770).*
 
 <!--
 

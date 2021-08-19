@@ -435,7 +435,7 @@ In the following cell, compose code to:
 
 ### Solution hidden here!
 
-*To see it, right-click and select "inspect element" in your browser.*
+*To see it, right-click and select "inspect element" in your browser (or look in the `04_Introduction_to_sf.Rmd` file near line 440).*
 
 <!--
 # SOLUTION

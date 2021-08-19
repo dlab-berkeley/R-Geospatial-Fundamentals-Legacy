@@ -429,7 +429,7 @@ Now it's time to take a crack and managing the CRS of a new dataset. In the code
 
 ## Solution hidden here!
 
-*To see it, right-click and select "inspect element" in your browser.*
+*To see it, right-click and select "inspect element" in your browser (or look in the `04_CRS_Map_Projections.Rmd` file near line 434).*
 
 <!--
 
