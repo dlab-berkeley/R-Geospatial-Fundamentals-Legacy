@@ -34,8 +34,8 @@ Thus, we'll start by developing an understanding of this operation first!
     <b>Instructor Notes</b>
 
 - Datasets used
-    - American Community Survey data from the United States Census Bureau ('notebook_data/census/ACS5yr/census_variables_CA.csv')
-    - California census tract cartographic boundaries for 2013 from the United States Census Bureau ('notebook_data/census/Tracts/cb_2013_06_tract_500k.zip')
+    - American Community Survey data from the United States Census Bureau ('notebook_data/census/ACS5yr/census_variables_CA_2018.csv')
+    - California census tract cartographic boundaries for 2018 from the United States Census Bureau ('notebook_data/census/Tracts/cb_2018_06_tract_500k.zip')
     - Alameda County school locations and data ('notebook_data/alco_schools.csv')
     
 - Expected time to complete
@@ -59,7 +59,7 @@ Let's read in a table of data from the US Census' 5-year American Community Surv
 acs5_df <- read.csv(here("notebook_data",
                          "census",
                          "ACS5yr",
-                         "census_variables_CA.csv"))
+                         "census_variables_CA_2018.csv"))
 
 head(acs5_df)
 ```
@@ -164,7 +164,7 @@ plot(tracts_sf_ac$geometry)
 
 - `tracts_sf_ac`: These are polygon data in this `sf` data.frame. However, as we saw with the `head` command, it contains no attributes of interest!
 
-- `acs5_df_ac`: These are 2018 ACS data attributes for CA census tracts read in from a CSV file ('census_variables_CA.csv'), into a regular data.frame. However, this data has no geometry column!
+- `acs5_df_ac`: These are 2018 ACS data attributes for CA census tracts read in from a CSV file ('census_variables_CA_2018.csv'), into a regular data.frame. However, this data has no geometry column!
 
 In order to map the ACS data we need to associate it with the tracts.  We can do that by `joining` the columns from `acs5_df_ac` to the columns of `tracts_gdf_ac` using a common column as the key for matching rows. This process is called an **attribute join**.
 
@@ -667,7 +667,7 @@ plot(tracts_acs_sf_ac2['school_count'])
 
 ## Solution hidden here!
 
-*To see it, right-click and select "inspect element" in your browser (or look in the `07_Joins_and_Aggregation.Rmd` file around line 670.)*
+*To see it, right-click and select "inspect element" in your browser (or look in the `07_Joins_and_Aggregation.Rmd` file around line 670).*
 
 <!--
 

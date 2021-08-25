@@ -26,9 +26,8 @@ In this lesson we'll learn about `sf`, the primary package for working with **ve
 
 ###### Datasets used
 
-- California county shapefiles with demographic data:
-'notebook_data/california_counties/CaliforniaCounties.shp'
-- California places cartographic boundaries for 2019 from the United States Census Bureau: 'notebook_data/census/Places/cb_2019_06_place_500k.zip'
+- California county shapefiles with demographic data ('notebook_data/california_counties/CaliforniaCounties.shp')
+- California places cartographic boundaries for 2019 from the United States Census Bureau ('notebook_data/census/Places/cb_2019_06_place_500k.zip')
 
 ###### Expected time to complete
 

@@ -26,10 +26,10 @@ Now that we know how to pull in data, check and transform Coordinate Reference S
     <b>Instructor Notes</b>
 
 - Datasets used
-    - California county shapefiles with demographic data: 'notebook_data/california_counties/CaliforniaCounties.shp'
-    - California places cartographic boundaries for 2019 from the United States Census Bureau: 'notebook_data/census/Places/cb_2019_06_place_500k.shp'
-    - Berkeley bike boulevards data: 'notebook_data/transportation/BerkeleyBikeBlvds.geojson'
-    - Alameda County school locations and data: 'notebook_data/alco_schools.csv'
+    - California county shapefiles with demographic data ('notebook_data/california_counties/CaliforniaCounties.shp')
+    - California places cartographic boundaries for 2019 from the United States Census Bureau ('notebook_data/census/Places/cb_2019_06_place_500k.shp')
+    - Berkeley bike boulevards data ('notebook_data/transportation/BerkeleyBikeBlvds.geojson')
+    - Alameda County school locations and data ('notebook_data/alco_schools.csv')
 
 - Expected time to complete
     - Lecture + Questions: 30 minutes

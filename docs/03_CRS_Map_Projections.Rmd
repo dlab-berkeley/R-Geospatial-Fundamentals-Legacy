@@ -27,9 +27,9 @@ Building off of what we learned in the previous lesson, the goal here is to impr
     <b>Instructor Notes</b>
 
 - Datasets used
-    - California county shapefiles with demographic data: ‘notebook_data/california_counties/CaliforniaCounties.shp’
-    - United States state shapefiles: ‘notebook_data/us_states/us_states.shp’
-    - California places cartographic boundaries for 2019 from the United States Census Bureau: ‘notebook_data/census/Places/cb_2019_06_place_500k.zip’
+    - California county shapefiles with demographic data (‘notebook_data/california_counties/CaliforniaCounties.shp’)
+    - United States state shapefiles (‘notebook_data/us_states/us_states.shp’)
+    - California places cartographic boundaries for 2019 from the United States Census Bureau (‘notebook_data/census/Places/cb_2019_06_place_500k.zip’)
 
 - Expected time to complete
     - Lecture + Questions: 45 minutes

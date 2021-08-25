@@ -51,8 +51,8 @@ content.**
     <b>Instructor Notes</b>
 
 - Datasets used
-    - American Community Survey and census tract data from the United States Census Bureau: 'outdata/tracts_acs_sdf_ac.json'
-    - Grocery store data: 'notebook_data/other/ca_grocery_stores_2019_wgs84.csv'
+    - American Community Survey and census tract data from the United States Census Bureau ('outdata/tracts_acs_sdf_ac.json')
+    - Grocery store data ('notebook_data/other/ca_grocery_stores_2019_wgs84.csv')
 
 - Expected time to complete
     - Lecture + Questions: N/A
@@ -276,7 +276,7 @@ final_map +
 
 ***
 
-# Congrats!! Thanks for Joining Us for Geospatial Fundamentals!!
+# Congrats! Thanks for joining us for for Geospatial Fundamentals!
 
 <img src="https://statmodeling.stat.columbia.edu/wp-content/uploads/2016/07/cat-globe.png">
 
