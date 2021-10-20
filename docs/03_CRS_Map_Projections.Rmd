@@ -4,7 +4,7 @@ output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
+# knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
 ```
 
 # Lesson 3. Coordinate Reference Systems (CRS) & Map Projections
@@ -27,9 +27,9 @@ Building off of what we learned in the previous lesson, the goal here is to impr
     <b>Instructor Notes</b>
 
 - Datasets used
-    - ‘notebook_data/california_counties/CaliforniaCounties.shp’
-    - ‘notebook_data/us_states/us_states.shp’
-    - ‘notebook_data/census/Places/cb_2018_06_place_500k.zip’
+    - California county shapefiles with demographic data (‘notebook_data/california_counties/CaliforniaCounties.shp’)
+    - United States state shapefiles (‘notebook_data/us_states/us_states.shp’)
+    - California places cartographic boundaries for 2019 from the United States Census Bureau (‘notebook_data/census/Places/cb_2019_06_place_500k.zip’)
 
 - Expected time to complete
     - Lecture + Questions: 45 minutes
@@ -40,14 +40,20 @@ Building off of what we learned in the previous lesson, the goal here is to impr
 
 ```{r}
 library(sf)
+library(here)
 ```
 
 ## 3.1 California County shapefile
 Let's go ahead and bring back in our California County shapefile. As before, we can read the file in using `st_read` and plot it straight away.
 
 ```{r}
-counties = st_read('notebook_data/california_counties/CaliforniaCounties.shp')
-plot(counties$geometry, col='lightgrey', border='white')
+counties = st_read(here("notebook_data",
+                        "california_counties", 
+                        "CaliforniaCounties.shp"))
+                   
+plot(counties$geometry, 
+     col = 'lightgrey', 
+     border = 'white')
 ```
 
 Even if we have an awesome map like this, sometimes we want to have more geographical context, or we just want additional information. We're going to try **overlaying** our counties `sf` data.frame with data from a shapefile with USA states.
@@ -58,7 +64,9 @@ We're going to bring in our states data, and let's do the usual operations to st
 
 ```{r}
 # Read in states shapefile
-states = st_read('notebook_data/us_states/us_states.shp')
+states = st_read(here("notebook_data", 
+                      "us_states",
+                      "us_states.shp"))
 ```
 
 ```{r}
@@ -86,9 +94,13 @@ Beyond the 50 states we seem to have American Samoa, Puerto Rico, Guam, Commonwe
 
 ```{r}
 # Define list of non-contiguous states
-non_contiguous_us = c('American Samoa','Puerto Rico','Guam',
+non_contiguous_us = c('American Samoa',
+                      'Puerto Rico',
+                      'Guam',
                       'Commonwealth of the Northern Mariana Islands',
-                      'United States Virgin Islands', 'Alaska','Hawaii')
+                      'United States Virgin Islands', 
+                      'Alaska',
+                      'Hawaii')
 
 # Limit data according to above list
 states_limited = states[!states$STATE %in% non_contiguous_us, ]
@@ -99,10 +111,13 @@ states_limited = states[!states$STATE %in% non_contiguous_us, ]
 plot(states_limited['STATE'])
 ```
 
-To prepare for our mapping overlay, let's make our states a nice, bold color
+To prepare for our mapping overlay, let's make our states a nice, bold color.
 
 ```{r, label='lower48'}
-plot(states_limited$geometry, col='blue', border='red', lwd=5)
+plot(states_limited$geometry, 
+     col = 'blue', 
+     border = 'red', 
+     lwd = 5)
 ```
 
 ## 3.3 Plot the two together
@@ -112,8 +127,8 @@ Now that we have both geodataframes in our environment, we can plot both in the 
 > Once we've created a plot (using base R's `plot` function), we can add more layers to it by calling subsequent `plot` commands and adding the argument `add=T`.
 
 ```{r, label='overlay1'}
-plot(counties$geometry, col='lightgrey', border='white')
-plot(states_limited$geometry, col='blue', border='red',lwd=5, add=T)
+plot(counties$geometry, col = 'lightgrey', border = 'white')
+plot(states_limited$geometry, col = 'blue', border = 'red', lwd = 5, add = T)
 ```
 
 Oh no, what happened here? Where's our CA data? What's going on?
@@ -298,7 +313,7 @@ You can transform the CRS of a geodataframe with the `st_transform` function. Th
 Let's transform the states data to Web Mercator (3857), giving the output dataframe a name that will make tje CRS obvious to us. This can be very helpful when working with multiple copies of a spatial dataframe.
 ```{r}
 # Convert the states data to Web Mercator
-states_limited_3857 = st_transform(states_limited, crs=3857)
+states_limited_3857 = st_transform(states_limited, crs = 3857)
 ```
 
 Now take a look at the CRS.
@@ -313,10 +328,10 @@ You can see the result immediately by plotting the data.
 par(mfrow=c(1,2))
 
 # plot geographic sf data.frame
-plot(states_limited$geometry, asp=1)
+plot(states_limited$geometry, asp = 1)
 
 # plot utm sf data.frame
-plot(states_limited_3857$geometry, asp=1)
+plot(states_limited_3857$geometry, asp = 1)
 ```
 
 <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
@@ -355,7 +370,7 @@ Overlay...
 ```{r}
 # Plot it together!
 plot(states_limited_3857$geometry, col = 'lightgrey')
-plot(counties_3857$geometry, col='darkgreen', add=T)
+plot(counties_3857$geometry, col='darkgreen', add = T)
 ```
 
 <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question** The original counties data had the CRS CAL Albers (3310). Would it make sense to transform the states_limited to that CRS for mapping these two datasets?
@@ -372,7 +387,7 @@ counties_5070 = st_transform(counties, st_crs())
 Now make an overlay map!
 ```{r, eval=F}
 plot(states_limited_5070$geometry, col = 'lightgrey')
-plot(counties_5070$geometry, col = 'darkgreen', add=T)
+plot(counties_5070$geometry, col = 'darkgreen', add = T)
 ```
 
 What would you use for your map? Web Mercator (3857) or USA Conus (5070)?
@@ -382,29 +397,25 @@ What would you use for your map? Web Mercator (3857) or USA Conus (5070)?
 
 In this lesson we learned about...
 
-- Coordinate Reference Systems 
+- Coordinate Reference Systems (CRSes)
 
-- Getting the CRS of a geodataframe
-    - `st_crs(<sf dataframe>)`
+- Getting the CRS of a geodataframe: `st_crs(<sf dataframe>)`
     
-- Setting (or defining) the CRS
-    - `st_crs(<sf dataframe>, <crs>)`
+- Setting (or defining) the CRS: `st_crs(<sf dataframe>, <crs>)`
     
-- Transforming, or repojecting, the CRS
-    - `st_transform(<sf dataframe>, <crs>)`
-    
+- Transforming, or repojecting, the CRS: `st_transform(<sf dataframe>, <crs>)`
+
 - Overlaying maps practice
+
 
 ## Exercise: CRS Management
 
 Now it's time to take a crack and managing the CRS of a new dataset. In the code cell below, write code to:
 
-1. Bring in the CA places data (`notebook_data/census/Places/cb_2018_06_place_500k.zip`)
+1. Bring in the CA places data (`notebook_data/census/Places/cb_2019_06_place_500k.zip`)
 2. Check if the CRS of the data 
 3. Transform the CRS to 3310
 3. Plot the California counties and CA places together.
-
-To see the solution, look at the hidden text below.
 
 ```{r}
 # YOUR CODE HERE
@@ -418,12 +429,17 @@ To see the solution, look at the hidden text below.
 
 ## Solution hidden here!
 
+*To see it, right-click and select "inspect element" in your browser (or look in the `04_CRS_Map_Projections.Rmd` file near line 434).*
+
 <!--
 
 # SOLUTION
 
 # 1. Bring in the CA places data
-ca_places = st_read('notebook_data/census/Places/cb_2018_06_place_500k.shp')
+ca_places = st_read(here("notebook_data",
+                         "census", 
+                         "Places", 
+                         "cb_2019_06_place_500k.shp"))
 head(ca_places)
 
 # 2. Check the CRS

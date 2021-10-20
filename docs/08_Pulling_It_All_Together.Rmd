@@ -4,7 +4,7 @@ output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
+# knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
 ```
 
 # 08. Pulling it all Together
@@ -20,8 +20,8 @@ Here's a set of steps that we will implement in the labeled cells below:
 
 <u> 8.1 Read in and Prep Data</u>
 
-- Read in the tracts ACS joined data (created in Lesson 7)
-- Read in a CSV file of grocery store data into a standard R data.frame (it lives at `'notebook_data/other/ca_grocery_stores_2019_wgs84.csv`)
+- Read in the American Community Survey census tract joined data (created in Lesson 7)
+- Read in a comma-separated-value (CSV) file of grocery store data into a standard R data.frame (it lives at `'notebook_data/other/ca_grocery_stores_2019_wgs84.csv`)
 - Promote the grocery store dataframe to an `sf` data.frame with the CRS NAD83 (EPSG:4326)
 - Transform the grocery store sf dataframe to match the CRS of the tracts sf dataframe
 - take a peek
@@ -51,8 +51,8 @@ content.**
     <b>Instructor Notes</b>
 
 - Datasets used
-    - 'outdata/tracts_acs_sdf_ac.json'
-    - 'notebook_data/other/ca_grocery_stores_2019_wgs84.csv'
+    - American Community Survey and census tract data from the United States Census Bureau ('outdata/tracts_acs_sdf_ac.json')
+    - Grocery store data ('notebook_data/other/ca_grocery_stores_2019_wgs84.csv')
 
 - Expected time to complete
     - Lecture + Questions: N/A
@@ -72,6 +72,7 @@ content.**
 ```{r}
 library(sf)
 library(tmap)
+library(here)
 ```
 
 ------------------
@@ -91,27 +92,27 @@ We first need to prepare our data by loading both our tracts/acs and grocery dat
 ```{r,eval=FALSE}
 # read in tracts acs data
 
-tracts_acs_ac = st_read(..)
+tracts_acs_ac <- st_read(...)
 ```
 
 ```{r,eval=FALSE}
 # read our grocery-data CSV into a plain data.frame
 
-grocery_pts_df = read.csv(...)
+grocery_pts_df <- read.csv(...)
 ```
 
 ```{r,eval=FALSE}
 # coerce it to an `sf` data.frame, and define its CRS as 4326
 
-grocery_pts_sf = st_as_sf(grocery_pts_df, 
-                          coords = c(...),
-                          crs = ...)
+grocery_pts_sf <- st_as_sf(grocery_pts_df, 
+                           coords = c(...),
+                           crs = ...)
 ```
 
 ```{r,eval=FALSE}
 # transform it to match the CRS of tracts_acs_ac
 
-grocery_pts_sf = st_transform(..., ...)
+grocery_pts_sf <- st_transform(..., ...)
 ```
 
 ```{r,eval=FALSE}
@@ -121,6 +122,8 @@ head(grocery_pts_sf)
 ```
 
 ## Solution hidden here!
+
+*To see it, right-click and select "inspect element" in your browser (or look in the `08_Pulling_It_All_Together.Rmd` file near line 128).*
 
 <!--
 
@@ -155,13 +158,13 @@ Now that we have our data and they're in the same projection, we're going to *ag
 ```{r,eval=FALSE}
 # join the two datasets in such a way that you can then...
 
-tracts_joingrocery = st_join(..., ..., left = ..., join = ...)
+tracts_joingrocery <- st_join(..., ..., left = ..., join = ...)
 ```
 
 ```{r,eval=FALSE}
 # aggregate groceries by tract and calculate the total sales volume
 
-tracts_totsalesvol = sf:::aggregate.sf(x = ..., by = ..., FUN = ...)
+tracts_totsalesvol <- sf:::aggregate.sf(x = ..., by = ..., FUN = ...)
 ```
 
 ```{r,eval=FALSE}
@@ -214,27 +217,31 @@ With any time of geospatial analysis you do, it's always nice to plot and visual
 
 ```{r,eval=FALSE}
 # plot the tracts, coloring by total SALESVOL
-final_map = tm_shape(tracts_totsalesvol) + 
-  tm_...(col=..., style='quantile',
-         palette='RdYlGn',
-         border.col='darkgrey')
+final_map <- tm_shape(tracts_totsalesvol) + 
+  tm_...(col = ..., 
+         style = 'quantile',
+         palette = 'RdYlGn',
+         border.col = 'darkgrey')
 ```
 
 ```{r,eval=FALSE}
 # subset the stores for only those within our tracts, to keep map within region of interest
 
-grocery_pts_sf_ac = st_intersection(..., ...)
+grocery_pts_sf_ac <- st_intersection(..., ...)
 ```
 
 ```{r,eval=FALSE}
 # add the grocery stores, coloring by SALESVOL, for a visual check
 final_map + 
   tm_shape(grocery_pts_sf_ac) + 
-  tm_...(col = ... , palette = ...,
-         size= ...)
+  tm_...(col = ..., 
+         palette = ...,
+         size = ...)
 ```
 
 ## Solution hidden here!
+
+*To see it, right-click and select "inspect element" in your browser (or look in the `08_Pulling_It_All_Together.Rmd` file near line 246).*
 
 <!--
 
@@ -269,7 +276,7 @@ final_map +
 
 ***
 
-# Congrats!! Thanks for Joining Us for Geospatial Fundamentals!!
+# Congrats! Thanks for joining us for for Geospatial Fundamentals!
 
 <img src="https://statmodeling.stat.columbia.edu/wp-content/uploads/2016/07/cat-globe.png">
 

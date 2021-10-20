@@ -4,7 +4,7 @@ output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
+# knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
 ```
 
 # Lesson 2. Introduction to the `sf` package
@@ -26,8 +26,8 @@ In this lesson we'll learn about `sf`, the primary package for working with **ve
 
 ###### Datasets used
 
-- 'notebook_data/california_counties/CaliforniaCounties.shp'
-- 'notebook_data/census/Places/cb_2018_06_place_500k.zip'
+- California county shapefiles with demographic data ('notebook_data/california_counties/CaliforniaCounties.shp')
+- California places cartographic boundaries for 2019 from the United States Census Bureau ('notebook_data/census/Places/cb_2019_06_place_500k.zip')
 
 ###### Expected time to complete
 
@@ -56,10 +56,11 @@ There are two primary sources on which this workshop is based. I encourage anyon
 
 ### Load the `sf` Library
 
-Let's start by loading the `sf` library.
+Let's start by loading the `sf` library (as well as the `here` library, which provides a `here()` command that builds file paths from the project directory).
 
 ```{r, message=T}
 library(sf)
+library(here)
 ```
 
 ## 2.2 Read in a shapefile with `st_read`
@@ -105,7 +106,8 @@ We are going to read in a shapefile with California county data.
 
 First, take a look at the shapefile on your computer using the RStudio `Files` browser or with the R `dir()` command
 ```{r}
-dir("notebook_data/california_counties/")
+dir(path = here("notebook_data", 
+                "california_counties"))
 ```
 
 ### Load the data into R
@@ -113,7 +115,9 @@ dir("notebook_data/california_counties/")
 Now use `st_read` to load the data into R. Take a look at the info st_read gives us about the data.
 ```{r}
 # Read in the counties shapefile
-counties = st_read('notebook_data/california_counties/CaliforniaCounties.shp')
+counties = st_read(dsn = here("notebook_data", 
+                              "california_counties", 
+                              "CaliforniaCounties.shp"))
 ```
 
 ## 2.3 Plotting Spatial Data
@@ -243,7 +247,7 @@ p <- rbind(c(10, 40), c(40, 30), c(20, 20), c(30, 10))
 plot(mp)
 ```
 
-## 2.5 Attribute Operations with `sf` objects
+## 2.5 Attribute Operations with `sf` Objects
 
 To get a better sense of the ways in which a spatial dataframe is like a standard R dataframe, let's practice working with the counties attribute data.
 
@@ -308,17 +312,20 @@ plot(alameda_county$geometry, col='pink', border='green', lwd=3, main='Alameda C
 
 Let's save out our `alameda_county` object. This way we won't need to repeat the processing steps we did above.
 
-## 2.6 Save your Data
+## 2.6 Save Your Data
 
 We can output`sf` objects to files using the **st_write** command. 
 
-`st_write` supports a wide range of output geographic vector file formats. It automattically determines the output file type based on the filename you specify.
+`st_write` supports a wide range of output geographic vector file formats. It automatically determines the output file type based on the filename you specify.
 
 ### Save to a Shapefile
 
 ```{r}
 # Save to shapefile, deleting existing file if present
-st_write(alameda_county, "outdata/alameda_county.shp", delete_dsn = T)
+st_write(alameda_county, 
+         here("outdata", 
+              "alameda_county.shp"),
+         delete_dsn = T)
 ```
 
 One of the problems of saving to a shapefile is that our column names get truncated to 10 characters (a shapefile limitation.) 
@@ -329,22 +336,36 @@ Instead of renaming all columns with obscure names that are less than 10 charact
 
 ### Save to a GeoJSON file
 ```{r}
-st_write(alameda_county, "outdata/alameda_county.geojson", delete_dsn = T)
-#or
-st_write(alameda_county, "outdata/alameda_county.json", driver="GeoJSON", delete_dsn=T)
+st_write(alameda_county, 
+         here("outdata", 
+              "alameda_county.geojson"), 
+         delete_dsn = T)
+# or
+st_write(alameda_county, 
+         here("outdata", 
+              "alameda_county.json"), 
+              driver="GeoJSON", 
+              delete_dsn = T)
 ```
 
-### Save to a [GPKG](https://en.wikipedia.org/wiki/GeoPackage) (geopackage) file.
+### Save to a [GPKG](https://en.wikipedia.org/wiki/GeoPackage) (geopackage) file
 
 ```{r}
-st_write(alameda_county, "outdata/alameda_county.gpkg", delete_dsn=T)
+st_write(alameda_county, 
+         here("outdata", 
+              "alameda_county.gpkg"), 
+         delete_dsn = T)
 ```
 
 ### Save to CSV file
 
 You can even ouput geospatial data to CSV - *check out the resultant file.*
 ```{r}
-st_write(alameda_county, "outdata/alameda_county.csv", layer_options="GEOMETRY=AS_WKT", delete_dsn=T)
+st_write(alameda_county, 
+         here("outdata",
+              "alameda_county.csv"), 
+         layer_options="GEOMETRY=AS_WKT", 
+         delete_dsn = T)
 ```
 
 ### Practice reading in these files
@@ -393,15 +414,13 @@ Now you'll get a chance to practice the operations we learned above.
 
 In the following cell, compose code to:
 
-1. Read in the California places data (`notebook_data/census/Places/cb_2018_06_place_500k.shp`)
+1. Read in the California places data (`notebook_data/census/Places/cb_2019_06_place_500k.shp`)
 2. Make a map of the CA Places geometry
 3. Subset the CA Places data to keep only Berkeley
 4. Plot Berkeley using base and customize  the border and fill colors
 5. Map the Berkeley geometry in a bright color over the CA PLaces geometry
 6. Save out Berkeley as a shapefile (`outdata/berkeley_places.shp`)
 
-
-To see the solution, look at the hidden text below.
 
 ```{r}
 # YOUR CODE HERE
@@ -415,13 +434,17 @@ To see the solution, look at the hidden text below.
 
 ### Solution hidden here!
 
-*You can right-click and inspect element in the browser*
+*To see it, right-click and select "inspect element" in your browser (or look in the `04_Introduction_to_sf.Rmd` file near line 440).*
 
 <!--
 # SOLUTION
 
 # 1. Read in the California places data 
-ca_places = st_read('./notebook_data/census/Places/cb_2018_06_place_500k.shp')
+ca_places <- st_read(here("notebook_data",
+                          "census",
+                          "Places",
+                          "cb_2019_06_place_500k.shp"))
+                         
 head(ca_places)
 
 # 2. Make a map of the CA Places geometry

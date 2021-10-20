@@ -4,14 +4,13 @@ output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
+# knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
 ```
 
 
-# Lesson 5. Data-driven Mapping
+# Lesson 5. Data-Driven Mapping
 
-*Data-driven mapping* refers to the process of using data values to determine the symbology of mapped features. Color, shape, and size are the three most common graphic elements used to symbolize data-driven maps.
-Data-driven maps are often referred to as thematic maps.
+*Data-driven mapping* refers to the process of using data values to determine the symbology of mapped features. Color, shape, and size are the three most common graphic elements used to symbolize data-driven maps. Data-driven maps are often referred to as thematic maps.
 
 
 - 5.1 Choropleth Maps
@@ -28,9 +27,9 @@ Data-driven maps are often referred to as thematic maps.
     <b>Instructor Notes</b>
 
 - Datasets used
-    - 'notebook_data/california_counties/CaliforniaCounties.shp'
-    - 'notebook_data/alco_schools.csv'
-    - 'notebook_data/other/PolicyMap_NCES_Data_20210429.csv'
+    - California county shapefiles with demographic data ('notebook_data/california_counties/CaliforniaCounties.shp')
+    - Alameda County school locations and data ('notebook_data/alco_schools.csv')
+    - National Center for Educational Statistics free and reduced-price lunch data ('notebook_data/other/PolicyMap_NCES_Data_20210429.csv')
     
 - Expected time to complete
     - Lecture + Questions: 40 minutes
@@ -51,6 +50,7 @@ We review both of these types of maps in more detail in this lesson. First, let'
 ```{r, message=F}
 library(sf)
 library(tmap)
+library(here)
 ```
 
 # 5.1 Choropleth Maps
@@ -62,7 +62,9 @@ Let's use an `sf` data.frame of counties data to make a choropleth map.
 First, read in the counties data with the `st_read` function.
 
 ```{r}
-counties = st_read('notebook_data/california_counties/CaliforniaCounties.shp')
+counties <- st_read(here("notebook_data",
+                         "california_counties",
+                         "CaliforniaCounties.shp"))
 ```
 Then, make a map of our counties.
 
@@ -106,7 +108,7 @@ tmap_mode('plot')
 
 # Map the county polygons colored by the values in the POP12_SQMI column
 tm_shape(counties) + 
-  tm_polygons(col='POP12_SQMI',
+  tm_polygons(col = 'POP12_SQMI',
               title = "Population Density per mi^2")
 ```
 
@@ -124,6 +126,8 @@ Let's make an interactive map, making our layer partially transparent, i.e. `alp
 
 ````{r}
 tmap_mode('view')
+
+tmap_options(check.and.fix = TRUE)  # force tmap to display invalid polygons
 
 tm_shape(counties) +
   tm_polygons(col='POP12_SQMI', alpha=0.5,
@@ -168,7 +172,9 @@ There are two major challenges when creating thematic maps:
   - Take a look at the histogram below as you consider the above question.
 
 ```{r}
-hist(counties$POP12_SQMI,breaks=40, main = 'Population Density per mi^2')
+hist(counties$POP12_SQMI,
+     breaks = 40, 
+     main = 'Population Density per mi^2')
 ```
 
 There are three main techniques for dealing with these mapping challenges:
@@ -299,9 +305,9 @@ tmap_mode('plot')
 # Plot population density - mile^2
 tm_shape(counties) + 
   tm_polygons(col = 'POP12_SQMI',
-              style="quantile",
-              alpha=0.5,
-              title="Population Density per mi^2")
+              style = "quantile",
+              alpha = 0.5,
+              title = "Population Density per mi^2")
 ```
 
 ### Practice
@@ -321,9 +327,9 @@ Let's customize our map with a `user-defined` classification scheme where we man
 tm_shape(counties) + 
   tm_polygons(col = 'POP12_SQMI',
               palette = "YlGn", 
-              style='fixed',
+              style = 'fixed',
               breaks = c(0, 50, 100, 200, 300, 400, max(counties$POP12_SQMI)),
-              title = "Population Density per Sq Mile")
+              title = "Population Density per Square Mile")
 ```
 
 Since we are customizing our plot, we can also edit our legend to specify the text, so that it's easier to read.
@@ -366,14 +372,18 @@ tm_shape(counties) +
   tm_polygons(col = 'pct_hispanic',
               palette = 'Blues', 
               style = 'fixed',
-              breaks= c(0,20,40,60,80,100),
+              breaks = c(0, 20, 40, 60, 80, 100),
               border.col = "darkgrey",
               lwd = 1.5,
-              legend.show=F) + 
+              legend.show = F) + 
 tm_add_legend('fill', col = RColorBrewer::brewer.pal(5, "Blues"),
               border.col = "darkgrey",
               title = "Percent Hispanic Population",
-              labels = c('<20%','20% - 40%','40% - 60%','60% - 80%','80% - 100%'))
+              labels = c('<20%',
+                         '20% - 40%',
+                         '40% - 60%',
+                         '60% - 80%',
+                         '80% - 100%'))
 ```
 
 <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
@@ -399,7 +409,7 @@ tmap_mode('plot')
 
 # Add the county polygon borders as a basemap
 tm_shape(counties) + 
-  tm_borders(col="grey") +
+  tm_borders(col = "grey") +
   
 # Then map the county centroids as points colored by population counts
   tm_shape(counties) + 
@@ -408,9 +418,9 @@ tm_shape(counties) +
               style = 'jenks',
               border.col = "black",  # dot borders only visible in interactive mode!
               border.lwd = 1,
-              border.alpha=1,
-              size=.5,
-              legend.show=T) 
+              border.alpha = 1,
+              size = .5,
+              legend.show = T) 
 ```
 
 This is another useful type of data transformation for making effective maps.
@@ -420,16 +430,18 @@ This is another useful type of data transformation for making effective maps.
 Let's read in some data that is more typically encoded with point geometry - Alameda County schools.
 
 ```{r}
-schools_df = read.csv('notebook_data/alco_schools.csv')
+schools_df <- read.csv(here("notebook_data",
+                            "alco_schools.csv"))
+
 head(schools_df)
 ```
 
 We got it from a plain CSV file, let's promote it to an `sf` data.frame.
 
 ```{r}
-schools_sf = st_as_sf(schools_df, 
-                      coords = c('X','Y'),
-                      crs = 4326)
+schools_sf <- st_as_sf(schools_df, 
+                       coords = c('X','Y'),
+                       crs = 4326)
 ```
 
 Then we can map it.
@@ -454,7 +466,7 @@ Let's try creating the same map with tmap.
 ```{r}
 tmap_mode('plot')
 tm_shape(schools_sf) + 
-  tm_dots(col="API")
+  tm_dots(col = "API")
 ```
 
 The basic `tmap` graduated color map needs some customization to shine, especially in plot mode!
@@ -466,57 +478,75 @@ By default, `tmap` uses a yellow-orange-brown (YlOrBr) `sequential color palette
 ```{r}
 # API Graduated Color Map
 tm_shape(schools_sf) +
-  tm_dots(col='API', 
-          size=0.15,
-          palette='Reds', 
-          style='fixed',
-          breaks=c(0, 200, 400, 600, 800, 1000),
-          border.col='grey',
-          legend.show=F) + 
-  
-tm_add_legend('fill', title='Alameda County, school API scores',
-              labels = c('<200', '[200,400)', '[400,600)', '[600,800)', '>800'),
-              col = RColorBrewer::brewer.pal(5, "Reds")) +
-  
-tm_layout(legend.position = c('right','top'))
+  tm_dots(col = 'API', 
+          size = 0.15,
+          palette = 'Reds', 
+          style = 'fixed',
+          breaks = c(0, 200, 400, 600, 800, 1000),
+          border.col = 'grey',
+          legend.show = F) + 
+  tm_add_legend('fill', 
+                title = 'Alameda County, school API scores',
+                labels = c('<200', 
+                           '[200,400)', 
+                           '[400,600)', 
+                           '[600,800)', 
+                           '>800'),
+                col = RColorBrewer::brewer.pal(5, "Reds")) +
+  tm_layout(legend.position = c('right', 'top'))
 ```
 
 ### Proportional Symbol Maps
 
 Another important type of point map is the **proportional symbol map**. These are like proportial color maps but instead of associating symbol color with data values they associate symbol size. You can make these in `tmap` with the **tm_bubbles** function.
 
-The schools data does not contain any good variables for proportional symbol mapping so we will read in a supplemental file of NCES data and join it to the school points.
+The schools data does not contain any good variables for proportional symbol mapping so we will read in a supplemental file of National Center for Educational Statistics (NCES) data and join it to the school points.
 
 ```{r}
-df = read.csv('notebook_data/other/PolicyMap_NCES_Data_20210429.csv')
-#head(df,2)
-df2 = df[c('School.Name','Student.Teacher.Ratio','Free.and.Reduced.price.Lunch.Eligible.Students')]
-colnames(df2) <- c('Site','STRatio','RLunch')
-#head(df2,2)
-schools_sf2 <- merge(schools_sf, df2, by="Site")
-#head(schools_sf2,2)
+df = read.csv(here("notebook_data",
+                   "other",
+                   "PolicyMap_NCES_Data_20210429.csv"))
+
+# head(df,2)
+
+df2 = df[c('School.Name',
+           'Student.Teacher.Ratio',
+           'Free.and.Reduced.price.Lunch.Eligible.Students')]
+
+colnames(df2) <- c('Site',
+                   'STRatio',
+                   'RLunch')
+
+# head(df2,2)
+
+schools_sf2 <- merge(schools_sf, df2, by = "Site")
+
+# head(schools_sf2,2)
 ```
 
 ```{r}
 tmap_mode('plot')
 
 tm_shape(schools_sf2) + 
-  tm_bubbles(size="RLunch", 
-             col="pink", 
-             border.col='black', 
-             title.size="Students Eligible for Free/Reduced Lunch" ) +
-  tm_layout( legend.position = c('right','top'))
+  tm_bubbles(size = "RLunch", 
+             col = "pink", 
+             border.col = 'black', 
+             title.size = "Students Eligible for Free/Reduced Lunch") +
+  tm_layout(legend.position = c('right',
+                                'top'))
 ```
 
 
 ## 5.5 Mapping Categorical Data
 
-
 Mapping categorical data, also called qualitative data, is a bit more straightforward. There is no need to scale or classify data values. The goal of the color map is to provide a contrasting set of colors so as to clearly delineate different categories. Here's a point-based example:
 
 ```{r}
 tm_shape(schools_sf) + 
-  tm_dots(col='Org', size=0.15, palette='Spectral', title="School Type")
+  tm_dots(col = 'Org', 
+          size = 0.15, 
+          palette = 'Spectral', 
+          title = "School Type")
 ```
 
 ## 5.6 Recap
@@ -547,6 +577,3 @@ Practice creating choropleth and graduated color maps with the `counties` data. 
 <div>&nbsp;Team Geo<div>
 </div>
         
-
-
-

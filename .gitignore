@@ -1,3 +1,4 @@
 ./output/
 ./docs/*.pdf
 .RHistory
+.Rproj.user
