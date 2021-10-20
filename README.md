@@ -1,6 +1,6 @@
-# Geospatial Fundamentals in R with `sf` 
+# R Geospatial Fundamentals
 
-This is the repository for D-Lab's __Geospatial Fundamentals in R with `sf`__ workshop.
+This is the repository for D-Lab's __R Geospatial Fundamentals__ workshop.
 
 <!--
 CAN ADD SLIDES AGAIN LATER
