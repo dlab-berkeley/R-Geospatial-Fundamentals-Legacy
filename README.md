@@ -2,6 +2,8 @@
 
 This is the repository for D-Lab's __R Geospatial Fundamentals__ workshop.
 
+Geospatial data are an important component of data visualization and analysis in the social sciences, humanities, and elsewhere. The R programming language is a great platform for exploring these data and integrating them into your research. This workshop focuses on fundamental operations for reading, writing, manipulating and mapping vector data, which encodes location as points, lines and polygons.
+
 <!--
 CAN ADD SLIDES AGAIN LATER
 __View the Slides__:
@@ -15,9 +17,10 @@ HERE IS CODE FOR IF/WHEN WE IMPLEMENT BINDER
 - [Part 1 slides](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/01-core_concepts_and_plotting.html#1), [![Part I](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf/docs/01-core_concepts_and_plotting/master?urlpath=rstudio)
 - [Part 2 slides](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/02-spatial_analysis.html#1), [![Part II](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf/docs/02-spatial_analysis/master?urlpath=rstudio)
 - [Part 3 slides](https://dlab-berkeley.github.io/Geospatial-Fundamentals-in-R-with-sf/docs/03-raster_data.html#1), [![Part III](http://mybinder.org/badge.svg)](http://beta.mybinder.org/v2/gh/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sf/docs/03-raster_data/master?urlpath=rstudio)
---->
 
 (For the old workshop, using the `sp` package, go [here](https://github.com/dlab-berkeley/Geospatial-Fundamentals-in-R-with-sp).)
+
+--->
 
 --
 
