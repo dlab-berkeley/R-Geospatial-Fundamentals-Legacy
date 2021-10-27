@@ -95,6 +95,7 @@ The shapefile also has some serious limitations, including:
 
 - none of the component files can exceed 2GB
 - column names cannot be longer than 10 characters
+- the number of columns is limited to 255
 - unicode support is weak, e.g. apostrophes (single quotes) can crash the software
 
 It's an old file format, but it remains the most commonly used file format for vector spatial data!
@@ -103,15 +104,21 @@ It's an old file format, but it remains the most commonly used file format for v
 
 We are going to read in a shapefile with California county data. 
 
-First, take a look at the shapefile on your computer using the RStudio `Files` browser or with the R `dir()` command
+First, take a look at the shapefile on your computer using the RStudio `Files` browser and then with the R `dir()` command
 ```{r}
 dir(path = here("notebook_data", 
                 "california_counties"))
 ```
 
+Above we use the `here` function to view the files in a folder. You can also reference the folder directly, using it's relative file system path as shown below. However, if you get the path wrong you cannot access files and folders. So the `here` package makes it easier for you to locate these.
+
+```{r}
+dir('../notebook_data/california_counties')
+```
+
 ### Load the data into R
 
-Now use `st_read` to load the data into R. Take a look at the info st_read gives us about the data.
+Now use `st_read` to load the data into R. Take a look at the info st_read outputs as it loads the data.
 ```{r}
 # Read in the counties shapefile
 counties = st_read(dsn = here("notebook_data", 
@@ -205,12 +212,27 @@ We are able to map our `sf` object because of the data in the `geometry` column.
 - where each row contains a feature (geometry + the column attributes that describe it)
     - and each feature contains a `simple feature geometry list column (sfc)`
         - which in turn contains `simple feature geometry (sfg)`
-        
+
+Let's take a closer look at the counties sf object
+
 ```{r}
+# What class of object is it?
+class(counties)
+
+# What about the geometry column?
+class(counties$geometry)
+
+# What about the geometry for the first feature?
+class(counties$geometry[[1]])
+```
+
+> <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question** Based on the output of the head command below, can you guess why they call the geometry column `sticky`?
+
+```{r}
+# Take a look at the first 5 rows, and first 4 cols
 head(counties[1:5,1:4])
 ```
 
-> <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question** Based on the output of the head command above, can you guess why they call the geometry column `sticky`?
 
 ### sf Geometry Types
 
@@ -226,7 +248,7 @@ In an `sf data.frame` these geometries are encoded in a format known as [Well-Kn
 >
 *where X,Y coordinate values are separated by a space, coordinate pairs by a comma, and geometries by parentheses*
 
-An `sf` object may also include the variants **multipoints, multilines, and multipolgyons** if some of the features are composed multiple parts. 
+An `sf` object may also include the variants **multipoints, multilines, and multipolgyons** if some of the features are composed multiple and or complex geometries. 
 
 > - MULTIPOINT ((10 40), (40 30), (20 20), (30 10))
 > - MULTILINESTRING ((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))
@@ -366,6 +388,8 @@ st_write(alameda_county,
          layer_options="GEOMETRY=AS_WKT", 
          delete_dsn = T)
 ```
+
+Use the RStudio Files panel to view the files you just wrote to the `outdata` folder.
 
 ### Practice reading in these files
 
