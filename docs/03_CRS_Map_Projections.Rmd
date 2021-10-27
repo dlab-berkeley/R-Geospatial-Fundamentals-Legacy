@@ -193,10 +193,10 @@ Why? Primariy, because there are many different definitions of the shape of the 
 
 #### What you need to know when working with CRSs
 
-- What CRSs used in your study area and their main characteristics
-- How to identify, or `get`, the CRS of a geodataframe
-- How to `set` the CRS of geodataframe (i.e. define the projection)
-- Hot to `transform` the CRS of a geodataframe (i.e. reproject the data)
+- What CRSs are used in your study area and their main characteristics
+- How to identify, or `get`, the CRS of a spatial dataframe
+- How to `set` the CRS of spatial dataframe (i.e. define the projection)
+- Hot to `transform` a spatial dataframe into a new CRS (i.e. reproject the data)
 
 ### Codes for CRSs commonly used with CA data
 
@@ -206,7 +206,7 @@ The EPSG Registry maintains information about CRSs and specifies the short codes
 
 It's important to know the commonly used CRSs and their EPSG codes for your geographic area of interest.  
 
-For example, below is a list of commonly used CRSs for California geospatial data along with their EPSG codes.
+For example, below is a list of commonly used CRSs for California geospatial data, along with their EPSG codes.
 
 
 ##### Geographic CRSs
@@ -216,7 +216,6 @@ For example, below is a list of commonly used CRSs for California geospatial dat
 - `4269: NAD83` (units decimal degrees) - a geographic CRS customized to best fit the USA. This is used by most geographic data produced by US federal agencies including the Census.
 
   - `NAD83 (epsg:4269)` and `WGS84(epsg:4326)` geographic data can be considered equivalent although locations can differ by up to 1 meter in the continental USA and elsewhere up to 3m. That is not a big issue with census tract data as these data are only accurate within +/-7meters.
-
 
 ##### Projected CRSs
 
@@ -247,10 +246,10 @@ st_crs(states_limited)
 ```
 
 As we can clearly see from those two printouts (even if we don't understand all the content!),
-the CRSs of our two datasets are different! **This explains why we couldn't overlay them correctly!**
+the CRSs of our two sf objects are different! **This explains why we couldn't overlay them correctly!**
 
 
-The above CRS definition specifies a bunch of information, including:
+The above CRS definition for `states_limited` specifies a bunch of information, including:
 
 - the name of the CRS (`WGS84`), 
 - the units (`degree`)
@@ -309,7 +308,7 @@ You can transform the CRS of a geodataframe with the `st_transform` function. Th
 
 > In desktop GIS terminology transforming the CRS is called **projecting the data** (or **reprojecting the data**)
 
-Let's transform the states data to Web Mercator (3857), giving the output dataframe a name that will make tje CRS obvious to us. This can be very helpful when working with multiple copies of a spatial dataframe.
+Let's transform the states data to Web Mercator (3857), giving the output dataframe a name that will make the CRS obvious to us. This can be very helpful when working with multiple copies of a spatial dataframe.
 ```{r}
 # Convert the states data to Web Mercator
 states_limited_3857 = st_transform(states_limited, crs = 3857)
@@ -331,6 +330,9 @@ plot(states_limited$geometry, asp = 1)
 
 # plot utm sf data.frame
 plot(states_limited_3857$geometry, asp = 1)
+
+# reset plot rows/cols
+par(mfrow=c(1,1))
 ```
 
 <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
@@ -369,7 +371,7 @@ Overlay...
 ```{r}
 # Plot it together!
 plot(states_limited_3857$geometry, col = 'lightgrey')
-plot(counties_3857$geometry, col='darkgreen', add = T)
+plot(counties_3857$geometry, col='darkgreen', add=T)
 ```
 
 <img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question** The original counties data had the CRS CAL Albers (3310). Would it make sense to transform the states_limited to that CRS for mapping these two datasets?
