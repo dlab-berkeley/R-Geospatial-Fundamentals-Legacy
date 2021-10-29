@@ -26,7 +26,7 @@ HERE IS CODE FOR IF/WHEN WE IMPLEMENT BINDER
 
 ## Content outline
   - __Part I: Core concepts, vector data, and plotting__
-      - Basic geospatial concepts
+      - [Basic geospatial concepts](https://docs.google.com/presentation/d/1uYwDqgcW_wJWMIwx3FEtLbHVx7YpKDWelJcAtYtmYnY)
       - Basic vector data
       - Geospatial data structures (the `sf` package)
       - Basic plotting (`base::plot` and the `ggplot3` package)
