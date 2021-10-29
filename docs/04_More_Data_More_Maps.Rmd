@@ -4,7 +4,6 @@ output: html_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-# knitr::opts_knit$set(root.dir = '/Users/pattyf/Documents/Dlab/workshops/2021/Geospatial-Fundamentals-in-R-with-sf')
 ```
 
 # Lesson 4. More Data, More Maps!
@@ -119,11 +118,13 @@ Mapview is great for exploring your data. Less great for making pretty custom ma
 
 ## 4.2 Mapping with `tmap`
 
-Our go-to mapping package of choice is [`tmap`](https://github.com/mtennekes/tmap). Its name stands for "thematic maps", i.e. maps in which we use attributes of our dataset to control the visualization parameters of our maps, thus creating effective data visualizations. 
+Our go-to mapping package of choice is [`tmap`](https://github.com/mtennekes/tmap). Its name stands for "thematic maps", i.e. maps in which you can use the attribute values of the features to control the style properties of the geometry, thus creating effective data visualizations. 
 
 `tmap` is great for creating both static and interactive maps.
 
 You'll get plenty of introduction here in the workshop, but for additional support you can check out the [tmap vignette](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) or Google other tutorials and references.
+
+The [Geocomputation with R](https://geocompr.robinlovelace.net/adv-map.html) book also has a great chapter on making maps with `tmap` and other `R` libraries.
 
 Let's start by loading the package and creating a 'quick tmap'.
 
@@ -131,7 +132,7 @@ Let's start by loading the package and creating a 'quick tmap'.
 # load tmap
 library(tmap)
 
-# make tmap fix broken polygons
+# make tmap fix invalid polygons
 tmap_options(check.and.fix = TRUE)
 
 # plot a 'quick tmap'
@@ -141,6 +142,16 @@ qtm(counties)
 Nice!
 
 That's the quickest, simplest example of a static map that `tmap` can make. 
+
+
+#### About `tmap_options(check.and.fix = TRUE)`
+
+- Sometimes during data creation or processing, polygon geometry gets a bit messed up. It may look great but one or more of the polylines may self-intersect or not close (i.e. snap to a node). This can cause some functions to return an error message or warning.  The `tmap_option` **check.and.fix** and repair invalid geometry so that it can render an interactive or static map properly.  You can also use the `sf` function **st_make_valid** to repair invalid geometry. See the function documentation for more information.
+
+```{r}
+# save fixed geom
+counties <- st_make_valid(counties)
+```
 
 ### Toggling `tmap` modes
 
@@ -156,7 +167,7 @@ That's the quickest, simplest example of a static map that `tmap` can make.
 
 
 ```{r}
-# toggle the mode
+# toggle the mode (or ttm!)
 ttm()
 ```
 
@@ -164,7 +175,7 @@ ttm()
 # then make our quick tmap again
 qtm(counties)
 ```
-That's outstanding! We get a clickable, scrollable, zoomable map built in Javascript's Leaflet package... right out of the box!
+That's outstanding! We get a clickable, scrollable, zoomable map built with the [Leaflet Javascript library](https://leafletjs.com/)... right out of the box!
 
 - You can change the **basemap** using the `Layer Control` under the `Zoom Controls`.
 
@@ -227,7 +238,7 @@ tm_shape(bike_blvds) +
   tm_lines()
 ```
 
-As usual, we'll want to do our usual data exploration...
+As usual, we'll want to do a bit of data exploration...
 
 ```{r}
 head(bike_blvds)
@@ -271,7 +282,7 @@ We can see that the CRS of the bike blvds dataframe is UTM Zone 10N, NAD83. This
 
 ### Alameda County Schools
 
-Alright! Now that we have our bike boulevard data squared away, we're going to bring in our Alameda County school data.
+Alright! Now that we have reviewed the bike boulevard data, we're going to bring in Alameda County school data.
 
 ```{r}
 schools_df = read.csv(here("notebook_data",
@@ -294,46 +305,97 @@ dim(schools_df)
 <br>
 This is not an `sf` data.frame! A couple of clues to figure that out are..
 
-1. We're pulling in a Comma Separated Value (CSV) file, which is not a geospatial data format
-2. There is no geometry column (although we do have latitude and longitude values)
+1. We're reading in data from a `Comma Separated Value (CSV)` file, which is not a geospatial data file format.
+2. There is no geometry column (although we do have latitude and longitude values).
 
+We can also check the object class of the dataframe.
+```{r}
+class(schools_df)
+```
 
 -------------------------------
 
-Although our school data is not starting off as an `sf` data.frame, we actually have the tools and information to make it one. Using the `st_as_sf` function, we can transform our plain data.frame into an `sf` data.frame by:
+Although we are loading the school data as a regular, non-spatial data.frame, we can use the function `st_as_sf` to transform it into an `sf` spatial data.frame by:
 
-- specifying the columns containings the points' coordinates 
+- specifying the columns that contain the point coordinates 
 
-- and the identifying the CRS of the data (*How do we know what it is?*)
+- and the identifying the CRS of the data
+
+Let's take another look at the dataframe. 
+
+- What columns contain the point coordinates?
+- What is the CRS of the point data?
 
 ```{r}
-schools_sf = st_as_sf(schools_df,
-                       coords = c('X', 'Y'),
-                       crs = 4326)
+head(schools_df, 2)
+```
+
+Now lets use the `st_as_sf` function and what we know about the data to convert the dataframe to an `sf` spatial dataframe.
+```{r}
+schools_sf = st_as_sf(schools_df,               # the name of the dataframe to make spatial
+                       coords = c('X', 'Y'),    # the cols in that dataframe that contain the X & Y coordinate values
+                       crs = 4326)              # the CRS, expressed as an EPSG code
+
+# Take a look at the output
 head(schools_sf)
 ```
 
+
+You'll notice that the spatial dataframe is almost the same as the regular data.frame, except with one less column (because the two coordinate columns, `X`, and `Y`, were consumed into a single `geometry` column.
+
+
+We can also check the `class` of the output spatial dataframe...
+```{r}
+class(schools_sf)
+```
+
+Check the dimensions (number of rows and columns) - *is it the same as for schools_df?*
 ```{r}
 dim(schools_sf)
 ```
 
-You'll notice that the spatial dataframe is almost the same as what we had as a data.frame, except with one less column (because the two coordinate columns, `X`, and `Y`, were consumed into a single `geometry` column.
+#### Plot the point data
 
-Now that it's an `sf` data.frame, we can map it with the `plot` method for it just as we did for our other data sets. Notice that this is our first **point** dataset.
+Now that it's an `sf` data.frame, we can make a map of the schools with the `plot` function, just as we did for our other data sets. Notice that this is our first **point** dataset.
 
 ```{r}
 plot(schools_sf)
 ```
 
-But of course we'll want to transform the CRS, so that we can later plot it with our bike boulevard data.
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Question**
 
+#### How do we plot just the school points?
 ```{r}
-schools_utm10 = st_transform(schools_sf, crs = 26910)
+# plot the school points only
+#plot(...)  
 ```
 
-And keep in mind that we can always use `tmap` to plot any of our datasets.
+#### How can we use `plot` to overlay the schools on the Berkeley Bike Boulevards?
 
-Here's how we can use the tmap `tm_dots` function for point data:
+- What might we need to first?
+```{r}
+# Hint
+st_crs(schools_sf) == st_crs(bike_blvds)
+```
+
+So, we'll want to transform the CRS to match that of our bike boulevard data.
+```{r}
+# What are we setting the CRS to?
+schools_utm10 = st_transform(schools_sf, st_crs(bike_blvds))
+```
+
+And make a map overlay of the two layers
+```{r}
+plot(bike_blvds$geometry)
+plot(schools_utm10$geometry, col= "red", add=T)
+```
+
+
+### Plotting point data in `tmap`
+
+We can also use `tmap` to plot any of our spatial dataframes.
+
+Here, we can use the tmap `tm_dots` function for point data:
 
 ```{r}
 tm_shape(schools_utm10) +
@@ -345,7 +407,7 @@ tm_shape(schools_utm10) +
 
 ### Writing Data to a CSV file
 
-In Lesson 2 we discussed that you can save out `sf` data.frames in multiple file formats. You could opt for a GeoJSON, a shapefile, etc... However, for point data sets it is also an option to save it out as a CSV since each geometry only has a single X and single Y value.
+In Lesson 2 we reviewed how to save `sf` data.frames to multiple file formats, such as the `GeoJSON` or `shapefile` formats, etc. However, point data is also often saved to a CSV file.
 
 ```{r, eval=F}
 st_write(obj = schools_utm10, 
@@ -355,12 +417,13 @@ st_write(obj = schools_utm10,
          delete_dsn = T)
 ```
  
+Use the RStudio File browser to take a look at the output.
 
 ## 4.4 Map Overlays with `tmap`
 
-No matter the geometry type we have for our `sf` data.frame, we can create overlay plots.
+We can combine multiple spatial dataframes of different geometry types to create overlay maps.
 
-Since we've already done the legwork of transforming our CRS, we can go ahead and plot them together.
+Let's take a look at how we do this in `tmap` with the schools and bike boulevard dataframes.
 
 - Note, we add lines to the `tmap` with the `tm_lines` function.
 
@@ -371,17 +434,24 @@ tm_shape(schools_utm10) +
   tm_lines(col = 'red')
 ```
 
+<img src="http://www.pngall.com/wp-content/uploads/2016/03/Light-Bulb-Free-PNG-Image.png" width="20" align=left >  **Questions**   What `tmap` functions do we use to 
+
+- identify the spatial object that will be plotted?
+- add polygons to the map?
+- add polygon outlines but not the fill?
+- add points?
+- add lines?
 
 ### Practice
 
-Now try that same map with the `schools_sf` dataframe instead of the `schools_utm10` dataframe. What does the output tell you about `tmap`?
+Now try remaking the previous map with the `schools_sf` dataframe instead of the `schools_utm10` dataframe. What does the output tell you about `tmap`?
 
 ```{r}
 ## Your code here!
 
 ```
 
-> Yeh, `tmap` will dynamically transform (reproject) spatial dataframes so that they can overlay in the same map if the CRS of each dataframe is defined. If it is not defined, `tmap` will assume the WGS84 crs.
+> Yeh, `tmap` will dynamically transform (reproject) spatial dataframes so that they can overlay in the same map if the CRS of each dataframe is defined. If it is not defined, `tmap` will assume the WGS84 CRS (EPSG code 4326).
 
 ### Asking questions of the data
 
@@ -390,18 +460,9 @@ If we want to answer questions like *"What schools are close to bike boulevards 
 - How could you answer this question with the data we have used in this lesson?
 
 
-## 4.5 Recap
-
-In this lesson we learned a several new skills:
-- We looked at different R packages for making maps.
-- Took a deeper look at `tmap` and interactive mapping
-- Transformed a non-spatial data.frame into an `sf` spatial data.frame
-- Worked with point and line datasets
-
-
 ## Exercise: Overlay Mapping
 
-Let's take some time to practice reading in and reconciling new datasets, then mapping them together.
+Let's practice reading in and mapping some additional spatial data.
 
 In the code cell provided below, write code to:
 
@@ -450,6 +511,17 @@ ttm()
 berkeley_map
 
 -->
+
+
+## 4.5 Recap
+
+In this lesson we learned several new skills:
+
+- We looked at different R packages for making maps.
+- Took a deeper look at `tmap` and interactive mapping
+- Transformed a non-spatial data.frame into an `sf` spatial points data.frame - a very common work flow!
+- Worked with point and line spatial dataframes and created map overlays
+
 
 -----------------------------------
 
