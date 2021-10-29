@@ -42,24 +42,33 @@ Spatial analysis is a process that begins with exploring and mapping a dataset a
 
 The basic types of **spatial queries** are:
 
-- <u>Measurement queries</u>
+- <u>Spatial Measurement Queries</u>
     - What is feature A's **length**?
+      - *What is the length of the BART train line between Walnut Creek and Rockridge?*
     - What is feature A's **perimeter**?
+      - *What is the perimeter of the city of Berkeley?*
     - What is feature A's **area**?
+      - *What is the area of Alameda County?*
     - What is feature A's **distance** from feature B?
+      - *What is the distance between Berkeley High School and Berkeley BART Station?*
     - etc.
     
-- <u>Relationship queries</u>
-    - Does feature A **intersect** with feature B?
+- <u>Spatial Relationship Queries</u>
     - Is feature A **within** feature B?
+      - *What schools are in Berkeley?*
+    - Does feature A **intersect** with feature B?
+      - *What in what cities is Tilden Regional Park located?
     - Does feature A **cross** feature B?
     - etc.
 
+- <u>Combination Spatial Queries</u>
+    - *What schools in Berkeley are within 1/4 mile of a BART station?*
+    
 Both of these types of queries operate on the geometry of features in one or two datasets and are dependent on the type of geometry. For example, with `point` features you can make distance measurements or ask what points are spatially inside polygon objects. Polygon features, on the other hand, allow for a wider range of both measurement and spatial relationship queries.
 
-An important distinction between these two types of queries is that measurement queries depend on the CRS of the data while spatial relationship queries do not. This is because `topological relationships`, the term used to describe spatial relationships, are invariant to rotation, translation and scaling transformations like those that CRS transformations entail.
+An important distinction between these two types of queries is that measurement queries **always depend** on the CRS of the data while spatial relationship queries almost always do not. 
 
-### Attribute vs. Spatial Queries
+### Spatial Queries are Special
 
 We already know how to do attribute queries with our data. For example, we can select one or more specific counties by name or select those counties where the total population is greater than 100,000 because we have these columns in the dataset.
 
