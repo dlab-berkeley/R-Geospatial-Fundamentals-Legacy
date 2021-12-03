@@ -1,0 +1,310 @@
+---
+title: "R Geospatial Fundamentals-Raster: Appendix"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## R Spatial Libraries
+
+Let's load the libraries we will use
+
+```{r, message=F, warning=F}
+library(sf)     # simple features objects and methods
+library(tmap)   # mapping spatial objects
+library(raster) # reading in and operating on rasters
+library(here)   # build paths from folder with .rproj file
+```
+
+# Appendix - Extra Exercise
+
+> Note: this material may need updating.
+
+## Predicting home values
+
+Not at the census-tract level. But that's kind of coarse...
+
+What if we want to do the analysis at the property level?
+
+We have added this workflow as an appendix at the end of this document. It puts together a bunch of what we've learned over Parts I to III of the workshop. Feel free to give it try later!
+
+```{r}
+# Take a random subset of our 2015 homes, to save on computer time
+SFhomes15_sample <- SFhomes15_sf[sample(seq(nrow(SFhomes15_sf)),
+                                 replace = FALSE, size = 2000), ]
+```
+
+## Predicting home values
+
+Now let's reproject all our data to a UTM projection, so that we units of meters rather 
+than decimal degrees.
+
+```{r}
+# reproject
+SFhomes15_utm <- st_transform(SFhomes15_sample, 26910)
+DEM_utm <- projectRaster(DEM,
+                         projectExtent(DEM,
+                                       st_crs(SFhomes15_utm)$proj4string))
+nlcd_green_utm <- projectRaster(nlcd_green,
+                                projectExtent(nlcd_green,
+                                              st_crs(SFhomes15_utm)$proj4string))
+
+#check projections
+st_crs(SFhomes15_utm) == st_crs(DEM_utm)
+st_crs(SFhomes15_utm) == st_crs(nlcd_green_utm)
+```
+
+## Predicting home values
+
+Now let's buffer all our homes with a 100-meter buffer, then sum the greenspace within
+those buffers.
+
+```{r}
+#create buffer
+SFhomes15_utm_buff <- st_buffer(SFhomes15_utm, dist = 100)
+
+#sum the greenspace within the buffers 
+#NOTE: This will take a couple minutes to run...
+greenspace_homes <- extract(nlcd_green_utm, SFhomes15_utm_buff, 
+                            fun = mean, 
+                            na.rm = T)
+
+#add that as a column in our SFhomes15_utm dataframe
+SFhomes15_utm$greenspace = greenspace_homes
+```
+
+## Predicting home values
+
+And now let's extract the elevation at each home.
+
+```{r}
+#extract the elevation to the homes
+#NOTE: no need for fun or na.rm arguments here, because the homes
+#and points, not polygons, so only a single cell will extract to each
+elev_homes <- extract(DEM_utm, SFhomes15_utm)
+
+#add that as a column in our SFhomes15_utm dataframe too
+SFhomes15_utm$elev = elev_homes
+
+```
+
+## Predicting home values
+
+**Now**, how about that regression model?
+
+```{r}
+mod <- lm(totvalue ~ elev + greenspace, data = SFhomes15_utm)
+```
+
+## Predicting home values
+
+Mehhh... Some signal for elevation, but a very low $R^{2}$.
+
+But again, this is **just a stand-in analysis** (and lacks various considerations and adjustments for statistical validity).
+
+```{r}
+summary(mod)
+```
+
+## Fog data
+
+Data on summertime coastal fog in CA (a.k.a. Karl)
+```{r}
+# (from http://climate.calcommons.org/dataset/monthly-summertime-fog)
+# (units are in average hours per day)
+karl_files <- unique(gsub('.aux.xml', 
+                          '', 
+                          list.files(here("notebook_data",
+                                          "Part_3",
+                                          "CalMnYr"))))
+
+karl_files <- karl_files[grep('flcc', karl_files)]
+
+# take  a look
+karl_files
+```
+
+```{r}
+r1 <- raster(here("notebook_data",
+                          "part_3","USGS_1_n38w123_20210615.tiff"))
+```
+
+## RasterStack
+
+Read all of the KARL files into one RasterStack object
+```{r}
+karl <- stack(paste0(here("notebook_data",
+                          "part_3",
+                          "CalMnYr"), 
+                     karl_files,))
+
+karl <- stack(paste0('./notebook_data/part_3/data/CalMnYr/', karl_files))
+
+# look at what we made!
+karl
+```
+**A RasterStack object** -  literally what it sounds like!
+
+## Plot the Stack
+
+```{r}
+#plot a few
+plot(karl)
+```
+
+## CRS
+
+What's the projection of the RasterStack?
+```{r}
+# what's the projection?
+st_crs(karl)
+```
+
+## CRS Transformation
+
+Let's reproject this
+```{r}
+karl_WGS = projectRaster(karl, projectExtent(karl, st_crs(SFtracts)$proj4string))
+
+# check resultant CRS
+st_crs(karl_WGS) == st_crs(SFtracts)
+```
+
+
+##  What did we get?
+
+What type of spatial object did that give us?
+
+```{r}
+karl_WGS
+```
+
+## RasterBrick
+
+A RasterBrick. What does that mean?
+```{r, eval = FALSE}
+
+# See the documentation!
+?raster::brick
+
+```
+
+
+## Crop the Brick
+
+Crop it to the extent of our area of interest - SF
+```{r}
+# Crop it to SFtracts
+karl_WGS_crop = crop(karl_WGS, SFtracts)
+
+#Note that R vectorized that operation across our entire RasterBrick, the same way that it vectorizes many operations, e.g. 3 < 4 vs 3 < seq(4).
+```
+
+
+## Plot it
+
+```{r}
+# now let's make our same plot again
+par(mfrow = c(1,2))
+plot(karl_WGS[[7]])
+plot(st_geometry(SFtracts), add = T, reset=F, key.pos = NULL, col = NA)
+plot(karl_WGS_crop[[7]])
+plot(st_geometry(SFtracts), add = T, reset = F, key.pos = NULL, col = NA)
+```
+
+## Mean Fog
+
+Let's mean the karl values across the RasterBrick
+```{r}
+# Mean values
+mean_karl_WGS_crop <- mean(karl_WGS_crop)
+```
+
+What did that give us?
+```{r}
+mean_karl_WGS_crop
+```
+
+## RasterBrick to Raster
+
+When we computed the mean of a RasterBrick we got back a RasterLayer object! That makes sense, because we took cellwise means across all Layers in our Brick.
+
+**This is called raster algebra**
+
+## Plot it
+
+```{r}
+plot(mean_karl_WGS_crop)
+plot(st_geometry(SFtracts), add = T, col = NA)
+```
+
+
+## BUT
+
+Not all common operations successfully run as raster algebra
+```{r, eval=FALSE}
+# This won't work
+sd_karl_WGS_crop = sd(karl_WGS_crop)
+```
+
+Let's try this instead
+```{r}
+sd_karl_WGS_crop <- calc(karl_WGS_crop, sd)
+```
+
+## Plot it
+
+```{r}
+# plot that too
+par(mfrow = c(1,2))
+plot(mean_karl_WGS_crop, main = "mean summer fog hours")
+plot(st_geometry(SFtracts), add = T, reset=F, key.pos=NULL, col = NA)
+plot(sd_karl_WGS_crop, main = "sd summer fog hours")
+plot(st_geometry(SFtracts), add = T, reset=F, key.pos=NULL, col = NA)
+```
+
+## Thoughts...
+
+Looks like the foggiest neighborhoods also have the highest variation in fog, 
+but some less foggy neighborhoods on the east side of the city
+(e.g. The Inner Mission, Bayview) also vary quite a bit
+
+## Extract Mean Values
+
+Extract fog values to our tracts
+```{r}
+SFtracts$mean_karl <- extract(mean_karl_WGS_crop, 
+                              SFtracts, 
+                              mean)
+```
+
+
+## Explore Spatial Relationships
+
+Maybe fogginess is a function of elevation? That would make sense, right?
+
+```{r}
+# Linear regression model
+mod = lm(mean_karl ~ mean_elev, data = SFtracts)
+```
+
+## View results
+```{r}
+summary(mod)
+```
+
+## Comments
+
+Neat!
+
+Census-tract mean elevation has a significant, positive effect on
+mean fogginess (with each meter increase in elevation causing on average
+a .011 hour, or about 39-second increase in time spent in fog on an average
+summer day.
+
+Though this barely explains about 3.5% of the variance in our data!
+
+Of course, again, these are __not statistically valid models!__ Just analytical stand-ins.
