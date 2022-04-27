@@ -196,7 +196,7 @@ Why? Primariy, because there are many different definitions of the shape of the 
 - What CRSs are used in your study area and their main characteristics
 - How to identify, or `get`, the CRS of a spatial dataframe
 - How to `set` the CRS of spatial dataframe (i.e. define the projection)
-- Hot to `transform` a spatial dataframe into a new CRS (i.e. reproject the data)
+- How to `transform` a spatial dataframe into a new CRS (i.e. reproject the data)
 
 ### Codes for CRSs commonly used with CA data
 
