@@ -1,5 +1,7 @@
 # R Geospatial Fundamentals
 
+[![Datahub](https://img.shields.io/badge/launch-datahub-blue)](http://dlab.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fdlab-berkeley%2FR-Geospatial-Fundamentals&urlpath=rstudio%2F) [![Binder](http://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/dlab-berkeley/R-Geospatial-Fundamentals/HEAD?urlpath=rstudio)
+
 This is the repository for D-Lab's __R Geospatial Fundamentals__ workshop.
 
 Geospatial data are an important component of data visualization and analysis in the social sciences, humanities, and elsewhere. The R programming language is a great platform for exploring these data and integrating them into your research. This workshop focuses on fundamental operations for reading, writing, manipulating and mapping vector data, which encodes location as points, lines and polygons.
